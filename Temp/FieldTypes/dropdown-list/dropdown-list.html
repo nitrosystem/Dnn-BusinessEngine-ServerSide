@@ -1,0 +1,5 @@
+﻿<select ng-model="[FIELD].Value" class="{{[FIELD].Settings.DropdownCssClass}}">
+    <option ng-if="![FIELD].Settings.ShowAll || ![FIELD].Options.length" value="" disabled>{{[FIELD].Settings.Placeholder}}</option>
+    <option ng-if="[FIELD].Settings.ShowAll && [FIELD].Options.length" value="">{{[FIELD].Settings.AllText}}</option>
+    <option ng-repeat="option in [FIELD].Options" ng-value="option[[FIELD].Settings.DataSource.ValueField]" ng-selected="[FIELD].Value == option[[FIELD].Settings.DataSource.ValueField]">{{option[[FIELD].Settings.DataSource.TextField]}}</option>
+</select>

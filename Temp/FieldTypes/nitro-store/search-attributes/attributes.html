@@ -1,0 +1,126 @@
+﻿<div class="{{[FIELD].Settings.LayoutCss}}">
+    <div ng-show="filters && filters.length" class="form-section theme-default selected-filters">
+        <p class="selected-filters-header">
+            فیلتر های اعمال شده :
+        </p>
+        <div class="filters-parent">
+            <span class="filter-item" ng-repeat="filter in filters">
+                {{filter.Title}}
+                <i class="fa fa-times m-r-5" ng-click="onRemoveFilterClick(filter)"></i>
+            </span>
+        </div>
+    </div>
+
+    <div class="form-section theme-default title-search1">
+        <div class="input-group">
+            <input type="text" class="form-control" ng-model="_Filter.SearchText" ng-enter="onFiltersChange()" placeholder="جستجو در عنوان/برند">
+            <div class="input-group-append">
+                <span class="input-group-text" ng-click="onFiltersChange()">
+                    <i class="fa fa-search"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section theme-default switch-button p-15">
+        <span class="switch-button-title">
+            فقط کالاهای موجود
+        </span>
+        <label class="toggle-switch theme-topol m-l-10">
+            <input type="checkbox" hidden="hidden" ng-model="_Filter.IsAvaliable" ng-change="onFiltersChange()" />
+            <div class="slider"></div>
+        </label>
+        <div class="clerfix"></div>
+    </div>
+
+    <div class="form-section theme-default product-groups">
+        <ul class="p-t-5">
+            <li ng-click="onProductGroupClick()" ng-class="{'active':!_Filter.ProductGroup}" class="cursor-pointer">
+                <img style="width:25px;max-height:100%;" class="m-l-5" src="/Portals/0/NoImage.png" />
+                همه گروه ها
+            </li>
+            <li ng-repeat="group in _ProductGroups" ng-click="onProductGroupClick(group)" ng-class="{'active':group.ProductGroupUrl==_Filter.ProductGroup}" class="cursor-pointer">
+                <img style="width:25px;max-height:100%;background:#78b4d6;border-radius:4px;" class="m-l-5" bind-image="{group.Image}" />
+                {{group.Title}}
+            </li>
+        </ul>
+    </div>
+
+    <div class="form-section theme-default check-box-list small">
+        <input type="checkbox" />
+        <div class="header">
+            <h3>برند</h3>
+        </div>
+        <fieldset>
+            <input type="text" class="form-control input-search-options m-b-15" ng-model="attribute._Filter"
+                   placeholder="جستجوی نام برند" ng-change="onBrandChange(attribute._Filter)" />
+            <div class="checkbox-options-parent">
+                <div ng-repeat="brand in _Brands" class="b-checkbox">
+                    <label>
+                        <input type="checkbox" ng-model="brand.IsSelected" ng-change="onFiltersChange()" />
+                        <i class="input-helper"></i>
+                        <img style="width:25px;max-height:100%;" class="m-l-5" bind-image="{brand.Image}" />
+                        {{brand.BrandName}}
+                    </label>
+                </div>
+                <button type="button" class="btn btn-info btn-sm w-100p" ng-click="getBrands(1)">موارد بیشتر</button>
+            </div>
+        </fieldset>
+    </div>
+
+    <div class="form-section theme-default check-box-list small" ng-repeat="attribute in _Attributes">
+        <input type="checkbox" ng-checked="attribute.AttributeName=='Size'||attribute.AttributeName=='Cover'||attribute.AttributeName=='PrintYear'?true:false" />
+        <div class="header">
+            <h3>{{attribute.AttributeTitle}}</h3>
+        </div>
+        <fieldset>
+            <div class="input-group" ng-if="attribute.FieldTypeInSearch=='textbox'">
+                <input type="text" class="form-control" ng-model="attribute._Filter" ng-enter="onFiltersChange()" placeholder="جستجوی {{attribute.AttributeTitle}}">
+                <div class="input-group-append">
+                    <span class="input-group-text" ng-click="onFiltersChange()">
+                        <i class="fa fa-search"></i>
+                    </span>
+                </div>
+            </div>
+            <div ng-if="attribute.FieldTypeInSearch=='checkbox-list'">
+                <input type="text" class="form-control input-search-options m-b-15" ng-model="attribute._Filter" placeholder="جستجوی {{attribute.AttributeTitle}}" />
+                <div class="checkbox-options-parent">
+                    <div ng-repeat="option in attribute.Options | searchField: 'Value' | filter: attribute._Filter" class="b-checkbox">
+                        <label>
+                            <input type="checkbox" ng-model="option.IsSelected" ng-change="onFiltersChange()" />
+                            <i class="input-helper"></i>
+                            {{option.Value}}
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+
+    <div class="form-section theme-default price-range">
+        <div style="direction:ltr;">
+            <div ya-no-ui-slider="SliderOptions"></div>
+        </div>
+        <div class="price-range-value">
+            <div class="price-range-start-value">
+                <p class="m-0"> از </p>
+                <p class="m-0">
+                    <span bind-text="{SliderOptions.start[0]}" data-type="number" data-digits="true"></span>
+                </p>
+                <P class="m-0"> تومان </P>
+            </div>
+            <div class="price-range-end-value">
+                <p class="m-0"> تا </p>
+                <p class="m-0">
+                    <span bind-text="{SliderOptions.start[1]}" data-type="number" data-digits="true"></span>
+                </p>
+                <P class="m-0"> تومان </P>
+            </div>
+            <div class="clearfix"></div>
+            <button type="button" class="btn btn-price-action" ng-click="onApplyPriceClick()">
+                اعمال محدوده قیمت
+            </button>
+        </div>
+    </div>
+
+</div>

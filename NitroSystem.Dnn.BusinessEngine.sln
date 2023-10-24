@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NitroSystem.Dnn.BusinessEngine.Data", "NitroSystem.Dnn.BusinessEngine.Data\NitroSystem.Dnn.BusinessEngine.Data.csproj", "{57E9A1EA-6603-4CD5-9914-5F79F60923ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NitroSystem.Dnn.BusinessEngine.Web", "NitroSystem.Dnn.BusinessEngine.Web.csproj", "{0341E00F-4C86-40DD-9434-9C5FCD8A7801}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NitroSystem.Dnn.BusinessEngine.Common", "NitroSystem.Dnn.BusinessEngine.Common\NitroSystem.Dnn.BusinessEngine.Common.csproj", "{91678844-5B48-4EE1-BDD0-CFCA92BA1924}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NitroSystem.Dnn.BusinessEngine.Api", "NitroSystem.Dnn.BusinessEngine.Api\NitroSystem.Dnn.BusinessEngine.Api.csproj", "{F75D86AD-7CEE-484A-B781-508B53411771}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NitroSystem.Dnn.BusinessEngine.Core", "NitroSystem.Dnn.BusinessEngine.Core\NitroSystem.Dnn.BusinessEngine.Core.csproj", "{A2CAF8DA-7B01-48D1-8FD6-C6CC8E755987}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NitroSystem.Dnn.BusinessEngine.Framework", "NitroSystem.Dnn.BusinessEngine.Framework\NitroSystem.Dnn.BusinessEngine.Framework.csproj", "{8EF8FF3B-E365-415E-AB70-72AEBB897A40}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{57E9A1EA-6603-4CD5-9914-5F79F60923ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57E9A1EA-6603-4CD5-9914-5F79F60923ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57E9A1EA-6603-4CD5-9914-5F79F60923ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57E9A1EA-6603-4CD5-9914-5F79F60923ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0341E00F-4C86-40DD-9434-9C5FCD8A7801}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0341E00F-4C86-40DD-9434-9C5FCD8A7801}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0341E00F-4C86-40DD-9434-9C5FCD8A7801}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0341E00F-4C86-40DD-9434-9C5FCD8A7801}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91678844-5B48-4EE1-BDD0-CFCA92BA1924}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91678844-5B48-4EE1-BDD0-CFCA92BA1924}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91678844-5B48-4EE1-BDD0-CFCA92BA1924}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91678844-5B48-4EE1-BDD0-CFCA92BA1924}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F75D86AD-7CEE-484A-B781-508B53411771}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F75D86AD-7CEE-484A-B781-508B53411771}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F75D86AD-7CEE-484A-B781-508B53411771}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F75D86AD-7CEE-484A-B781-508B53411771}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2CAF8DA-7B01-48D1-8FD6-C6CC8E755987}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2CAF8DA-7B01-48D1-8FD6-C6CC8E755987}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2CAF8DA-7B01-48D1-8FD6-C6CC8E755987}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2CAF8DA-7B01-48D1-8FD6-C6CC8E755987}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EF8FF3B-E365-415E-AB70-72AEBB897A40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EF8FF3B-E365-415E-AB70-72AEBB897A40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EF8FF3B-E365-415E-AB70-72AEBB897A40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EF8FF3B-E365-415E-AB70-72AEBB897A40}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B965EC00-B028-4FE7-9725-D2AECFAC2990}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,10 @@
+﻿<div class="mbd-field-radiobutton">
+    <div ng-repeat="option in [FIELD].Options" class="b-radio">
+        <label>
+            <input type="radio" name="bRadio_[FIELDID]" ng-value="option[[FIELD].Settings.DataSource.ValueField]" 
+                   ng-model="[FIELD].Value" bolbol />
+            <i class="input-helper"></i>
+            {{option[[FIELD].Settings.DataSource.TextField]}}
+        </label>
+    </div>
+</div>

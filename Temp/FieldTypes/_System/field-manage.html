@@ -1,0 +1,53 @@
+﻿<div id="field[FIELDID]" data-field="[FIELDNAME]">
+    <!-- Droppable field panel -->
+    <div class="droppable" data-default-helper="AddItemHere" data-drop="true"
+         jqyoui-droppable="{onOver:'onDragOverField()',onOut:'onDragOutField()',onDrop:'onDropField([FIELD])'}">
+    </div>
+    <div ng-click="onFieldClick($event,'[FIELDID]')" class="field" ng-class="{'active':[FIELD].FieldID==currentField.FieldID,'required':[FIELD].IsRequired,'shake':shakeField}" data-fieldname="[FIELDNAME]">
+        <!-- Toolbar -->
+        <div class="toolbar" ng-show="currentField && [FIELD].FieldID==currentField.FieldID">
+            <div class="sorting" jqyoui-draggable="{onStop:'onStopDrag()'}" jqyoui-options="{appendTo: 'body',revert: 'invalid',helper: 'clone'}" data-drag="true" data-move-field="[FIELDNAME]">
+                <i class="glyphicon glyphicon-move"></i>
+                Move
+            </div>
+            <div class="actions pull-left">
+                <button type="button" class="p-l-5 p-r-5 m-l-5" ng-click="onSaveFieldClick($event)" ng-disabled="waiting"><i class="zmdi zmdi-save"></i></button>
+                <button type="button" class="p-l-5 p-r-5" ng-click="onCancelEditFieldClick($event)" ng-disabled="waiting"><i class="zmdi zmdi-edit"></i></button>
+            </div>
+            <ajaxbar id="ajaxbar-[FIELDID]" class="theme-blue m-10"></ajaxbar>
+            <div class="field-required" ng-if="currentField.IsValuable">
+                Required
+                <label class="toggle-switch theme-topol small red">
+                    <input type="checkbox" hidden="hidden" ng-model="currentField.IsRequired" ng-disabled="waiting" />
+                    <div class="slider"></div>
+                </label>
+            </div>
+            <div class="actions">
+                <button type="button" ng-click="onShowPanelDeleteClick($event)" ng-disabled="waiting"><i class="zmdi zmdi-delete"></i></button>
+                <button type="button" ng-click="onShowSettingsClick($event)"><i class="zmdi zmdi-settings" ng-class="{'spin':loadingSettings}"></i></button>
+            </div>
+        </div>
+        <!-- Field save message -->
+        <div class="panel-popover panel-save-message left-arrow blue-theme" ng-class="{'active':isShowSavePanel}">
+            <h3>Save Field</h3>
+            <p>For continue, you must first save this field</p>
+            <div class="actions">
+                <button type="button" class="btn btn-success waves-effect" ng-click="onSaveFieldClick($event)">Save</button>
+                <button type="button" class="btn btn-default waves-effect" ng-click="onCancelEditFieldClick($event)">Cancel</button>
+            </div>
+        </div>
+        <!-- Field delete panel -->
+        <div class="panel-popover panel-delete" ng-class="{'active':isShowDeletePanel}" click-out="onPanelDeleteOutClick([FIELD].FieldID)" click-out-if="isShowDeletePanel">
+            <h3>Delete Field</h3>
+            <p>Are you sure for delete this field?</p>
+            <div class="actions">
+                <button type="button" class="btn btn-danger waves-effect" ng-click="onDeleteFieldClick()">Delete</button>
+                <button type="button" class="btn btn-default waves-effect" ng-click="onCancelDeleteFieldClick()">Cancel</button>
+            </div>
+        </div>
+        <!-- Field  -->
+        <div data-field-component="true">
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>

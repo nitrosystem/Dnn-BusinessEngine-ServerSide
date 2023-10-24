@@ -1,0 +1,300 @@
+﻿<div class="mbd-list-settings">
+    <!--Columns Modal-->
+    <div class="form-section theme-default small">
+        <input type="checkbox" />
+        <div class="header">
+            <h3><i class="zmdi zmdi-storage zmdi-hc-fw"></i>Columns</h3>
+        </div>
+        <fieldset>
+            <table class="table table-bordered table-striped table-condensed table-hover">
+                <thead>
+                    <tr>
+                        <th>Column Title</th>
+                        <th>Contents</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="column in currentField.Settings.Columns">
+                        <td>
+                            {{column.Title}}
+                        </td>
+                        <td>
+                            <span ng-repeat="content in column.Contents">{{content.Content}}</span>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-default" ng-click="onSwapColumnClick($index,$index-1)" ng-disabled="!currentField.Settings.Columns.length || $index===0">
+                                <i class="zmdi zmdi-caret-up f-20"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-default" ng-click="onSwapColumnClick($index,$index+1)" ng-disabled="!currentField.Settings.Columns.length || $index===currentField.Settings.Columns.length-1">
+                                <i class="zmdi zmdi-caret-down f-20"></i>
+                            </button>
+                        </td>
+                        <td>
+                            <a href="" ng-click="onEditColumnClick(column)"><i class="zmdi zmdi-edit"></i></a>
+                            <a href="" ng-click="onDeleteColumnClick($index)"><i class="zmdi zmdi-delete f-20 text-danger"></i></a>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="6">
+                            <button type="button" class="btn btn-primary" ng-click="onAddColumnClick()">
+                                <i class="zmdi zmdi-plus f-20"></i>
+                            </button>
+                        </th>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <button type="button" class="btn btn-success m-t-10 m-b-15" ng-click="onSaveSettingsClick()">Save Settings</button>
+        </fieldset>
+    </div>
+
+    <!--Column Edit Modal-->
+    <div class="modal" id="wnEditColumn" tabindex="-1" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false" style="overflow:visible;">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Edit Column</h4>
+                    <button type="button" class="close" aria-label="Close" ng-click="onCancelColumnClick()"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body form-horizontal">
+                    <div class="mb-3">
+                        <div class="row">
+                            <label class="col-sm-3 col-form-label">Column Title</label>
+                            <div class="col-sm-9 ang-validation theme-default" ng-class="{'error':columnForm.$submitted && columnForm.columnTitle.$invalid}">
+                                <input type="text" name="columnTitle" ng-model="column.Title"
+                                       class="form-control" placeholder="Enter column title" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <label class="col-sm-3 col-form-label">Column Contents</label>
+                            <div class="col-sm-9">
+                                <div class="row">
+                                    <div class="col-sm-6 m-b-5">
+                                        <select ng-model="columnField" class="form-control"
+                                                ng-change="column.Contents[column.ContentscurrentRow?column.ContentscurrentRow:0].Content=column.Contents[column.ContentscurrentRow?column.ContentscurrentRow:0].Content+'{Field:'+columnField+'}'"
+                                                select2 placeholder="Select one field">
+                                            <option></option>
+                                            <option ng-repeat="field in fields" value="{{field.FieldName}}">{{field.FieldText}}</option>
+                                            <option value="UserDisplayName">User Display Name</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-6 m-b-5">
+                                        <select ng-model="columnAction" class="form-control"
+                                                ng-change="onColumnActionChange()"
+                                                select2 placeholder="Select action type">
+                                            <option></option>
+                                            <option value='<a {Action:Edit}><i class="zmdi zmdi-edit"></i></a>'>Edit</option>
+                                            <option value='<a href="" {Action:Delete}>Delete</a>'>Delete</option>
+                                            <option value='<a href="" {Action:Approve}>Approve</a>'>Approve</option>
+                                            <option value='<a href="" {Action:NotApprove}>Not Approve</a>'>Not Approve</option>
+                                            <option value="updateItem">Update Item</option>
+                                            <option value='<a href="" {Action:Payment:}>Payment</a>'>Payment</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="column-content-item" ng-repeat="content in column.Contents" ng-class="{'active':column.Contents.length>1 && $index===column.ContentscurrentRow}" ng-click="column.ContentscurrentRow=$index">
+                                    <div class="row">
+                                        <div class="col-sm-8">
+                                            <textarea ng-model="content.Content"></textarea>
+                                        </div>
+                                        <div class="col-sm-3 p-l-10 p-r-0 conditions" ng-click="onColumnContentConditionsClick(content)">
+                                            <span ng-if="!content.Conditions || !content.Conditions.length">Click For Add Condition</span>
+                                            <span ng-if="content.Conditions.length">{{content.Conditions.length}} Condition(s)</span>
+                                        </div>
+                                        <div class="col-sm-1">
+                                            <i class="zmdi zmdi-delete cursor-pointer" ng-click="column.Contents.splice($index,1)"></i>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                    <span ng-if="content.UpdateItemActions" ng-click="onupdateItemActionsClick(content)" class="update-items">Update Items : <span ng-repeat="action in content.UpdateItemActions">{{action.FieldName}} {{action.EvalType}} {{action.RightExpression}} </span></span>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-info m-t-5" ng-click="column.Contents.push({})">
+                                    <i class="zmdi zmdi-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div ng-if="column.Type==='action'">
+                        <div class="mb-3" ng-if="column.ActionType==='updateItem'">
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label">Update Fields</label>
+                                <div class="col-sm-9">
+                                    <b-params ng-model="column.UpdateItemActions" data-source="['fields','form','_b','variables','actionParams']"
+                                              data-variables="variables" data-fields="fields" data-view-models="viewModels" data-action-params="action.Params"></b-params>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3" ng-if="column.ActionType==='payment'">
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label">Payment Method</label>
+                                <div class="col-sm-9">
+                                    <select ng-model="column.TokenServiceName" class="form-control"
+                                            ng-options="pm.PaymentName for pm in paymentMethods"
+                                            select2 placeholder="Select one service">
+                                        <option></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3 m-b-0">
+                        <div class="row">
+                            <label class="col-sm-3 col-form-label">Show In Row Details</label>
+                            <div class="col-sm-9">
+                                <div class="b-checkbox">
+                                    <label>
+                                        <input type="checkbox" ng-model="column.ShowInRowDetails" />
+                                        <i class="input-helper"></i>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3 m-b-0" ng-if="column.ShowInRowDetails">
+                        <div class="row">
+                            <label class="col-sm-3 col-form-label">Hide Title Column</label>
+                            <div class="col-sm-9">
+                                <div class="b-checkbox">
+                                    <label>
+                                        <input type="checkbox" ng-model="column.HideTitleColumn" />
+                                        <i class="input-helper"></i>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3" ng-if="column.ShowInRowDetails">
+                        <div class="row">
+                            <label class="col-sm-3 col-form-label">View Conditions</label>
+                            <div class="col-sm-9">
+                                <b-conditions ng-model="column.Conditions"
+                                              data-source="['fields','form','_b','variables','actionParams']"
+                                              data-variables="variables" data-fields="fields" data-view-models="viewModels"
+                                              data-action-params="action.Params"></b-conditions>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <label class="col-sm-3 col-form-label">Is Update Collection</label>
+                            <div class="col-sm-9">
+                                <div class="b-checkbox">
+                                    <label>
+                                        <input type="checkbox" ng-model="column.IsUpdateCollection" />
+                                        <i class="input-helper"></i>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <label class="col-sm-3 col-form-label">Authorization View Column</label>
+                            <div class="col-sm-9">
+                                <select ng-model="column.AuthorizationViewColumn"
+                                        class="form-control" ng-options="role for role in roles"
+                                        chosen multiple placeholder-text-multiple="'Authorization View Column'" inherit-select-classes="true"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <label class="col-sm-3 col-form-label">Column Style</label>
+                            <div class="col-sm-9">
+                                <input type="text" ng-model="column.ColumnStyle" class="form-control" placeholder="Enter column style" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <label class="col-sm-3 col-form-label">Column Css</label>
+                            <div class="col-sm-9">
+                                <input type="text" ng-model="column.ColumnCss" class="form-control" placeholder="Enter column css" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <div class="col-sm-8 col-sm-offset-3">
+                                <button type="button" class="btn btn-success  m-r-5" ng-click="onSaveColumnClick()">Save</button>
+                                <button type="button" class="btn btn-cancel m-r-5 bgm-gray" ng-click="onCancelColumnClick()">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Column Content Conditions Modal-->
+    <div class="modal" id="wnColumnContentConditions" tabindex="-1" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Edit Column</h4>
+                    <button type="button" class="close" aria-label="Close" ng-click="onCancelColumnContentConditionClick()"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body form-horizontal">
+                    <div class="mb-3">
+                        <div class="row">
+                            <label class="col-sm-3 col-form-label">Conditions</label>
+                            <div class="col-sm-9">
+                                <b-conditions ng-model="columnContentConditions"
+                                              data-source="['fields','form','_b','variables','actionParams']"
+                                              data-variables="variables" data-fields="fields" data-view-models="viewModels"
+                                              data-action-params="action.Params"></b-conditions>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <div class="col-sm-8 col-sm-offset-3">
+                                <button type="button" class="btn btn-success  m-r-5" ng-click="onSaveColumnContentConditionClick()">Save</button>
+                                <button type="button" class="btn btn-cancel m-r-5 bgm-gray" ng-click="onCancelColumnContentConditionClick()">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Column Content Update Actions Modal-->
+    <div class="modal" id="wnColumnContentUpdateActions" tabindex="-1" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Update Item Actions</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body form-horizontal">
+                    <div class="mb-3">
+                        <div class="row">
+                            <label class="col-sm-3 col-form-label">Actions</label>
+                            <div class="col-sm-9">
+                                <b-properties ng-model="columnContentUpdateActions"></b-properties>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <div class="col-sm-8 col-sm-offset-3">
+                                <button type="button" class="btn btn-success  m-r-5" ng-click="onSaveColumnContentUpdateActionsClick()">Save</button>
+                                <button type="button" class="btn btn-cancel m-r-5 bgm-gray" data-bs-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

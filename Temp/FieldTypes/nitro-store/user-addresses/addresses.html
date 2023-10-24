@@ -1,0 +1,357 @@
+﻿<!------------------------------------>
+<!--Start  User Address component -->
+<!------------------------------------>
+<div class="user-address">
+
+    <!------------------------------------>
+    <!--Start  Order recipient address -->
+    <!------------------------------------>
+    <div class="card user-address-card" ng-show="[FIELD].state == 'default-address'">
+        <div class="card-header bg-transparent border-0 position-relative">
+            <p class="m-0 font-weight-bold">آدرس گیرنده سفارش</p>
+        </div>
+        <div class="card-body">
+            <address class="card-title mb-0">
+                {{[FIELD].defaultAddress.Province}}
+                &nbsp;-&nbsp;
+                {{[FIELD].defaultAddress.City}}
+                &nbsp;-&nbsp;
+                {{[FIELD].defaultAddress.Address}}
+            </address>
+            <p class="card-text">
+                <i class="zmdi zmdi-account text-info mr-5"></i> {{[FIELD].defaultAddress.RecipientFirstName}} &nbsp; {{[FIELD].defaultAddress.RecipientLastName}}
+            </p>
+            <div class="text-right">
+                <button type="button" href="#" ng-click="showEditAddress()" class="btn btn-info">تغییر یا ویرایش
+                    آدرس</button>
+            </div>
+        </div>
+    </div>
+    <!------------------------------------>
+    <!--End  Order recipient address -->
+    <!------------------------------------>
+
+
+    <!------------------------------------>
+    <!--Start  add & edit address -->
+    <!------------------------------------>
+    <div class="card user-address-card" ng-show="[FIELD].state == 'edit-address'">
+        <div class="card-header bg-transparent border-0 position-relative">
+            <div class="row align-items-center">
+                <div class="col-lg-10 col-sm-9 col-8">
+                    <p class="m-0 font-weight-bold">انتخاب مقصد سفارش</p>
+                </div>
+                <div class="col-lg-2 col-sm-3 col-4 text-right">
+                    <button type="button" ng-click="showDefaultAddress()" class="btn btn-info u-a-back-btn">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <!--start  saved address box -->
+                <div class="col-lg-3 col-sm-6 col-12" ng-repeat="address in [FIELD].listAddress">
+                    <div class="card border-info">
+                        <div class="card-header bg-transparent">
+                            <a href="" ng-show="address.IsDefault" ng-click="setAddressDefault(address)">
+                                <i class="fas fa-check-circle text-info"></i>
+                            </a>
+                            <a href="" ng-show="!address.IsDefault" b-click="setAddressDefault(address)">
+                                <i class="fa fa-circle text-info"></i>
+                            </a>
+                            <span class="mb-0">به این آدرس ارسال شود</span>
+                        </div>
+                        <div class="card-body">
+                            <address class="card-title mb-0">
+                                {{address.Province}}
+                                &nbsp;-&nbsp;
+                                {{address.City}}
+                                &nbsp;-&nbsp;
+                                {{address.Address}}
+                            </address>
+                        </div>
+                        <ul class="list-group list-group-flush m-0">
+                            <li class="list-group-item">
+                                <i class="zmdi zmdi-email text-info mr-3"></i> {{address.PostalCode}}
+                            </li>
+                            <li class="list-group-item">
+                                <i class="zmdi zmdi-smartphone-iphone text-info mr-3"></i> {{address.RecipientMobile}}
+                            </li>
+                            <li class="list-group-item">
+                                <i class="zmdi zmdi-account text-info mr-3"></i> {{address.RecipientFirstName}} &nbsp; {{address.RecipientLastName}}
+                            </li>
+                        </ul>
+                        <div class="card-footer bg-transparent p-0">
+                            <div class="row">
+                                <div class="col-6 pr-0">
+                                    <a ng-click="deleteAddress(address)" class="u-a-card-btn u-a-card-border-btn">حذف</a>
+                                </div>
+                                <div class="col-6 pl-0">
+                                    <a ng-click="showModalAddress(address)" class="u-a-card-btn">ویرایش</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--end  saved address box -->
+
+                <!--start  add address box -->
+                <div class="col-lg-3 col-sm-6 col-12">
+                    <div class="card add-address-card rounded p-0">
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn text-info w-100p h-100 font-weight-bold" ng-click="showModalAddress()">
+                            <i class="fas fa-plus text-info mb-5"></i>
+                            <span class="d-block">ایجاد آدرس جدید</span>
+                        </button>
+                    </div>
+                </div>
+                <!--end  add address box -->
+            </div>
+        </div>
+    </div>
+    <!------------------------------------>
+    <!--End  add & edit address  -->
+    <!------------------------------------>
+
+
+
+    <!------------------------------------>
+    <!--Start  add Address Modall -->
+    <!------------------------------------>
+    <div class="modal fade user-address-modal" id="userAddressModal" tabindex="-1" role="dialog" aria-labelledby="userAddressTitle" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content px-2">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userAddressTitle">فرم ثبت آدرس</h5>
+                    <button type="button" class="close" ng-click="closeModalAddress()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Start  modal form -->
+                    <form>
+                        <div class="form-row">
+                            <div class="mb-3 col-lg-6 col-sm-6 col-12">
+                                <label class="col-form-label">استان</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-append d-input-group-icon">
+                                        <span class="input-group-text rounded-left">
+                                            <i class=" fas fa-map-marker-alt text-info"></i>
+                                        </span>
+                                    </div>
+                                    <select class="form-control" ng-change="showListCities([FIELD].Address.ProvinceID)" ng-options="item.ProvinceID as item.ProvinceName for item in [FIELD].Provinces" ng-model="[FIELD].Address.ProvinceID">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3 col-lg-6 col-sm-6 col-12">
+                                <label class="col-form-label">شهر</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-append d-input-group-icon">
+                                        <span class="input-group-text rounded-left">
+                                            <i class=" fas fa-map-marker-alt text-info"></i>
+                                        </span>
+                                    </div>
+                                    <select class="form-control" ng-model="[FIELD].Address.CityID" ng-options="item.CityID as item.CityName for item in [FIELD].Cities">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="col-form-label">نشانی پستی</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-append d-input-group-icon">
+                                    <span class="input-group-text rounded-left">
+                                        <i class=" fa fa-home text-info"></i>
+                                    </span>
+                                </div>
+                                <input type="text" class="form-control b-input rounded-right" placeholder="نشانی پستی را به صورت دقیق وارد نمایید" ng-model="[FIELD].Address.Address">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="mb-3 col-lg-3 col-sm-6 col-12">
+                                <label class="col-form-label">پلاک</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-append d-input-group-icon">
+                                        <span class="input-group-text rounded-left">
+                                            <i class=" fas fa-plus text-info"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control b-input rounded-right" placeholder="شماره پلاک را وارد نمایید" ng-model="[FIELD].Address.Plaque">
+                                </div>
+                            </div>
+                            <div class="mb-3 col-lg-4 col-sm-6 col-12">
+                                <label class="col-form-label">واحد</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-append d-input-group-icon">
+                                        <span class="input-group-text rounded-left">
+                                            <i class=" fas fa-plus text-info"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control b-input rounded-right" placeholder="شماره واحد را وارد نمایید" ng-model="[FIELD].Address.Unit">
+                                </div>
+                            </div>
+                            <div class="mb-3 col-lg-5 col-sm-6 col-12">
+                                <label class="col-form-label">کد پستی</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-append d-input-group-icon">
+                                        <span class="input-group-text rounded-left">
+                                            <i class=" fa fa-inbox text-info"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control b-input rounded-right" placeholder="کد پستی را وارد نمایید" ng-model="[FIELD].Address.PostalCode">
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="hr" />
+
+                        <!---- start  modal resiver form---->
+                        <div>
+                            <div class="mb-3 d-flex mb-0">
+                                <div class="b-checkbox">
+                                    <label class="col-form-label">
+                                        <input type="checkbox" ng-model="[FIELD].Address.RecipientOrder" ng-click="clearUserInformation()"/>
+                                        <i class="input-helper"></i>
+                                    </label>
+                                </div>
+                                <label class="col-form-label pt-0"> گیرنده فرد دیگری است</label>
+                            </div>
+                            <div class="form-row" ng-show="[FIELD].Address.RecipientOrder">
+                                <!-- start receiver first name -->
+                                <div class="mb-3 col-lg-6 col-sm-6 col-12">
+                                    <label class="col-form-label">نام گیرنده</label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-append d-input-group-icon">
+                                            <span class="input-group-text rounded-left">
+                                                <i class="fas fa-user text-info"></i>
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control b-input rounded-right" placeholder="نام گیرنده را وارد نمایید" ng-model="[FIELD].Address.RecipientFirstName">
+                                    </div>
+                                </div>
+                                <!-- end receiver first name -->
+                                <!-- start receiver last name -->
+                                <div class="mb-3 col-lg-6 col-sm-6 col-12">
+                                    <label class="col-form-label">نام خانوادگی گیرنده</label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-append d-input-group-icon">
+                                            <span class="input-group-text rounded-left">
+                                                <i class="fas fa-user text-info"></i>
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control b-input rounded-right" placeholder="نام خانوادگی گیرنده را وارد نمایید" ng-model="[FIELD].Address.RecipientLastName">
+                                    </div>
+                                </div>
+                                <!-- end receiver last name -->
+                                <!-- start receiver ID -->
+                                <div class="mb-3 col-lg-6 col-sm-6 col-12">
+                                    <label class="col-form-label">کد ملی گیرنده</label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-append d-input-group-icon">
+                                            <span class="input-group-text rounded-left">
+                                                <i class="fa fa-address-card text-info"></i>
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control b-input rounded-right" placeholder="کد ملی گیرنده را وارد نمایید" ng-model="[FIELD].Address.RecipientNationalCode">
+                                    </div>
+                                </div>
+                                <!-- end receiver ID -->
+                                <!-- start receiver mobile -->
+                                <div class="mb-3 col-lg-6 col-sm-6 col-12">
+                                    <label class="col-form-label">شماره موبایل</label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-append d-input-group-icon">
+                                            <span class="input-group-text rounded-left">
+                                                <i class="fa fa-mobile text-info"></i>
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control b-input rounded-right" placeholder="شماره موبایل گیرنده را وارد نمایید" ng-model="[FIELD].Address.RecipientMobile">
+                                    </div>
+                                </div>
+                                <!-- end receiver mobile -->
+                            </div>
+                        </div>
+                    </form>
+                    <!-- End  modal form -->
+                </div>
+                <div class="modal-footer text-right">
+                    <button type="button" class="btn btn-info" ng-click="saveAddress()">تایید و ثبت آدرس</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!------------------------------------>
+    <!--End  add Address Modal -->
+    <!------------------------------------>
+
+</div>
+<!------------------------------------>
+<!--End  User Address component -->
+<!------------------------------------>
+
+
+
+<style>
+    /* --------------------------------------------------------
+    custom class on  --->  .input-group-append bootstrap class
+    -----------------------------------------------------------*/
+    
+    .d-input-group-icon .input-group-text {
+        background-color: transparent;
+        border-left: 0;
+    }
+    /* --------------------------------------------------------
+     start  user address cumponent style
+    -----------------------------------------------------------*/
+    
+    .user-address {
+        box-sizing: border-box;
+    }
+    /*.user-address .user-address-card .card-header{
+            border: none;
+            position: relative;
+        }*/
+    
+    .user-address .user-address-card .card-header::after {
+        position: absolute;
+        content: "";
+        width: 96%;
+        border-bottom: 1px solid rgba(0, 0, 0, .125);
+        bottom: 0;
+        right: 2%;
+    }
+    /* custom border-dashed */
+    
+    .user-address .user-address-card .add-address-card {
+        border: 1px dashed #17a2b8 !important;
+        height: 100%;
+        width: 100%;
+        min-height: 15.65rem;
+    }
+    /*** user address card footer button ***/
+    
+    .user-address .user-address-card .u-a-card-btn {
+        padding: 0.45rem;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        color: #17a2b8 !important;
+        display: block;
+        border-top: 1px solid #17a2b8;
+        color: inherit;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+        padding: 6px;
+        cursor: pointer;
+    }
+    
+    .user-address .user-address-card .u-a-card-btn.u-a-card-border-btn {
+        border-left: 1px solid #17a2b8;
+    }
+    
+    .user-address .user-address-card .u-a-back-btn>i {
+        vertical-align: middle;
+    }
+</style>

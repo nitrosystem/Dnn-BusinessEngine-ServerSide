@@ -1,0 +1,324 @@
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Options]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Options](
+	[OptionID] [int] IDENTITY(1,1) NOT NULL,
+	[ModuleID] [int] NULL,
+	[Title] [nvarchar](150) NULL,
+	[AuthorizationSendItem] [nvarchar](250) NULL,
+	[AuthorizationViewItems] [nvarchar](250) NULL,
+	[AuthorizationModeratorItems] [nvarchar](250) NULL,
+	[AuthorizationEditSelfItems] [nvarchar](250) NULL,
+	[AuthorizationTrustUsers] [nvarchar](250) NULL,
+	[TableName] [nvarchar](250) NULL,
+	[EnableRating] [bit] NULL,
+	[EnableUserFavorites] [bit] NULL,
+ CONSTRAINT [PK_MyDnnBusiness_Options] PRIMARY KEY CLUSTERED 
+(
+	[OptionID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+ALTER TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Options]  WITH CHECK ADD  CONSTRAINT [FK_MyDnnBusinessDirectory_Options_Modules] FOREIGN KEY([ModuleID])
+REFERENCES {databaseOwner}[{objectQualifier}Modules] ([ModuleID])
+ON DELETE CASCADE
+END
+
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Settings]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Settings](
+	[SettingID] [int] IDENTITY(1,1) NOT NULL,
+	[ModuleID] [int] NULL,
+	[SettingName] [nvarchar](max) NULL,
+	[SettingValue] [nvarchar](max) NULL,
+ CONSTRAINT [PK_MyDnnBusinessDirectory_Settings] PRIMARY KEY CLUSTERED 
+(
+	[SettingID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+ALTER TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Settings]  WITH CHECK ADD  CONSTRAINT [FK_MyDnnBusinessDirectory_Settings_Modules] FOREIGN KEY([ModuleID])
+REFERENCES {databaseOwner}[{objectQualifier}Modules] ([ModuleID])
+ON DELETE CASCADE
+END
+
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Providers]') AND type in (N'U'))
+BEGIN
+CREATE TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Providers](
+	[ProviderID] [int] IDENTITY(1,1) NOT NULL,
+	[ProviderType] [nvarchar](50) NULL,
+	[ProviderName] [nvarchar](150) NULL,
+	[TypeName] [nvarchar](1000) NULL,
+	[Description] [nvarchar](500) NULL,
+	[DefaultSettings] [nvarchar](max) NULL,
+ CONSTRAINT [PK_MyDnnBusinessDirectory_Providers] PRIMARY KEY CLUSTERED 
+(
+	[ProviderID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+END
+
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_TokenServices]') AND type in (N'U'))
+BEGIN
+CREATE TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_TokenServices](
+	[ItemID] [int] IDENTITY(1,1) NOT NULL,
+	[ModuleID] [int] NULL,
+	[ServiceName] [nvarchar](50) NULL,
+	[ServiceType] [nvarchar](50) NULL,
+	[AuthorizationRunService] [nvarchar](250) NULL,
+	[Command] [nvarchar](max) NULL,
+	[HasResult] [bit] NULL,
+	[ResultType] [nvarchar](50) NULL,
+	[IsEnabled] [bit] NULL,
+ CONSTRAINT [PK_MyDnnBusinessDirectory_TokenServices] PRIMARY KEY CLUSTERED 
+(
+	[ItemID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
+ CONSTRAINT [IX_MyDnnBusinessDirectory_TokenServices] UNIQUE NONCLUSTERED 
+(
+	[ModuleID] ASC,
+	[ServiceName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+ALTER TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_TokenServices]  WITH CHECK ADD  CONSTRAINT [FK_MyDnnBusinessDirectory_TokenServices_Modules] FOREIGN KEY([ModuleID])
+REFERENCES {databaseOwner}[{objectQualifier}Modules] ([ModuleID])
+ON DELETE CASCADE
+END
+
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Categories]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Categories](
+	[CategoryID] [int] IDENTITY(1,1) NOT NULL,
+	[ModuleID] [int] NULL,
+	[ParentID] [int] NULL,
+	[Title] [nvarchar](250) NULL,
+	[Description] [nvarchar](2000) NULL,
+	[CategoryUrlType] [int] NULL,
+	[CategoryUrl] [nvarchar](1000) NULL,
+	[IconUrl] [nvarchar](1000) NULL,
+	[NumberDaysForDisplayItems] [int] NULL,
+	[ViewOrder] [int] NULL,
+	[MoreData] [nvarchar](max) NULL,
+ CONSTRAINT [PK_MyDnnBusinessDirectory_Categories] PRIMARY KEY CLUSTERED 
+(
+	[CategoryID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+ALTER TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Categories]  WITH CHECK ADD  CONSTRAINT [FK_MyDnnBusinessDirectory_Categories_MyDnnBusinessDirectory_Categories] FOREIGN KEY([ParentID])
+REFERENCES {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Categories] ([CategoryID])
+END
+
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Fields]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Fields](
+	[FieldID] [int] IDENTITY(1,1) NOT NULL,
+	[ModuleID] [int] NOT NULL,
+	[FieldType] [nvarchar](50) NOT NULL,
+	[FieldName] [nvarchar](150) NOT NULL,
+	[FieldText] [nvarchar](999) NULL,
+	[GroupName] [nvarchar](250) NULL,
+	[GroupOrder] [smallint] NULL,
+	[IsDatabaseColumn] [bit] NULL,
+	[ColumnType] [nvarchar](50) NULL,
+	[AllowDeleteField] [bit] NULL,
+	[IsSystemField] [bit] NULL,
+	[IsReadOnly] [bit] NULL,
+	[IsRequired] [bit] NULL,
+	[IsShow] [bit] NULL,
+	[IsEnabled] [bit] NULL,
+	[IsSelective] [bit] NULL,
+	[IsActionable] [bit] NULL,
+	[IsJsonValue] [bit] NULL,
+	[ViewOrder] [int] NULL CONSTRAINT [DF_MyDnnBusinessDirectory_Fields_ViewOrder]  DEFAULT ((0)),
+	[AuthorizationViewField] [nvarchar](250) NULL,
+ CONSTRAINT [PK_MyDnnBusinessDirectory_Fields] PRIMARY KEY CLUSTERED 
+(
+	[FieldID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+
+ALTER TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Fields]  WITH CHECK ADD  CONSTRAINT [FK_MyDnnBusinessDirectory_Fields_Modules] FOREIGN KEY([ModuleID])
+REFERENCES {databaseOwner}[{objectQualifier}Modules] ([ModuleID])
+ON DELETE CASCADE
+END
+
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_FieldCategories]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_FieldCategories](
+	[FieldCategoryID] [int] IDENTITY(1,1) NOT NULL,
+	[CategoryID] [int] NULL,
+	[FieldID] [int] NULL,
+ CONSTRAINT [PK_MyDnnBusinessDirectory_FieldCategories] PRIMARY KEY CLUSTERED 
+(
+	[FieldCategoryID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_FieldOptions]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_FieldOptions](
+	[OptionID] [int] IDENTITY(1,1) NOT NULL,
+	[FieldID] [int] NULL,
+	[OptionText] [nvarchar](max) NULL,
+	[OptionValue] [nvarchar](max) NULL,
+	[ViewOrder] [int] NULL,
+ CONSTRAINT [PK_MyDnnBusinessDirectory_FieldOptions] PRIMARY KEY CLUSTERED 
+(
+	[OptionID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+ALTER TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_FieldOptions]  WITH CHECK ADD  CONSTRAINT [FK_MyDnnBusinessDirectory_FieldOptions_MyDnnBusinessDirectory_Fields] FOREIGN KEY([FieldID])
+REFERENCES {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Fields] ([FieldID])
+ON DELETE CASCADE
+
+END
+
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_FieldSettings]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_FieldSettings](
+	[SettingID] [int] IDENTITY(1,1) NOT NULL,
+	[FieldID] [int] NULL,
+	[SettingName] [nvarchar](50) NULL,
+	[SettingValue] [nvarchar](max) NULL,
+	[ValueType] [nvarchar](50) NULL,
+ CONSTRAINT [PK_MyDnnBusinessDirectory_FieldSettings] PRIMARY KEY CLUSTERED 
+(
+	[SettingID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+ALTER TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_FieldSettings]  WITH CHECK ADD  CONSTRAINT [FK_MyDnnBusinessDirectory_FieldSettings_MyDnnBusinessDirectory_Fields] FOREIGN KEY([FieldID])
+REFERENCES {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Fields] ([FieldID])
+ON DELETE CASCADE
+
+END
+
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Actions]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Actions](
+	[ActionID] [int] IDENTITY(1,1) NOT NULL,
+	[ModuleID] [int] NULL,
+	[ActionType] [nvarchar](50) NULL,
+	[Event] [nvarchar](50) NULL,
+	[ActionDetails] [nvarchar](max) NULL,
+ CONSTRAINT [PK_MyDnnBusinessDirectory_Actions] PRIMARY KEY CLUSTERED 
+(
+	[ActionID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+END
+
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_ActionScheduleItems]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_ActionScheduleItems](
+	[ItemID] [int] IDENTITY(1,1) NOT NULL,
+	[ActionType] [nvarchar](50) NULL,
+	[Query] [nvarchar](max) NULL,
+	[StartDate] [datetime] NULL,
+ CONSTRAINT [PK_MyDnnBusinessDirectory_ActionScheduleItems] PRIMARY KEY CLUSTERED 
+(
+	[ItemID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+END
+
+GO
+
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_PaymentMethods]') AND type in (N'U'))
+BEGIN
+CREATE TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_PaymentMethods](
+	[PaymentMethodID] [int] IDENTITY(1,1) NOT NULL,
+	[ModuleID] [int] NULL,
+	[PaymentName] [nvarchar](50) NULL,
+	[Amount] [money] NULL,
+	[Actions] [nvarchar](max) NULL,
+	[SuccessPaymentMessage] [nvarchar](max) NULL,
+	[FailedPaymentMessage] [nvarchar](max) NULL,
+ CONSTRAINT [PK_MyDnnBusinessDirectory_PaymentMethods] PRIMARY KEY CLUSTERED 
+(
+	[PaymentMethodID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
+ CONSTRAINT [IX_MyDnnBusinessDirectory_PaymentMethods] UNIQUE NONCLUSTERED 
+(
+	[ModuleID] ASC,
+	[PaymentName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+ALTER TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_PaymentMethods]  WITH CHECK ADD  CONSTRAINT [FK_MyDnnBusinessDirectory_PaymentMethods_Modules] FOREIGN KEY([ModuleID])
+REFERENCES {databaseOwner}[{objectQualifier}Modules] ([ModuleID])
+ON DELETE CASCADE
+END
+
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Payments]') AND type in (N'U'))
+BEGIN
+CREATE TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Payments](
+	[PaymentID] [int] IDENTITY(1,1) NOT NULL,
+	[ModuleID] [int] NULL,
+	[UserID] [int] NULL,
+	[ItemID] [int] NULL,
+	[Amount] [money] NULL,
+	[IsSuccess] [bit] NULL,
+	[PaymentDate] [datetime] NULL,
+	[ReferenceID] [nvarchar](50) NULL,
+	[TrackingID] [nvarchar](50) NULL,
+	[Status] [int] NULL,
+	[ErrorMessage] [nvarchar](500) NULL,
+ CONSTRAINT [PK_MyDnnBusinessDirectory_Payments] PRIMARY KEY CLUSTERED 
+(
+	[PaymentID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+ALTER TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Payments]  WITH CHECK ADD  CONSTRAINT [FK_MyDnnBusinessDirectory_Payments_Modules] FOREIGN KEY([ModuleID])
+REFERENCES {databaseOwner}[{objectQualifier}Modules] ([ModuleID])
+ON DELETE CASCADE
+END
+
+GO
+
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_VerifyCodes]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_VerifyCodes](
+	[ItemID] [int] IDENTITY(1,1) NOT NULL,
+	[PortalID] [int] NULL,
+	[UserID] [int] NULL,
+	[Email] [nvarchar](250) NULL,
+	[Mobile] [nvarchar](20) NULL,
+	[VerifyCode] [nvarchar](50) NULL,
+ CONSTRAINT [PK_MyDnnBusinessDirectory_RegisterVerify] PRIMARY KEY CLUSTERED 
+(
+	[ItemID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+

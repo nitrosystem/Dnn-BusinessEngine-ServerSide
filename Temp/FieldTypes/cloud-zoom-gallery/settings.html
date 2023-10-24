@@ -1,0 +1,61 @@
+﻿<div>
+    <div class="form-section theme-default small">
+        <input type="checkbox" checked="checked" />
+        <div class="header">
+            <h3><i class="zmdi zmdi-storage zmdi-hc-fw"></i>Data Model Columns</h3>
+        </div>
+        <fieldset>
+            <table class="table table-bordered table-striped table-columns-vmiddle table-hover">
+                <thead>
+                    <tr>
+                        <th>Column Name</th>
+                        <th>Column Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="column in currentField.DataModelColumns">
+                        <td>{{column.ColumnName}}</td>
+                        <td>{{column.ColumnType}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </fieldset>
+    </div>
+    <div class="form-section theme-default small">
+        <input type="checkbox" />
+        <div class="header">
+            <h3><i class="zmdi zmdi-storage zmdi-hc-fw"></i>Template</h3>
+        </div>
+        <fieldset>
+            <div class="mb-3">
+                <div class="row">
+                    <label class="col-sm-3 col-form-label">Layout Template</label>
+                    <div class="col-sm-9">
+                        <textarea code-mirror syntax="htmlmixed" ng-model="currentField.Settings.LayoutTemplate" />
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="row">
+                    <label class="col-sm-3 col-form-label">Thumbnail Item Template</label>
+                    <div class="col-sm-9">
+                        <textarea code-mirror syntax="htmlmixed" ng-model="currentField.Settings.ThumbnailItemTemplate" />
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="row">
+                    <label class="col-sm-3 col-form-label">Custom Css</label>
+                    <div class="col-sm-9">
+                        <textarea code-mirror syntax="css" ng-model="currentField.Settings.CustomCss" />
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="col-sm-offset-3 col-sm-4">
+                    <button type="button" class="btn btn-success m-t-10 m-b-15" ng-click="onSaveSettingsClick()">Save Settings</button>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</div>

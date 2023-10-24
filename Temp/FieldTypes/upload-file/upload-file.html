@@ -1,0 +1,40 @@
+﻿<div class="mbd-field-uploadfile {{[FIELD].Settings.Theme}}">
+    <input type="file" placeholder="{{[FIELD].Settings.HelpText}}" class="form-control"
+           ng-multiple="[FIELD].Settings.AllowUploadMultipleFile"
+           ngf-select="bUploadFile_onUploadFile([FIELD],$files,$file, $newFiles, $duplicateFiles, $invalidFiles, $event)"
+           ngf-max-files="{{[FIELD].Settings.MaxFileCount}}" ngf-max-size="{{[FIELD].Settings.MaxFileLength*1024}}" />
+
+    <table ng-if="[FIELD].Value" class="table table-bordered table-condensed table-columns-vmiddle m-t-10">
+        <thead>
+            <tr>
+                <th style="width: 30px; padding: 10px;"></th>
+                <th>Filename</th>
+                <th>Title</th>
+                <th ng-if="1==2">File Type</th>
+                <th ng-if="1==2">Size</th>
+                <th ng-if="1==2">Is Uploaded</th>
+                <th ng-if="1==2">Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="file in [FIELD].Value" ng-class="{'bg-danger':file.IsError}">
+                <td class="text-center">
+                    <i ng-if="file.IsError" class="zmdi zmdi-close text-danger f-30"></i>
+                    <i ng-if="file.IsUploaded" class="zmdi zmdi-check text-success f-30"></i>
+                </td>
+                <td>{{file.FileName}}</td>
+                <td>
+                    <input type="text" ng-model="file.Title" class="form-control" placeholder="Enter Title" />
+                </td>
+                <td ng-if="1==2">{{file.FileType}}</td>
+                <td ng-if="1==2">{{file.FileSize}}</td>
+                <td ng-if="1==2">{{file.IsUploaded}}</td>
+                <td ng-if="1==2">{{file.Message}}</td>
+                <td ng-if="1==2" class="text-center">
+                    <i ng-if="file.IsError" class="zmdi zmdi-delete f-15" ng-click="bUploadFile_onDeleteFileClick([FIELD],$index)"></i>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

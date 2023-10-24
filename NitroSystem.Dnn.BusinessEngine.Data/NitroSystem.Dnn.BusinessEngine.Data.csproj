@@ -1,0 +1,178 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{57E9A1EA-6603-4CD5-9914-5F79F60923ED}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NitroSystem.Dnn.BusinessEngine.Data</RootNamespace>
+    <AssemblyName>NitroSystem.Dnn.BusinessEngine.Data</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DotNetNuke, Version=9.4.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotNetNuke.Core.9.4.4\lib\net45\DotNetNuke.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetNuke.DependencyInjection, Version=9.4.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotNetNuke.DependencyInjection.9.4.4\lib\netstandard2.0\DotNetNuke.DependencyInjection.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetNuke.Web, Version=9.4.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotNetNuke.Web.9.4.4\lib\net45\DotNetNuke.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetNuke.WebUtility, Version=4.2.1.783, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotNetNuke.Web.9.4.4\lib\net45\DotNetNuke.WebUtility.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ApplicationBlocks.Data, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotNetNuke.Core.9.4.4\lib\net45\Microsoft.ApplicationBlocks.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=2.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.2.1.1\lib\net461\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=2.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.2.1.1\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Contracts\IExpressionInfo.cs" />
+    <Compile Include="Contracts\IParamInfo.cs" />
+    <Compile Include="Entities\Tables\ActionConditionInfo.cs" />
+    <Compile Include="Entities\Tables\ActionResultInfo.cs" />
+    <Compile Include="Entities\Tables\LogInfo.cs" />
+    <Compile Include="Entities\Tables\ModuleFieldTypeResourceInfo.cs" />
+    <Compile Include="Entities\Tables\ModuleFieldTypeTemplateInfo.cs" />
+    <Compile Include="Entities\Tables\LibraryResourceInfo.cs" />
+    <Compile Include="Entities\Tables\ExtensionInfo.cs" />
+    <Compile Include="Entities\Tables\SkinInfo.cs" />
+    <Compile Include="Entities\Tables\ExpressionItemInfo.cs" />
+    <Compile Include="Entities\Tables\ServiceParamInfo.cs" />
+    <Compile Include="Entities\Tables\ActionParamInfo.cs" />
+    <Compile Include="Entities\Tables\ServiceTypeInfo.cs" />
+    <Compile Include="Entities\Tables\ActionTypeInfo.cs" />
+    <Compile Include="Entities\Tables\DatabaseInfo.cs" />
+    <Compile Include="Entities\Tables\LocalizedPropertyInfo.cs" />
+    <Compile Include="Entities\Tables\LocalePropertyInfo.cs" />
+    <Compile Include="Entities\Tables\PageResourceInfo.cs" />
+    <Compile Include="Entities\Tables\DefinedListItemInfo.cs" />
+    <Compile Include="Entities\Tables\DefinedListInfo.cs" />
+    <Compile Include="Entities\Tables\ModuleFieldInfo.cs" />
+    <Compile Include="Entities\Tables\DashboardPageModuleInfo.cs" />
+    <Compile Include="Entities\Tables\DashboardPageInfo.cs" />
+    <Compile Include="Entities\Tables\DashboardInfo.cs" />
+    <Compile Include="Entities\Tables\EntityColumnInfo.cs" />
+    <Compile Include="Entities\Tables\ModuleVariableInfo.cs" />
+    <Compile Include="Entities\Tables\GroupInfo.cs" />
+    <Compile Include="Entities\Tables\ViewModelPropertyInfo.cs" />
+    <Compile Include="Entities\Tables\ViewModelInfo.cs" />
+    <Compile Include="Entities\Tables\ScenarioInfo.cs" />
+    <Compile Include="Entities\Tables\ModuleInfo.cs" />
+    <Compile Include="Entities\Tables\ServiceInfo.cs" />
+    <Compile Include="Entities\Tables\PaymentInfo.cs" />
+    <Compile Include="Entities\Tables\PaymentMethodInfo.cs" />
+    <Compile Include="Entities\Tables\ProviderInfo.cs" />
+    <Compile Include="Entities\Tables\ActionInfo.cs" />
+    <Compile Include="Entities\Tables\ModuleFieldTypeInfo.cs" />
+    <Compile Include="Entities\Tables\GlobalSettingsInfo.cs" />
+    <Compile Include="Entities\Tables\EntityInfo.cs" />
+    <Compile Include="Entities\Tables\ModuleFieldSettingInfo.cs" />
+    <Compile Include="Entities\Tables\SitemapInfo.cs" />
+    <Compile Include="Entities\Views\ModuleFieldTypeView.cs" />
+    <Compile Include="Entities\Views\DashboardPageModuleView.cs" />
+    <Compile Include="Entities\Views\ActionTypeView.cs" />
+    <Compile Include="Entities\Views\ModuleView.cs" />
+    <Compile Include="Entities\Views\ServiceTypeView.cs" />
+    <Compile Include="Entities\Views\ExplorerItemView.cs" />
+    <Compile Include="Entities\Views\DashboardView.cs" />
+    <Compile Include="Entities\Views\PageResourceView.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\ActionConditionRepository.cs" />
+    <Compile Include="Repositories\ActionResultRepository.cs" />
+    <Compile Include="Repositories\LogRepository.cs" />
+    <Compile Include="Repositories\ModuleFieldTypeResourceRepository.cs" />
+    <Compile Include="Repositories\ModuleFieldTypeTemplateRepository.cs" />
+    <Compile Include="Repositories\LibraryResourceRepository.cs" />
+    <Compile Include="Repositories\ExtensionRepository.cs" />
+    <Compile Include="Repositories\SkinRepository.cs" />
+    <Compile Include="Repositories\ExpressionRepository.cs" />
+    <Compile Include="Repositories\ServiceParamRepository.cs" />
+    <Compile Include="Repositories\ActionParamRepository.cs" />
+    <Compile Include="Repositories\ServiceTypeRepository.cs" />
+    <Compile Include="Repositories\ActionTypeRepository.cs" />
+    <Compile Include="Repositories\ExplorerItemRepository.cs" />
+    <Compile Include="Repositories\DatabaseRepository.cs" />
+    <Compile Include="Repositories\ViewModelPropertyRepository.cs" />
+    <Compile Include="Repositories\LocalizedPropertyRepository.cs" />
+    <Compile Include="Repositories\LocalePropertyRepository.cs" />
+    <Compile Include="Repositories\PageResourceRepository.cs" />
+    <Compile Include="Repositories\DefinedListItemRepository.cs" />
+    <Compile Include="Repositories\DefinedListRepository.cs" />
+    <Compile Include="Repositories\DashboardPageModuleRepository.cs" />
+    <Compile Include="Repositories\DashboardPageRepository.cs" />
+    <Compile Include="Repositories\ModuleFieldRepository.cs" />
+    <Compile Include="Repositories\DashboardRepository.cs" />
+    <Compile Include="Repositories\EntityColumnRepository.cs" />
+    <Compile Include="Repositories\ModuleVariableRepository.cs" />
+    <Compile Include="Repositories\GroupRepository.cs" />
+    <Compile Include="Repositories\ViewModelRepository.cs" />
+    <Compile Include="Repositories\ScenarioRepository.cs" />
+    <Compile Include="Repositories\ModuleRepository.cs" />
+    <Compile Include="Repositories\ServiceRepository.cs" />
+    <Compile Include="Repositories\PaymentRepository.cs" />
+    <Compile Include="Repositories\PaymentMethodRepository.cs" />
+    <Compile Include="Repositories\ProviderRepository.cs" />
+    <Compile Include="Repositories\ActionRepository.cs" />
+    <Compile Include="Repositories\ModuleFieldTypeRepository.cs" />
+    <Compile Include="Repositories\GlobalSettingsRepository.cs" />
+    <Compile Include="Repositories\EntityRepository.cs" />
+    <Compile Include="Repositories\ModuleFieldSettingRepository.cs" />
+    <Compile Include="Repositories\SitemapRepository.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\.editorconfig">
+      <Link>.editorconfig</Link>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>IF NOT ($(ConfigurationName)) == (Debug) GOTO END
+cd $(ProjectDir)
+copy /y obj\debug\NitroSystem.Dnn.BusinessEngine.Data.dll  D:\Wokstation\Dnn\DnnDev\bin
+:END</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

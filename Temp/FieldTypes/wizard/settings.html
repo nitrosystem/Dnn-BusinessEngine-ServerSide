@@ -1,0 +1,155 @@
+﻿<div class="mbd-list-settings">
+    <!--Steps Modal-->
+    <div class="form-section theme-default small">
+        <input type="checkbox" />
+        <div class="header">
+            <h3><i class="zmdi zmdi-storage zmdi-hc-fw"></i>Steps</h3>
+        </div>
+        <fieldset>
+            <table class="table table-bordered table-striped table-condensed table-hover">
+                <thead>
+                    <tr>
+                        <th>Step Title</th>
+                        <th>Show Conditions</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="step in currentField.Settings.Steps">
+                        <td>{{step.Title}}</td>
+                        <td>{{content.ShowConditions}}</td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-default" ng-click="onSwapStepClick($index,$index-1)" ng-disabled="!currentField.Settings.Steps.length || $index===0">
+                                <i class="zmdi zmdi-caret-up f-20"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-default" ng-click="onSwapStepClick($index,$index+1)" ng-disabled="!currentField.Settings.Steps.length || $index===currentField.Settings.Steps.length-1">
+                                <i class="zmdi zmdi-caret-down f-20"></i>
+                            </button>
+                        </td>
+                        <td>
+                            <a href="" ng-click="onEditStepClick(step)"><i class="zmdi zmdi-edit"></i></a>
+                            <a href="" ng-click="onDeleteStepClick($index)"><i class="zmdi zmdi-delete f-20 text-danger"></i></a>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="6">
+                            <button type="button" class="btn btn-primary" ng-click="onAddStepClick()">
+                                <i class="zmdi zmdi-plus f-20"></i>
+                            </button>
+                        </th>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <button type="button" class="btn btn-success m-t-10 m-b-15" ng-click="onSaveSettingsClick()">Save Settings</button>
+        </fieldset>
+    </div>
+
+    <!--Step Edit Modal-->
+    <div class="modal" id="wnEditStep" tabindex="-1" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false" style="overflow:visible;">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Edit Step</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body form-horizontal">
+                    <div class="mb-3">
+                        <div class="row">
+                            <label class="col-sm-3 col-form-label">Step Name(must be unique)</label>
+                            <div class="col-sm-9 ang-validation theme-default" ng-class="{'error':stepForm.$submitted && stepForm.stepTitle.$invalid}">
+                                <input type="text" name="stepTitle" ng-model="step.Name"
+                                       class="form-control" placeholder="Enter step unique name" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <label class="col-sm-3 col-form-label">Step Title</label>
+                            <div class="col-sm-9 ang-validation theme-default" ng-class="{'error':stepForm.$submitted && stepForm.stepTitle.$invalid}">
+                                <input type="text" name="stepTitle" ng-model="step.Title"
+                                       class="form-control" placeholder="Enter step title" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <label class="col-sm-3 col-form-label">Show Conditions</label>
+                            <div class="col-sm-9">
+                                <b-conditions ng-model="step.ShowConditions"
+                                              data-source="['fields','form','_b','variables','actionParams']"
+                                              data-variables="variables" data-fields="fields" data-view-models="viewModels"
+                                              data-action-params="action.Params"></b-conditions>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <label class="col-sm-3 col-form-label">Enable Conditions</label>
+                            <div class="col-sm-9">
+                                <b-conditions ng-model="step.EnableConditions"
+                                              data-source="['fields','form','_b','variables','actionParams']"
+                                              data-variables="variables" data-fields="fields" data-view-models="viewModels"
+                                              data-action-params="action.Params"></b-conditions>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <label class="col-sm-3 col-form-label">Authorization View Step</label>
+                            <div class="col-sm-9">
+                                <select ng-model="step.AuthorizationViewStep"
+                                        class="form-control" ng-options="role for role in roles"
+                                        chosen multiple placeholder-text-multiple="'Authorization View Step'" inherit-select-classes="true"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <label class="col-sm-3 col-form-label">Step Style</label>
+                            <div class="col-sm-9">
+                                <input type="text" ng-model="step.StepStyle" class="form-control" placeholder="Enter step style" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <label class="col-sm-3 col-form-label">Step Icon</label>
+                            <div class="col-sm-9">
+                                <input type="text" ng-model="step.Icon" class="form-control" placeholder="Enter step font icon" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <label class="col-sm-3 col-form-label">Step Css</label>
+                            <div class="col-sm-9">
+                                <input type="text" ng-model="step.StepCss" class="form-control" placeholder="Enter step css" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <label class="col-sm-3 col-form-label">Description</label>
+                            <div class="col-sm-9">
+                                <input type="text" ng-model="step.Description" class="form-control" placeholder="Enter step description" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <div class="col-sm-8 col-sm-offset-3">
+                                <button type="button" class="btn btn-success  m-r-5" ng-click="onSaveStepClick()">Save</button>
+                                <button type="button" class="btn btn-cancel m-r-5 bgm-gray" data-bs-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

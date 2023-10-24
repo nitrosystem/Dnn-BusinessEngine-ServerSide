@@ -1,0 +1,127 @@
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Options]') AND type in (N'U'))
+BEGIN
+	DROP TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Options]
+END
+
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_TokenServices]') AND type in (N'U'))
+BEGIN
+	DROP TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_TokenServices]
+END
+
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Settings]') AND type in (N'U'))
+BEGIN
+	DROP TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Settings]
+END
+
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_VerifyCodes]') AND type in (N'U'))
+BEGIN
+	DROP TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_VerifyCodes]
+END
+
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Providers]') AND type in (N'U'))
+BEGIN
+	DROP TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Providers]
+END
+
+GO
+
+
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_FieldCategories]') AND type in (N'U'))
+BEGIN
+	DROP TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_FieldCategories]
+END
+
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_FieldOptions]') AND type in (N'U'))
+BEGIN
+	DROP TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_FieldOptions]
+END
+
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_FieldSettings]') AND type in (N'U'))
+BEGIN
+	DROP TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_FieldSettings]
+END
+
+GO
+
+
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Categories]') AND type in (N'U'))
+BEGIN
+	DROP TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Categories]
+END
+
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Fields]') AND type in (N'U'))
+BEGIN
+	DROP TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Fields]
+END
+
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_ActionScheduleItems]') AND type in (N'U'))
+BEGIN
+	DROP TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_ActionScheduleItems]
+END
+
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Actions]') AND type in (N'U'))
+BEGIN
+	DROP TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Actions]
+END
+
+GO
+
+
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Payments]') AND type in (N'U'))
+BEGIN
+	DROP TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_Payments]
+END
+
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_PaymentMethods]') AND type in (N'U'))
+BEGIN
+	DROP TABLE {databaseOwner}[{objectQualifier}MyDnnBusinessDirectory_PaymentMethods]
+END
+GO
+
+IF EXISTS ( SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}parseJSON]') AND type IN ( N'TF' ))
+	DROP FUNCTION {databaseOwner}[{objectQualifier}parseJSON]
+GO
+
+IF EXISTS ( SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}GetJsonValues]') AND type IN ( N'TF' ))
+	DROP FUNCTION {databaseOwner}[{objectQualifier}GetJsonValues]
+GO
+
+IF EXISTS ( SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}GetJsonValue]') AND type IN ( N'FN' ))
+	DROP FUNCTION {databaseOwner}[{objectQualifier}GetJsonValue]
+GO
+
+IF EXISTS ( SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MBD_ParseJSON]') AND type IN ( N'TF' ))
+	DROP FUNCTION {databaseOwner}[{objectQualifier}MBD_ParseJSON]
+GO
+
+IF EXISTS ( SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MBD_GetJsonValues]') AND type IN ( N'TF' ))
+	DROP FUNCTION {databaseOwner}[{objectQualifier}MBD_GetJsonValues]
+GO
+
+IF EXISTS ( SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MBD_GetJsonValue]') AND type IN ( N'TF' ))
+	DROP FUNCTION {databaseOwner}[{objectQualifier}MBD_GetJsonValue]
+GO
+
+IF EXISTS ( SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}MBD_CompareJson]') AND type IN ( N'TF' ))
+	DROP FUNCTION {databaseOwner}[{objectQualifier}MBD_CompareJson]
+GO

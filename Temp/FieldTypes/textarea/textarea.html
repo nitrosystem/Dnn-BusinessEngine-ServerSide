@@ -1,0 +1,12 @@
+﻿<textarea id="bTextarea[FIELDNAME]"
+          ng-model="[FIELD].Value"
+          ng-disabled="![FIELD].IsEnabled"
+          ng-minlength="{{[FIELD].Settings.MinLength}}"
+          maxlength="{{[FIELD].Settings.MaxLength}}"
+          ng-maxlength="{{[FIELD].Settings.MaxLength}}"
+          placeholder="{{[FIELD].Settings.Placeholder}}"
+          class="{{[FIELD].Settings.InputCssClass}}"></textarea>
+<p class="small" ng-if="[FIELD].Value && [FIELD].Settings.ShowMaxLength">
+    <span ng-if="[FIELD].Value">{{[FIELD].Settings.MaxLength-[FIELD].Value.length}}</span>
+    <span ng-if="[FIELD].Settings.MaxLengthMessage">{{[FIELD].Settings.MaxLengthMessage}}</span>
+</p>

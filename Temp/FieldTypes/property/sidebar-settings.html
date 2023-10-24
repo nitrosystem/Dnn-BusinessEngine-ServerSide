@@ -1,0 +1,18 @@
+﻿<div class="mb-3">
+    <label>Data Model</label>
+    <input type="text" ng-model="currentField.Settings.Datamodel" class="form-control" />
+</div>
+<div class="mb-3">
+    <label>Data Type</label>
+    <select ng-model="currentField.Settings.DataType" class="form-control">
+        <option value="text">text</option>
+        <option value="number">number</option>
+        <option value="money">money</option>
+        <option value="date">date</option>
+        <option value="image">image</option>
+    </select>
+</div>
+<div class="mb-3">
+    <label>Content</label>
+    <textarea code-mirror syntax="htmlmixed" ng-model="currentField.Settings.Content"></textarea>
+</div>

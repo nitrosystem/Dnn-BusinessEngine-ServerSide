@@ -1,0 +1,119 @@
+﻿/* --------------------------------------------------------
+        Studio Styles
+    -----------------------------------------------------------*/
+#bEngineStudioApp {
+    display: none;
+    height: 100%;
+    width: 100%;
+    z-index: 99999999;
+}
+
+    #bEngineStudioApp.show {
+        display: block;
+    }
+
+    #bEngineStudioApp.fullscreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+
+    #bEngineStudioApp.not-fullscreen {
+        position: relative;
+        min-height: 500px;
+    }
+
+.studio-type-boxs {
+    margin: 0 auto;
+}
+
+    .studio-type-boxs .st-box {
+        position: relative;
+        max-width: 300px;
+        height: 300px;
+        padding: 40px 20px 20px;
+        border: solid 1px #ccc;
+        background: #FFF;
+        box-shadow: 0 10px 6px -6px #777;
+    }
+
+        .studio-type-boxs .st-box .note-ribbon {
+            background: #94aa2a;
+            border-color: #94aa2a;
+            color: #fff !important;
+            text-align: left;
+            border-radius: 0.28571429rem 0 0 0.28571429rem;
+            padding-left: 10px;
+            padding-right: 22px;
+            position: absolute;
+            line-height: 2;
+            font-size: 13px;
+            right: -15px;
+            top: 15px;
+            min-width: -webkit-max-content;
+            box-shadow: 0 3px 10px -5px rgb(0 0 0);
+            min-width: -moz-max-content;
+            min-width: max-content;
+        }
+
+            .studio-type-boxs .st-box .note-ribbon:after {
+                left: auto;
+                right: 0;
+                border-style: solid;
+                border-width: 1.2em 1.2em 0 0;
+                border-color: transparent;
+                border-top-color: inherit;
+                position: absolute;
+                content: '';
+                top: 100%;
+                background-color: transparent !important;
+                width: 0;
+                height: 0;
+            }
+
+            .studio-type-boxs .st-box .note-ribbon.not-recommended {
+                background: #f1bc31;
+                border-color: #f1bc31;
+            }
+
+        .studio-type-boxs .st-box .box-text {
+            line-height: 1.8;
+            text-align: justify;
+        }
+
+        .studio-type-boxs .st-box .box-button {
+            display: inline-block;
+            background: #69b6f0;
+            border-color: #69b6f0;
+            color: #fff;
+            padding: 11px 16px;
+            cursor: pointer;
+            border-width: 1px;
+            border-radius: 2px;
+            font-size: 14px;
+            font-weight: 400;
+            -webkit-box-shadow: 0px 10px 20px -6px rgb(0 0 0 / 12%);
+            -moz-box-shadow: 0px 10px 20px -6px rgba(0, 0, 0, 0.12);
+            box-shadow: 0px 10px 20px -6px rgb(0 0 0 / 12%);
+            text-align: center;
+            vertical-align: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            border: 1px solid transparent;
+            line-height: 1.5;
+            -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+            transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+            -o-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+            width: 100%;
+        }
+
+            .studio-type-boxs .st-box .box-button:hover, .studio-type-boxs .st-box .box-button:active, .studio-type-boxs .st-box .box-button:focus {
+                outline: none !important;
+                -webkit-box-shadow: 0px 12px 20px -6px rgb(0 0 0 / 21%);
+                -moz-box-shadow: 0px 12px 20px -6px rgba(0, 0, 0, 0.21);
+                box-shadow: 0px 12px 20px -6px rgb(0 0 0 / 21%);
+            }

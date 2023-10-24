@@ -1,0 +1,110 @@
+﻿<div class="mb-3">
+    <label class="col-xs-12">Upload Label</label>
+    <input type="text" ng-model="currentField.Settings.UploadLabel" class="text-input theme-default form-control" placeholder="Upload Label" />
+</div>
+<div class="mb-3">
+    <label class="col-xs-12">Allow Upload Multiple File</label>
+    <label class="toggle-switch theme-topol">
+        <input type="checkbox" hidden="hidden" ng-model="currentField.Settings.AllowUploadMultipleFile" />
+        <div class="slider"></div>
+    </label>
+</div>
+<div class="mb-3" ng-if="currentField.Settings.AllowUploadMultipleFile">
+    <label class="col-xs-12">Max File Count</label>
+    <input type="text" ng-model="currentField.Settings.MaxFileCount" class="text-input theme-default form-control" placeholder="Max File Count" />
+</div>
+<div class="mb-3">
+    <label class="col-xs-12">Max File Length(KB)</label>
+    <input type="text" ng-model="currentField.Settings.MaxFileLength" class="text-input theme-default form-control" placeholder="Max File Length" />
+</div>
+<div class="mb-3">
+    <label class="col-xs-12">Resize Large Images</label>
+    <label class="toggle-switch theme-topol">
+        <input type="checkbox" hidden="hidden" ng-model="currentField.Settings.ResizeLargeImage" />
+        <div class="slider"></div>
+    </label>
+</div>
+<div class="mb-3" ng-if="currentField.Settings.ResizeLargeImage">
+    <label class="col-xs-12">Resize Width</label>
+    <input type="text" ng-model="currentField.Settings.LargeImageWidth" class="text-input theme-default form-control" placeholder="Width" />
+</div>
+<div class="mb-3" ng-if="currentField.Settings.ResizeLargeImage">
+    <label class="col-xs-12">Resize Height(Auto Height = 0)</label>
+    <input type="text" ng-model="currentField.Settings.LargeImageHeight" class="text-input theme-default form-control" placeholder="Height" />
+</div>
+<div class="mb-3">
+    <label class="col-xs-12">Enable Watermark</label>
+    <label class="toggle-switch theme-topol">
+        <input type="checkbox" hidden="hidden" ng-model="currentField.Settings.EnableWatermark" />
+        <div class="slider"></div>
+    </label>
+</div>
+<div ng-if="currentField.Settings.EnableWatermark">
+    <div class="mb-3">
+        <label class="col-xs-12">Watermark Image Path</label>
+        <input type="text" ng-model="currentField.Settings.WatermarkImagePath" class="text-input theme-default form-control" placeholder="Watermark Image Path" />
+    </div>
+    <div class="mb-3">
+        <label class="col-xs-12">Watermark Position</label>
+        <select ng-model="currentField.Settings.WatermarkPosition" class="form-control"
+                chosen inherit-select-classes="true" placeholder-text-single="'Select watermark position'" required>
+            <option disabled></option>
+            <option ng-value="1">Top Left</option>
+            <option ng-value="2">Top Right</option>
+            <option ng-value="3">Top Middle</option>
+            <option ng-value="4">Bottom Left</option>
+            <option ng-value="5">Bottom Right</option>
+            <option ng-value="6">Bottom Middle</option>
+            <option ng-value="7">Middle Left</option>
+            <option ng-value="8">Middle Right</option>
+            <option ng-value="9">Center</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="col-xs-12">Opacity(1-255)</label>
+        <input type="text" ng-model="currentField.Settings.WatermarkOpacity" class="text-input theme-default form-control" placeholder="Opacity(1-255)" />
+    </div>
+    <div class="mb-3">
+        <label class="col-xs-12">Margin Left</label>
+        <input type="text" ng-model="currentField.Settings.WatermarkMarginLeft" class="text-input theme-default form-control" placeholder="Margin Left" />
+    </div>
+    <div class="mb-3">
+        <label class="col-xs-12">Margin Right</label>
+        <input type="text" ng-model="currentField.Settings.WatermarkMarginRight" class="text-input theme-default form-control" placeholder="Margin Right" />
+    </div>
+    <div class="mb-3">
+        <label class="col-xs-12">Margin Top</label>
+        <input type="text" ng-model="currentField.Settings.WatermarkMarginTop" class="text-input theme-default form-control" placeholder="Margin Top" />
+    </div>
+    <div class="mb-3">
+        <label class="col-xs-12">Margin Bottom</label>
+        <input type="text" ng-model="currentField.Settings.WatermarkMarginBottom" class="text-input theme-default form-control" placeholder="Margin Bottom" />
+    </div>
+</div>
+<div ng-repeat="thumbnail in currentField.Settings.Thumbnails" style="padding:10px;margin-bottom:10px;border:solid 1px #ccc;">
+    <div class="mb-3">
+        <label class="col-xs-12">
+            Thumbnail Name
+            <span class="pull-right cursor-pointer" ng-click="currentField.Settings.Thumbnails.splice($index,1)">
+                <i class="zmdi zmdi-delete"></i>
+            </span>
+        </label>
+        <input type="text" ng-model="thumbnail.Name" class="text-input theme-default form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="col-xs-12">Width X Height (px)</label>
+        <div class="col-xs-6 p-0">
+            <input type="text" ng-model="thumbnail.Width" class="text-input theme-default form-control" />
+        </div>
+        <div class="col-xs-6 p-0">
+            <input type="text" ng-model="thumbnail.Height" class="text-input theme-default form-control" />
+        </div>
+        <p class="pull-right m-t-5 small">Height 0 : auto</p>
+        <div class="clearfix"></div>
+    </div>
+</div>
+<div class="mb-3" ng-init="currentField.Settings.Thumbnails=currentField.Settings.Thumbnails||[]">
+    <button type="button" class="btn btn-primary" ng-click="currentField.Settings.Thumbnails.push({})">
+        <i class="zmdi zmdi-plus"></i> Add Thumbnail
+    </button>
+</div>

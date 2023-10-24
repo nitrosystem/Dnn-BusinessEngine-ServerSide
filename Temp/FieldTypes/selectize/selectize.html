@@ -1,0 +1,8 @@
+﻿<selectize class="w-100p"
+           config="{
+                    valueField:[FIELD].Settings.DataSource.ValueField,
+                    labelField:[FIELD].Settings.DataSource.TextField,
+                    searchField: [[FIELD].Settings.DataSource.TextField],
+                    plugins: ['remove_button']}"
+           placeholder="{{[FIELD].Settings.Placeholder}}" multiple="[FIELD].Settings.AllowMultiple" is-json-value="[FIELD].IsJsonValue"
+           options="[FIELD].Options" ng-model="[FIELD].Value"></selectize>

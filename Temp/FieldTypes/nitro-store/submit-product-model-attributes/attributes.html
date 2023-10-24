@@ -1,0 +1,9 @@
+﻿<div class="mb-3" ng-repeat="attribute in ProductModelAttributes | orderBy:'ViewOrder'">
+    <label>{{attribute.AttributeTitle}}</label>
+    <div class="form-control">
+        <selectize class="w-100p"
+                   config="{valueField:'Value',labelField:'Value',searchField: 'Value',plugins: ['remove_button']}"
+                   placeholder="{{attribute.Title}}" multiple="true"
+                   options="attribute.Options" ng-model="attribute.ModelValue"></selectize>
+    </div>
+</div>

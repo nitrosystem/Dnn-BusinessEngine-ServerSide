@@ -1,0 +1,249 @@
+﻿<!--Basic Settings-->
+<div class="form-section theme-default small">
+    <input type="checkbox" />
+    <div class="header">
+        <h3><i class="bi bi-list-ul me-2"></i>Basic Settings</h3>
+    </div>
+    <fieldset>
+        <div class="mb-3">
+            <label class="small">Field ID : {{currentField.FieldID}}</label>
+        </div>
+        <div class="mb-3">
+            <label class="form-label d-block">Field Type</label>
+            <select ng-model="currentField.FieldType" class="form-control"
+                    ng-options="fieldType.FieldType as fieldType.Title for fieldType in fieldTypes" ng-change="onChangeFieldType($event)"
+                    chosen inherit-select-classes="true" placeholder-text-multiple="'Select field type'" required>
+                <option disabled></option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label d-block">Fied Name</label>
+            <input type="text" ng-model="currentField.FieldName" class="text-input theme-default form-control"
+                   placeholder="Enter field name"
+                   onkeypress="return (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || (event.charCode >= 48 && event.charCode <= 57)" />
+        </div>
+        <div class="mb-3" ng-if=" !currentField.Settings.IsDisableLayout && !currentField.Settings.IsHideFieldText">
+            <div class="row">
+                <label class="form-label d-block">Field Text</label>
+                <textarea ng-model="currentField.FieldText" class="text-input theme-default form-control" placeholder="Enter your field text(title)"></textarea>
+            </div>
+        </div>
+        <div class="mb-3" ng-if="currentField.IsValuable">
+            <label class="form-label d-block">Is Required Field</label>
+            <label class="toggle-switch theme-topol">
+                <input type="checkbox" hidden="hidden" ng-model="currentField.IsRequired" />
+                <div class="slider"></div>
+            </label>
+        </div>
+        <div class="mb-3">
+            <label class="form-label d-block">Is Show Field</label>
+            <label class="toggle-switch theme-topol">
+                <input type="checkbox" hidden="hidden" ng-model="currentField.IsShow" />
+                <div class="slider"></div>
+            </label>
+        </div>
+        <div class="mb-3">
+            <label class="form-label d-block">Is Enabled Field</label>
+            <label class="toggle-switch theme-topol">
+                <input type="checkbox" hidden="hidden" ng-model="currentField.IsEnabled " />
+                <div class="slider"></div>
+            </label>
+        </div>
+        <div class="mb-3">
+            <label class="form-label d-block">Show Conditions</label>
+            <div class="form-control p-relative" ng-click="onLoadFieldShowHideWindowClick()">
+                <span ng-if="!currentField.ShowConditions.length">No Conditions</span>
+                <span ng-if="currentField.ShowConditions.length">{{currentField.ShowConditions.length}} Conditions</span>
+                <span class="more-dot">...</span>
+            </div>
+        </div>
+    </fieldset>
+</div>
+<!--Advanced Settings-->
+<div class="form-section theme-default small">
+    <input type="checkbox" checked="checked" />
+    <div class="header">
+        <h3><i class="bi bi-list-ul me-2"></i>Advanced Settings</h3>
+    </div>
+    <fieldset>
+        <div class="mb-3">
+            <label class="form-label d-block">Save Field Value In</label>
+            <input type="text" ng-model="currentField.Settings.SaveValueIn" class="text-input theme-default form-control" placeholder="Default saved in {Form.{{currentField.FieldName}}}" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label d-block">Default Value & Conditional Value</label>
+            <div class="form-control p-relative" ng-click="onLoadFieldValueWindowClick()">
+                <span ng-if="!currentField.Settings.FieldValues.length">No Value</span>
+                <span ng-if="currentField.Settings.FieldValues.length">Has Value</span>
+                <span class="more-dot">...</span>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label d-block">Data Source</label>
+            <div class="form-control p-relative" ng-click="onLoadFieldDataSourceWindowClick()">
+                <span ng-if="!currentField.Settings.DataSource.Type">Standard(Static items)</span>
+                <span ng-if="currentField.Settings.DataSource.Type==1">Custom Defined List</span>
+                <span ng-if="currentField.Settings.DataSource.Type==2">Use Service</span>
+                <span class="more-dot">...</span>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label d-block">Custom Actions</label>
+            <div class="form-control p-relative" ng-click="onLoadFieldActionsWindowClick()">
+                <span ng-if="!currentField.Actions.length">No Action</span>
+                <span ng-if="currentField.Actions.length">Has Actions</span>
+                <span class="more-dot">...</span>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label d-block">Authorization View Field </label>
+            <select ng-model="currentField.AuthorizationViewField" class="form-control"
+                    ng-options="role for role in roles"
+                    chosen multiple inherit-select-classes="true" placeholder-text-multiple="'Authorization view field roles'" required>
+                <option disabled></option>
+            </select>
+        </div>
+        <div>
+            <div class="mb-3">
+                <label class="form-label d-block">Is Selective</label>
+                <label class="toggle-switch theme-topol">
+                    <input type="checkbox" hidden="hidden" ng-model="currentField.IsSelective" />
+                    <div class="slider"></div>
+                </label>
+            </div>
+            <div class="mb-3">
+                <label class="form-label d-block">Is Valuable</label>
+                <label class="toggle-switch theme-topol">
+                    <input type="checkbox" hidden="hidden" ng-model="currentField.IsValuable" />
+                    <div class="slider"></div>
+                </label>
+            </div>
+            <div class="mb-3">
+                <label class="form-label d-block">Is Json Value</label>
+                <label class="toggle-switch theme-topol">
+                    <input type="checkbox" hidden="hidden" ng-model="currentField.IsJsonValue" />
+                    <div class="slider"></div>
+                </label>
+            </div>
+            <div class="mb-3">
+                <label class="form-label d-block">Disable Null Value When Field Is Hide</label>
+                <label class="toggle-switch theme-topol">
+                    <input type="checkbox" hidden="hidden" ng-model="currentField.Settings.DisableNullValueWhenFieldIsHide" />
+                    <div class="slider"></div>
+                </label>
+            </div>
+            <div class="mb-3" ng-if="currentField.IsValuable">
+                <label class="form-label d-block">Sanitize XSS On Field Value</label>
+                <label class="toggle-switch theme-topol">
+                    <input type="checkbox" hidden="hidden" ng-model="currentField.Settings.SanitizeXSSOnFieldValue" />
+                    <div class="slider"></div>
+                </label>
+            </div>
+            <div class="mb-3" ng-if="!currentField.ShowConditions || !currentField.ShowConditions.length">
+                <label class="form-label d-block">Set Condition Listener</label>
+                <label class="toggle-switch theme-topol">
+                    <input type="checkbox" hidden="hidden" ng-model="currentField.Settings.SetConditionListener" />
+                    <div class="slider"></div>
+                </label>
+            </div>
+        </div>
+    </fieldset>
+</div>
+<!--Appearance Settings-->
+<div class="form-section theme-default small">
+    <input type="checkbox" checked="checked" />
+    <div class="header">
+        <h3><i class="bi bi-list-ul me-2"></i>Appearance Settings</h3>
+    </div>
+    <fieldset>
+        <div class="mb-3" ng-if="module.Skin.FieldTypes[currentField.FieldType].Templates.length">
+            <label class="form-label d-block">Field Template</label>
+            <select ng-model="currentField.Settings.Template" class="form-control"
+                    ng-options="template.TemplateFile as template.TemplateName for template in module.Skin.FieldTypes[currentField.FieldType].Templates"
+                    chosen inherit-select-classes="true" placeholder-text-single="'Default Template'" required>
+                <option value="">Default Template</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label d-block">Disable Layout</label>
+            <label class="toggle-switch theme-topol">
+                <input type="checkbox" hidden="hidden" ng-model="currentField.Settings.IsDisableLayout" ng-disabled="currentField.IsGroup" />
+                <div class="slider"></div>
+            </label>
+        </div>
+        <div ng-if="!currentField.Settings.IsDisableLayout">
+            <div class="mb-3">
+                <label class="form-label d-block">Css Class</label>
+                <input type="text" ng-model="currentField.Settings.CssClass" class="text-input theme-default form-control" placeholder="Field css class" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label d-block">Hide Field Text(Label)</label>
+                <label class="toggle-switch theme-topol">
+                    <input type="checkbox" hidden="hidden" ng-model="currentField.Settings.IsHideFieldText" />
+                    <div class="slider"></div>
+                </label>
+            </div>
+            <div class="mb-3" ng-if="!currentField.Settings.IsHideFieldText">
+                <label class="form-label d-block">Field Text Css Class</label>
+                <input type="text" ng-model="currentField.Settings.FieldTextCssClass" class="text-input theme-default form-control" placeholder="Field css class" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label d-block">Sub Text</label>
+                <textarea ng-model="currentField.Settings.SubText" class="text-input theme-default form-control" placeholder="Enter sub text"></textarea>
+            </div>
+            <div class="mb-3" ng-if="currentField.Settings.SubText">
+                <label class="form-label d-block">Sub Text Css Class</label>
+                <input type="text" ng-model="currentField.Settings.SubTextCssClass" class="text-input theme-default form-control" placeholder="Field css class" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label d-block">Custom Layout</label>
+                <label class="toggle-switch theme-topol">
+                    <input type="checkbox" hidden="hidden" ng-model="currentField.Settings.IsCustomFieldLayout" ng-change="onIsCustomFieldLayoutChange()" />
+                    <div class="slider"></div>
+                </label>
+            </div>
+            <div class="mb-3" ng-if="currentField.Settings.IsCustomFieldLayout">
+                <label class="form-label d-block">Custom Layout Html</label>
+                <textarea code-mirror syntax="htmlmixed" ng-model="currentField.Settings.CustomFieldLayout"></textarea>
+            </div>
+        </div>
+        <div ng-if="currentField.IsValuable">
+            <div ng-if="currentField.IsRequired">
+                <div class="mb-3">
+                    <label class="form-label d-block">Required Message</label>
+                    <input type="text" ng-model="currentField.Settings.RequiredMessage" class="text-input theme-default form-control" placeholder="Required message" />
+                </div>
+                <div class="mb-3" ng-if="currentField.Settings.RequiredMessage">
+                    <label class="form-label d-block">Required Message Css Class</label>
+                    <input type="text" ng-model="currentField.Settings.RequiredMessageCssClass" class="text-input theme-default form-control" placeholder="Field css class" />
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label d-block">Validation Pattern</label>
+                <textarea ng-model="currentField.Settings.ValidationPattern" class="text-input theme-default form-control" placeholder="Validation pattern"></textarea>
+            </div>
+            <div class="mb-3" ng-if="currentField.Settings.ValidationPattern">
+                <label class="form-label d-block">Validation Message</label>
+                <input type="text" ng-model="currentField.Settings.ValidationMessage" class="text-input theme-default form-control" placeholder="Validation message" />
+            </div>
+            <div class="mb-3" ng-if="currentField.Settings.ValidationPattern && currentField.Settings.ValidationMessage">
+                <label class="form-label d-block">Required Message Css Class</label>
+                <input type="text" ng-model="currentField.Settings.ValidationMessageCssClass" class="text-input theme-default form-control" placeholder="Field css class" />
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label d-block">Parent</label>
+            <select ng-model="currentField.ParentID" class="form-control"
+                    ng-options="field.FieldID as field.FieldName for field in fields | filter: {IsGroup:true}" chosen inherit-select-classes="true">
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label d-block">Pane Name</label>
+            <input type="text" ng-model="currentField.PaneName" class="text-input theme-default form-control" placeholder="Pane Name" ng-disabled="true" readonly />
+        </div>
+        <div class="mb-3">
+            <label class="form-label d-block">View Order</label>
+            <input type="number" ng-model="currentField.ViewOrder" class="text-input theme-default form-control" placeholder="View Order" />
+        </div>
+    </fieldset>
+</div>

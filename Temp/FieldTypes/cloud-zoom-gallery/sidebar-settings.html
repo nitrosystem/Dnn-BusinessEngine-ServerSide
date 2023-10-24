@@ -1,0 +1,23 @@
+﻿<div class="mb-3">
+    <label class="col-xs-12">Custom List Css Class</label>
+    <input type="text" ng-model="currentField.Settings.CustomListCssClass" class="text-input theme-default form-control" />
+</div>
+<div class="mb-3">
+    <label>Columns</label>
+    <div class="form-control p-relative" ng-click="onShowGridColumnsClick()">
+        <span ng-if="!currentField.Settings.Columns.length">No Columns</span>
+        <span ng-if="currentField.Settings.Columns.length">Has Columns</span>
+        <span class="more-dot">...</span>
+    </div>
+</div>
+<div class="mb-3">
+    <label class="col-xs-12">Enable Paging</label>
+    <label class="toggle-switch theme-topol">
+        <input type="checkbox" hidden="hidden" ng-model="currentField.Settings.EnablePaging" />
+        <div class="slider"></div>
+    </label>
+</div>
+<div class="mb-3" ng-if="currentField.Settings.EnablePaging">
+    <label>Page Size</label>
+    <input type="text" ng-model="currentField.Settings.PageSize" class="text-input theme-default form-control" />
+</div>

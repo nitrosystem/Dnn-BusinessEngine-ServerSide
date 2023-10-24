@@ -1,0 +1,15 @@
+﻿<div class="mb-3">
+    <label class="col-xs-12">Allow Upload Multiple File</label>
+    <label class="toggle-switch theme-topol">
+        <input type="checkbox" hidden="hidden" ng-model="currentField.Settings.AllowUploadMultipleFile" />
+        <div class="slider"></div>
+    </label>
+</div>
+<div class="mb-3" ng-if="currentField.Settings.AllowUploadMultipleFile">
+    <label class="col-xs-12">Max File Count</label>
+    <input type="text" ng-model="currentField.Settings.MaxFileCount" class="text-input theme-default form-control" placeholder="Max File Count" />
+</div>
+<div class="mb-3">
+    <label class="col-xs-12">Max File Length(KB)</label>
+    <input type="text" ng-model="currentField.Settings.MaxFileLength" class="text-input theme-default form-control" placeholder="Max File Length" />
+</div>

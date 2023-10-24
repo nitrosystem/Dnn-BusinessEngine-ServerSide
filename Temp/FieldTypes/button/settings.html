@@ -1,0 +1,38 @@
+﻿<div class="mb-3">
+    <label class="col-xs-12">Button Type</label>
+    <select ng-model="currentField.Settings.ButtonType" class="form-control"
+            chosen inherit-select-classes="true" required>
+        <option value="button">Standard Button</option>
+        <option value="submit">Submit Button</option>
+    </select>
+</div>
+<div class="mb-3" ng-if="currentField.Settings.ButtonType=='button'">
+    <label class="col-xs-12">Validation Groups</label>
+    <select ng-model="currentField.Settings.ValidationGroups" class="form-control"
+            ng-options="field.FieldID as field.FieldName for field in fields | filter: {IsGroup:true}" multiple
+            chosen inherit-select-classes="true" required>
+    </select>
+</div>
+<div class="mb-3" ng-if="currentField.Settings.ButtonType=='button'">
+    <label class="col-xs-12">Validation Panes</label>
+    <select ng-model="currentField.Settings.ValidationPanes" class="form-control"
+            ng-options="pane.PaneName as pane.PaneTitle for pane in panes" multiple
+            chosen inherit-select-classes="true" required>
+    </select>
+</div>
+<div class="mb-3">
+    <label class="col-xs-12">Button Css Class</label>
+    <input type="text" ng-model="currentField.Settings.ButtonCssClass" class="text-input theme-default form-control" />
+</div>
+<div class="mb-3">
+    <label class="col-xs-12">Button Text</label>
+    <input type="text" ng-model="currentField.Settings.ButtonText" class="text-input theme-default form-control" />
+</div>
+<div class="mb-3">
+    <label class="col-xs-12">Icon Position</label>
+    <input type="text" ng-model="currentField.Settings.IconPosition" class="text-input theme-default form-control" />
+</div>
+<div class="mb-3">
+    <label class="col-xs-12">Font Icon</label>
+    <input type="text" ng-model="currentField.Settings.FontIcon" class="text-input theme-default form-control" />
+</div>

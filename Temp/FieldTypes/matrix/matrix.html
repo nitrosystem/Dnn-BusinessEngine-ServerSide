@@ -1,0 +1,48 @@
+﻿<div class="mbd-field-matrix">
+    <div class="table-responsive" ng-if="[FIELD].Settings.Columns.length">
+        <table class="table table-bordered table-columns-vmiddle table-striped" ng-if="![FIELD].Settings.TableType || [FIELD].Settings.TableType == 'horizontal'">
+            <thead>
+                <tr>
+                    <th ng-repeat="column in [FIELD].Settings.Columns | orderBy:'Order'" ng-if="column.Settings.ShowCondition"
+                        style="{{column.Settings.Width?'width:'+column.Settings.Width:''}}">{{column.ColumnTitle}}</th>
+                    <th ng-if="![FIELD].Settings.DisableDeleteRow"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="row in [FIELD].Value.Data">
+                    <td ng-repeat="column in [FIELD].Settings.Columns | orderBy:'Order'" ng-if="column.Settings.ShowCondition" style="{{column.Settings.Style}}">
+                        <matrix-field ng-model="row[column.ColumnName]" row="row" column="column" scope="this" option-index="{{$parent.$index}}_{{$index}}"></matrix-field>
+                    </td>
+                    <td ng-if="![FIELD].Settings.DisableDeleteRow">
+                        <i class="zmdi zmdi-delete f-14 cursor-pointer text-danger" ng-click="bMatrix_onDeleteRowClick([FIELD],$index)"></i>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="{{[FIELD].Settings.Columns.length+1}}">
+                        <button type="button" ng-if="[FIELD].Settings.AddButtonText" class="btn btn-primary" ng-click="bMatrix_onAddMatrixRowClick([FIELD])" ng-bind-html="[FIELD].Settings.AddButtonText"></button>
+                    </th>
+                </tr>
+            </tfoot>
+        </table>
+        <div ng-if="[FIELD].Settings.TableType == 'vertical'">
+            <div ng-repeat="row in [FIELD].Value.Data">
+                <i class="zmdi zmdi-delete f-14 cursor-pointer text-danger" ng-click="bMatrix_onDeleteRowClick([FIELD],$index)"></i>
+                <table class="table table-bordered table-columns-vmiddle table-striped">
+                    <tbody>
+                        <tr ng-repeat="column in [FIELD].Settings.Columns | orderBy:'Order'" ng-if="column.Settings.ShowCondition">
+                            <td>
+                                {{column.ColumnTitle}}
+                            </td>
+                            <td style="{{column.Settings.Style}}">
+                                <matrix-field ng-model="row[column.ColumnName]" row="row" column="column" scope="this" option-index="{{$parent.$index}}_{{$index}}"></matrix-field>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <button type="button" ng-if="[FIELD].Settings.AddButtonText" class="btn btn-primary" ng-click="bMatrix_onAddMatrixRowClick([FIELD])" ng-bind-html="[FIELD].Settings.AddButtonText"></button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,59 @@
+﻿<dotnetnuke type="Package" version="5.0">
+  <packages><package name="MyDnnBusinessDirectory.Search" type="Module" version="1.0.0">
+  <friendlyName>MyDnn Business Directory Search</friendlyName>
+  <description />
+  <iconFile />
+  <owner>
+    <name />
+    <organization />
+    <url />
+    <email />
+  </owner>
+  <license>The license for this package is not currently included within the installation file, please check with the vendor for full license details.</license>
+  <releaseNotes />
+  <components>
+    <component type="Module">
+      <desktopModule>
+        <moduleName>MyDnnBusinessDirectory.Search</moduleName>
+        <foldername>MyDnnBusinessDirectory/Module-Search</foldername>
+        <businessControllerClass />
+        <supportedFeatures />
+        <moduleDefinitions>
+          <moduleDefinition>
+            <friendlyName>MyDnn Business Directory Search</friendlyName>
+            <definitionName>MyDnn Business Directory Search</definitionName>
+            <defaultCacheTime>0</defaultCacheTime>
+            <moduleControls>
+              <moduleControl>
+                <controlKey />
+                <controlSrc>DesktopModules/MyDnnBusinessDirectory/Module-Search/Search.ascx</controlSrc>
+                <supportsPartialRendering>False</supportsPartialRendering>
+                <controlTitle />
+                <controlType>View</controlType>
+                <iconFile />
+                <helpUrl />
+                <supportsPopUps>False</supportsPopUps>
+                <viewOrder>0</viewOrder>
+              </moduleControl>
+            </moduleControls>
+          </moduleDefinition>
+        </moduleDefinitions>
+      </desktopModule>
+    </component>
+    <component type="File">
+      <files>
+        <basePath>DesktopModules\MyDnnBusinessDirectory\Module-Search</basePath>
+        <file>
+          <name>Search.ascx</name>
+        </file>
+        <file>
+          <name>Search.ascx.cs</name>
+        </file>
+        <file>
+          <name>Search.ascx.designer.cs</name>
+        </file>
+      </files>
+    </component>
+  </components>
+</package></packages>
+</dotnetnuke>

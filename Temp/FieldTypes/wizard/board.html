@@ -1,0 +1,32 @@
+﻿<div class="kt-grid kt-wizard-v1 kt-wizard-v1--white" data-ktwizard-state="first" id="wizard[FIELDNAME]">
+    <div class="kt-grid__item">
+        <!--begin: Form Wizard Nav -->
+        <div class="kt-wizard-v1__nav">
+            <!--doc: Remove "kt-wizard-v1__nav-items--clickable" class and also set 'clickableSteps: false' in the JS init to disable manually clicking step titles -->
+            <div class="kt-wizard-v1__nav-items kt-wizard-v1__nav-items--clickable">
+                <div class="kt-wizard-v1__nav-item" data-ktwizard-type="step" data-ktwizard-state="current"
+                     ng-repeat="step in [FIELD].Settings.Steps">
+                    <div class="kt-wizard-v1__nav-body">
+                        <div class="kt-wizard-v1__nav-icon" ng-if="step.Icon">
+                            <i class="{{step.Icon}}"></i>
+                        </div>
+                        <div class="kt-wizard-v1__nav-label">
+                            {{step.Title}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--end: Form Wizard Nav -->
+    </div>
+    <div class="kt-grid__item kt-grid__item--fluid kt-wizard-v1__wrapper">
+        <!--begin: Form Wizard Form-->
+        <div class="kt-form" novalidate="novalidate">
+            <div id="wizard[FIELDNAME]Panes"></div>
+            <!--begin: Form Actions -->
+            <div class="kt-form__actions" data-pane="WizardActionsPane[FIELDID]" data-pane-title="Actions Pane"></div>
+            <!--end: Form Actions -->
+        </div>
+        <!--end: Form Wizard Form-->
+    </div>
+</div>

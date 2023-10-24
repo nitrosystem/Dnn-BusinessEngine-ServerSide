@@ -1,0 +1,82 @@
+﻿<div>
+    <button type="button" class="btn btn-default m-t-15" ng-click="onShowCustomSelectSettings()" ng-show="[FIELD].FieldID==currentField.FieldID">Settings</button>
+
+    <div class="modal modal-wide" id="wnCustomSelectSettings" tabindex="-1" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false" ng-click="onLiveCurrentField($event)">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h4 class="modal-title">Field Settings</h4>
+                </div>
+                <div class="modal-body form-horizontal">
+                    <div class="form-section theme-default small">
+                        <input type="checkbox" />
+                        <div class="header">
+                            <h3><i class="zmdi zmdi-storage zmdi-hc-fw"></i>Template Settings</h3>
+                        </div>
+                        <fieldset>
+                            <div class="mb-3">
+                                <label class="col-sm-3 col-form-label">Layout Template</label>
+                                <div class="col-sm-9">
+                                    <textarea code-mirror syntax="htmlmixed" ng-model="currentField.Settings.LayoutTemplate" />
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="col-sm-3 col-form-label">Item Template</label>
+                                <div class="col-sm-9">
+                                    <textarea code-mirror syntax="htmlmixed" ng-model="currentField.Settings.ItemTemplate" />
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="col-sm-3 col-form-label">Custom Css</label>
+                                <div class="col-sm-9">
+                                    <textarea code-mirror syntax="css" ng-model="currentField.Settings.CustomCss" />
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="col-sm-offset-3 col-sm-4">
+                                    <button type="button" class="btn btn-primary" ng-click="customSelect_onSaveTemplateClick()">Save Template</button>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="form-section theme-default small">
+                        <input type="checkbox" />
+                        <div class="header">
+                            <h3><i class="zmdi zmdi-storage zmdi-hc-fw"></i>Options</h3>
+                        </div>
+                        <fieldset>
+                            <div ng-repeat="option in currentField.Settings.Options" style="padding:15px;border:solid 1px #ddd;margin-bottom:15px;">
+                                <div class="mb-3" ng-repeat="field in currentField.Settings.CustomFields">
+                                    <label class="col-sm-3 col-form-label">{{field.FieldName}}</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" ng-model="option[field.FieldName]" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="col-sm-offset-3 col-sm-4">
+                                        <button type="button" class="btn btn-danger" ng-click="currentField.Settings.Options.splice($index,1)">
+                                            <i class="zmdi zmdi-delete"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="col-sm-offset-3 col-sm-4">
+                                    <button type="button" class="btn btn-success" ng-click="customSelect_onAddOptionClick()">
+                                        <i class="zmdi zmdi-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="col-sm-offset-3 col-sm-4">
+                                    <button type="button" class="btn btn-primary" ng-click="customSelect_onSaveOptionsClick()">Save Options</button>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

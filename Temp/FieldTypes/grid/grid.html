@@ -1,0 +1,44 @@
+﻿<table class="table table-bordered table-striped table-condensed table-hover table-columns-vmiddle">
+    <thead>
+        <tr>
+            <th ng-if="![FIELD].Settings.ShowRowDetails" style="width:10px;"></th>
+            <th ng-repeat="column in [FIELD].Settings.Columns" ng-if="!column.ShowInRowDetails" class="{{column.ColumnCss}}" style="{{column.ColumnStyle}}" ng-bind-html="column.Title"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="row in [FIELD].Options" ng-class="{'il-row-even':$even}" id="bGridRow{{$index}}_[FIELDNAME]">
+            <td ng-if="![FIELD].Settings.ShowRowDetails" style="width:10px">
+                <i ng-click="onShowRowDetailsClick([FIELD],row,$index)" class="fa" ng-class="{'fa-caret-right':!row.IsExpanded,'fa-caret-down':row.IsExpanded}"></i>
+            </td>
+            <td ng-repeat="column in [FIELD].Settings.Columns" ng-if="!column.ShowInRowDetails" class="p-10 {{column.ColumnCss}}" style="{{column.ColumnStyle}}">
+                <mbd-column-value row="row" column="column" scope="this"></mbd-column-value>
+            </td>
+        </tr>
+    </tbody>
+    <tfoot>
+        <tr>
+            <th colspan="{{[FIELD].Settings.Columns.length}}" ng-if="[FIELD].Settings.EnablePaging">
+                <ul id="paging[FIELDNAME]" class="pagination"></ul>
+            </th>
+        </tr>
+    </tfoot>
+</table>
+
+<script type="text/ng-template" id="rowDetails_[FIELDNAME]">
+        <tr id="bGridRow{{$index}}_[FIELDNAME]" class="datatable-row-detail" ng-show="{RowItem}.IsExpanded">
+            <td class="datatable-detail" colspan="{{[FIELD].Settings.Columns.length}}">
+                <table>
+                    <tbody>
+                        <tr ng-repeat="column in [FIELD].Settings.Columns | filter:{ShowInRowDetails:true}" class="datatable-row">
+                            <td class="datatable-cell" ng-if="!column.HideTitleColumn">
+                                {{column.Title}}
+                            </td>
+                            <td class="datatable-cell">
+                                <mbd-column-value row="{RowItem}" column="column" scope="this"></mbd-column-value>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+</script>

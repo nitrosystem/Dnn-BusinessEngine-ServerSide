@@ -1,0 +1,37 @@
+﻿<div class="mb-3">
+    <label class="col-xs-12">Placeholder</label>
+    <input type="text" ng-model="currentField.Settings.Placeholder" class="text-input theme-default form-control" />
+</div>
+<div class="mb-3">
+    <label class="col-xs-12">Input Css Class</label>
+    <input type="text" ng-model="currentField.Settings.Theme" class="text-input theme-default form-control mh-50" placeholder="Input css class" />
+</div>
+<div class="mb-3">
+    <label class="col-xs-12">Auto Close</label>
+    <label class="toggle-switch theme-topol">
+        <input type="checkbox" hidden="hidden" ng-model="currentField.Settings.AutoClose" />
+        <div class="slider"></div>
+    </label>
+</div>
+<div class="mb-3">
+    <label>Calendar Type</label>
+    <select ng-model="currentField.Settings.CalendarType" class="form-control"
+            chosen inherit-select-classes="true" placeholder-text-single="'Select calendar type'" required>
+        <option disabled></option>
+        <option value="gregorian">Gregorian</option>
+        <option value="jalali">Jalali</option>
+    </select>
+</div>
+<div class="mb-3">
+    <label class="col-xs-12">Format</label>
+    <input ng-model="currentField.Settings.Format" class="text-input theme-default form-control" placeholder="Enter date format" />
+</div>
+<div class="mb-3">
+    <label class="col-xs-12">Date & Time</label>
+    <select ng-model="currentField.Settings.DateType" class="form-control"
+            chosen inherit-select-classes="true" placeholder-text-single="'Select date type'" required>
+        <option disabled></option>
+        <option value="datetime">Date & Time</option>
+        <option value="date">Date</option>
+    </select>
+</div>

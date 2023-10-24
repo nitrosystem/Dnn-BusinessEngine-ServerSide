@@ -1,0 +1,14 @@
+﻿<div class="mb-3">
+    <label>Language</label>
+    <select ng-model="[FIELD]._Language" class="form-control" ng-change="[FIELDNAME]_onLanguageChange()" ng-disabled="waiting">
+        <!--<option value="en-us">English</option>-->
+        <option value="ar-ae">Arabic</option>
+    </select>
+</div>
+<div class="mb-3" ng-repeat="property in [FIELDNAME]_Properties">
+    <label>{{property.PropertyName}}</label>
+    <textarea ng-model="property.Value" class="form-control" placeholder="{{property.PropertyName}}" ng-disabled="![FIELD]._Language"></textarea>
+</div>
+<div class="mb-3">
+    <button type="button" class="btn btn-success" ng-click="[FIELDNAME]_onSubmitClick()" ng-disabled="waiting">Save</button>
+</div>

@@ -1,0 +1,26 @@
+﻿<div class="mbd-field-uploadphoto {{[FIELD].Settings.Theme}}">
+    <div class="box-upload">
+        <input type="file" class="form-control" accept="image/*"
+               ng-multiple="[FIELD].Settings.AllowUploadMultipleFile"
+               ngf-select="onUploadImages([FIELD],$files,$file, $newFiles, $duplicateFiles, $invalidFiles, $event)"
+               ngf-max-files="{{[FIELD].Settings.MaxFileCount?[FIELD].Settings.MaxFileCount:1}}"
+               ngf-max-size="{{[FIELD].Settings.MaxFileLength?[FIELD].Settings.MaxFileLength*1024:12000000}}"
+               ngf-fix-orientation="true" />
+        <i class="fa fa-plus"></i>
+        <span>{{[FIELD].Settings.UploadLabel}}</span>
+    </div>
+    <div class="box-image" ng-repeat="f in [FIELD].Files" ng-click="onSetMainImageClick([FIELD],f)">
+        <span class="photo-error" ng-if="f.Status==-1">Upload Error! <br />{{f.Message}}</span>
+        <i class="zmdi zmdi-check-circle is-main" ng-if="f.IsMain"></i>
+        <div class="bu-actions">
+            <i class="zmdi zmdi-rotate-right" title="Try Again" ng-if="f.Status!=1" ng-click="onTryAgainUploadImageClick([FIELD],f,$event)"></i>
+            <i class="zmdi zmdi-delete" title="Remove Image" ng-click="onDeleteImageClick([FIELD],$index,$event)"></i>
+        </div>
+        <img class="bu-file" ng-if="!f.FilePath && f.PreviewImage" ng-src="{{f.PreviewImage}}" />
+        <img class="bu-file" ng-if="f.FilePath" ng-src="{{f.FilePath}}" />
+        <div class="bu-progress" ng-if="f.Progress<100">
+            <span class="progress-bar progress-bar-success progress-bar-striped active" style="width:{{f.Progress}}%">{{f.Progress}}%</span>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+</div>

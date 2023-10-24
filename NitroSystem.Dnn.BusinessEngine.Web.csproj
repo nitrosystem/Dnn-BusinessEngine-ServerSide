@@ -1,0 +1,474 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="packages\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.1.17.0\build\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.props" Condition="Exists('packages\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.1.17.0\build\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0341E00F-4C86-40DD-9434-9C5FCD8A7801}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NitroSystem.Dnn.BusinessEngine</RootNamespace>
+    <AssemblyName>NitroSystem.Dnn.BusinessEngine</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>enabled</IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
+    <TargetFrameworkProfile />
+    <UseGlobalApplicationHostFile />
+    <Use64BitIISExpress />
+    <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
+    <DockerLaunchUrl>http://{ServiceIPAddress}</DockerLaunchUrl>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Dapper, Version=1.60.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Dapper.1.60.6\lib\net451\Dapper.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetNuke, Version=9.4.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\DotNetNuke.Core.9.4.4\lib\net45\DotNetNuke.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetNuke.Abstractions, Version=9.4.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\DotNetNuke.Abstractions.9.4.4\lib\netstandard2.0\DotNetNuke.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetNuke.DependencyInjection, Version=9.4.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\DotNetNuke.DependencyInjection.9.4.4\lib\netstandard2.0\DotNetNuke.DependencyInjection.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetNuke.Instrumentation, Version=9.4.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\DotNetNuke.Instrumentation.9.4.4\lib\net45\DotNetNuke.Instrumentation.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetNuke.log4net, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\DotNetNuke.Instrumentation.9.4.4\lib\net45\DotNetNuke.log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetNuke.Web, Version=9.4.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\DotNetNuke.Web.9.4.4\lib\net45\DotNetNuke.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetNuke.Web.Client, Version=9.4.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\DotNetNuke.Web.Client.9.4.4\lib\net45\DotNetNuke.Web.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetNuke.Web.Mvc, Version=9.4.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\DotNetNuke.Web.Mvc.9.4.4\lib\net45\DotNetNuke.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetNuke.WebUtility, Version=4.2.1.783, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\DotNetNuke.Web.9.4.4\lib\net45\DotNetNuke.WebUtility.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ApplicationBlocks.Data, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\DotNetNuke.Core.9.4.4\lib\net45\Microsoft.ApplicationBlocks.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=2.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Extensions.DependencyInjection.2.1.1\lib\net461\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=2.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Extensions.DependencyInjection.Abstractions.2.1.1\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Net.Http.2.0.20126.16343\lib\net40\System.Net.Http.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Net.Http.Formatting.Extension.5.2.3.0\lib\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives, Version=4.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Net.Http.Formatting.Extension.5.2.3.0\lib\System.Net.Http.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Net.Http.2.0.20126.16343\lib\net40\System.Net.Http.WebRequest.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime" />
+    <Reference Include="System.Security.Cryptography.Algorithms" />
+    <Reference Include="System.Security.Cryptography.Encoding" />
+    <Reference Include="System.Security.Cryptography.Primitives" />
+    <Reference Include="System.Security.Cryptography.X509Certificates" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNet.Mvc.5.1.3\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>packages\Microsoft.AspNet.Razor.3.1.2\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="dashboard.aspx.cs">
+      <DependentUpon>dashboard.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="dashboard.aspx.designer.cs">
+      <DependentUpon>dashboard.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="module-studio\studio.ascx.cs">
+      <DependentUpon>studio.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="module-studio\studio.ascx.designer.cs">
+      <DependentUpon>studio.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="payment-gateway\send.aspx.cs">
+      <DependentUpon>send.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="payment-gateway\send.aspx.designer.cs">
+      <DependentUpon>send.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="payment-gateway\verify.aspx.cs">
+      <DependentUpon>verify.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="payment-gateway\verify.aspx.designer.cs">
+      <DependentUpon>verify.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Services\Service.cs" />
+    <Compile Include="studio.aspx.cs">
+      <DependentUpon>studio.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="studio.aspx.designer.cs">
+      <DependentUpon>studio.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="module-dashboard\dashboard.ascx.cs">
+      <DependentUpon>dashboard.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="module-dashboard\dashboard.ascx.designer.cs">
+      <DependentUpon>dashboard.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="module-details\details.ascx.cs">
+      <DependentUpon>details.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="module-details\details.ascx.designer.cs">
+      <DependentUpon>details.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="module-list\list.ascx.cs">
+      <DependentUpon>list.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="module-list\list.ascx.designer.cs">
+      <DependentUpon>list.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="module-form\form.ascx.cs">
+      <DependentUpon>form.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="module-form\form.ascx.designer.cs">
+      <DependentUpon>form.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="data\sql-templates\create-entity.sql" />
+    <Content Include="module-studio\container.html" />
+    <Content Include="module-studio\module.css" />
+    <Content Include="module-studio\studio.ascx" />
+    <Content Include="payment-gateway\send.aspx" />
+    <Content Include="payment-gateway\verify.aspx" />
+    <Content Include="scripts\studio-setup.js" />
+    <Content Include="studio.aspx" />
+    <Content Include="dashboard.aspx" />
+    <Content Include="module-dashboard\dashboard.ascx" />
+    <Content Include="module-details\details.ascx" />
+    <Content Include="module-list\list.ascx" />
+    <Content Include="module-form\form.ascx" />
+    <Content Include="Temp\FieldTypes\adm-datetime-picker\date-picker.html" />
+    <Content Include="Temp\FieldTypes\adm-datetime-picker\date-picker.js" />
+    <Content Include="Temp\FieldTypes\adm-datetime-picker\settings.html" />
+    <Content Include="Temp\FieldTypes\button\Button.html" />
+    <Content Include="Temp\FieldTypes\button\button.js" />
+    <Content Include="Temp\FieldTypes\button\settings.html" />
+    <Content Include="Temp\FieldTypes\checkbox-list\checkbox-list.html" />
+    <Content Include="Temp\FieldTypes\checkbox-list\checkbox-list.js" />
+    <Content Include="Temp\FieldTypes\checkbox\checkbox.html" />
+    <Content Include="Temp\FieldTypes\chosen-dropdown\dropdown.html" />
+    <Content Include="Temp\FieldTypes\chosen-dropdown\dropdown.js" />
+    <Content Include="Temp\FieldTypes\chosen-dropdown\settings.html" />
+    <Content Include="Temp\FieldTypes\cloud-zoom-gallery\gallery.html" />
+    <Content Include="Temp\FieldTypes\cloud-zoom-gallery\gallery.js" />
+    <Content Include="Temp\FieldTypes\cloud-zoom-gallery\settings.html" />
+    <Content Include="Temp\FieldTypes\cloud-zoom-gallery\settings.js" />
+    <Content Include="Temp\FieldTypes\cloud-zoom-gallery\sidebar-settings.html" />
+    <Content Include="Temp\FieldTypes\content\board.html" />
+    <Content Include="Temp\FieldTypes\content\Content.html" />
+    <Content Include="Temp\FieldTypes\content\content.js" />
+    <Content Include="Temp\FieldTypes\custom-list\custom-list.html" />
+    <Content Include="Temp\FieldTypes\custom-list\custom-list.js" />
+    <Content Include="Temp\FieldTypes\custom-list\settings.html" />
+    <Content Include="Temp\FieldTypes\custom-list\settings.js" />
+    <Content Include="Temp\FieldTypes\custom-list\sidebar-settings.html" />
+    <Content Include="Temp\FieldTypes\custom-select\admin.js" />
+    <Content Include="Temp\FieldTypes\custom-select\custom-select-board.html" />
+    <Content Include="Temp\FieldTypes\custom-select\custom-select.html" />
+    <Content Include="Temp\FieldTypes\custom-select\custom-select.js" />
+    <Content Include="Temp\FieldTypes\custom-select\sidebar-settings.html" />
+    <Content Include="Temp\FieldTypes\dashboard-link\link.html" />
+    <Content Include="Temp\FieldTypes\dashboard-link\settings.html" />
+    <Content Include="Temp\FieldTypes\dashboard-menu\menu.html" />
+    <Content Include="Temp\FieldTypes\dashboard-menu\menu.js" />
+    <Content Include="Temp\FieldTypes\dashboard-menu\settings.html" />
+    <Content Include="Temp\FieldTypes\dropdown-list\dropdown-list.html" />
+    <Content Include="Temp\FieldTypes\dropdown-list\dropdown-list.js" />
+    <Content Include="Temp\FieldTypes\dropdown-list\settings.html" />
+    <Content Include="Temp\FieldTypes\dropdown-tree\dropdown-tree.html" />
+    <Content Include="Temp\FieldTypes\dropdown-tree\dropdown-tree.js" />
+    <Content Include="Temp\FieldTypes\dropdown-tree\settings.html" />
+    <Content Include="Temp\FieldTypes\grid\grid.html" />
+    <Content Include="Temp\FieldTypes\grid\grid.js" />
+    <Content Include="Temp\FieldTypes\grid\metronic-grid.html" />
+    <Content Include="Temp\FieldTypes\grid\settings.html" />
+    <Content Include="Temp\FieldTypes\grid\settings.js" />
+    <Content Include="Temp\FieldTypes\grid\sidebar-settings.html" />
+    <Content Include="Temp\FieldTypes\group\group.html" />
+    <Content Include="Temp\FieldTypes\group\settings.html" />
+    <Content Include="Temp\FieldTypes\locale-properties\properties.html" />
+    <Content Include="Temp\FieldTypes\locale-properties\properties.js" />
+    <Content Include="Temp\FieldTypes\locale-properties\sidebar-settings.html" />
+    <Content Include="Temp\FieldTypes\matrix\matrix-board.html" />
+    <Content Include="Temp\FieldTypes\matrix\matrix.html" />
+    <Content Include="Temp\FieldTypes\matrix\matrix.js" />
+    <Content Include="Temp\FieldTypes\matrix\settings.js" />
+    <Content Include="Temp\FieldTypes\matrix\sidebar-settings.html" />
+    <Content Include="Temp\FieldTypes\nitro-store\attribute-component\attribute.html" />
+    <Content Include="Temp\FieldTypes\nitro-store\attribute-component\attribute.js" />
+    <Content Include="Temp\FieldTypes\nitro-store\attribute-component\settings.html" />
+    <Content Include="Temp\FieldTypes\nitro-store\product-attributes\attributes.html" />
+    <Content Include="Temp\FieldTypes\nitro-store\product-attributes\attributes.js" />
+    <Content Include="Temp\FieldTypes\nitro-store\product-attributes\settings.html" />
+    <Content Include="Temp\FieldTypes\nitro-store\product-attributes\settings.js" />
+    <Content Include="Temp\FieldTypes\nitro-store\product-attributes\sidebar-settings.html" />
+    <Content Include="Temp\FieldTypes\nitro-store\product-model-attributes\attributes.html" />
+    <Content Include="Temp\FieldTypes\nitro-store\product-model-attributes\attributes.js" />
+    <Content Include="Temp\FieldTypes\nitro-store\search-attributes\attributes.html" />
+    <Content Include="Temp\FieldTypes\nitro-store\search-attributes\attributes.js" />
+    <Content Include="Temp\FieldTypes\nitro-store\search-attributes\settings.html" />
+    <Content Include="Temp\FieldTypes\nitro-store\search-attributes\settings.js" />
+    <Content Include="Temp\FieldTypes\nitro-store\search-attributes\sidebar-settings.html" />
+    <Content Include="Temp\FieldTypes\nitro-store\submit-attribute-options\options.html" />
+    <Content Include="Temp\FieldTypes\nitro-store\submit-attribute-options\options.js" />
+    <Content Include="Temp\FieldTypes\nitro-store\submit-product-attributes\attributes.html" />
+    <Content Include="Temp\FieldTypes\nitro-store\submit-product-attributes\attributes.js" />
+    <Content Include="Temp\FieldTypes\nitro-store\submit-product-attributes\settings.html" />
+    <Content Include="Temp\FieldTypes\nitro-store\submit-product-model-attributes\attributes.html" />
+    <Content Include="Temp\FieldTypes\nitro-store\submit-product-model-attributes\attributes.js" />
+    <Content Include="Temp\FieldTypes\nitro-store\submit-product-model-attributes\settings.html" />
+    <Content Include="Temp\FieldTypes\nitro-store\user-addresses\addresses.html" />
+    <Content Include="Temp\FieldTypes\nitro-store\user-addresses\settings.html" />
+    <Content Include="Temp\FieldTypes\nitro-store\user-addresses\user-address.js" />
+    <Content Include="Temp\FieldTypes\persian-datetime-picker\date-picker.html" />
+    <Content Include="Temp\FieldTypes\persian-datetime-picker\date-picker.js" />
+    <Content Include="Temp\FieldTypes\persian-datetime-picker\settings.html" />
+    <Content Include="Temp\FieldTypes\property\property.html" />
+    <Content Include="Temp\FieldTypes\property\settings.html" />
+    <Content Include="Temp\FieldTypes\property\sidebar-settings.html" />
+    <Content Include="Temp\FieldTypes\protlet-group\protlet.html" />
+    <Content Include="Temp\FieldTypes\protlet-group\settings.html" />
+    <Content Include="Temp\FieldTypes\radio-button-list\radio-button-list.html" />
+    <Content Include="Temp\FieldTypes\radio-button-list\radio.js" />
+    <Content Include="Temp\FieldTypes\scan-qr-code\qr-code.html" />
+    <Content Include="Temp\FieldTypes\scan-qr-code\qr-code.js" />
+    <Content Include="Temp\FieldTypes\selectize\selectize.html" />
+    <Content Include="Temp\FieldTypes\selectize\selectize.js" />
+    <Content Include="Temp\FieldTypes\selectize\settings.html" />
+    <Content Include="Temp\FieldTypes\simple-capcha\captcha.html" />
+    <Content Include="Temp\FieldTypes\simple-capcha\captcha.js" />
+    <Content Include="Temp\FieldTypes\simple-capcha\settings.html" />
+    <Content Include="Temp\FieldTypes\swiper-slider\settings.html" />
+    <Content Include="Temp\FieldTypes\swiper-slider\settings.js" />
+    <Content Include="Temp\FieldTypes\swiper-slider\sidebar-settings.html" />
+    <Content Include="Temp\FieldTypes\swiper-slider\slider.html" />
+    <Content Include="Temp\FieldTypes\swiper-slider\slider.js" />
+    <Content Include="Temp\FieldTypes\switch-button\switch-button.html" />
+    <Content Include="Temp\FieldTypes\switch-button\switch.js" />
+    <Content Include="Temp\FieldTypes\tags\tags.html" />
+    <Content Include="Temp\FieldTypes\temp.html" />
+    <Content Include="Temp\FieldTypes\text-editor\editor.html" />
+    <Content Include="Temp\FieldTypes\text-editor\editor.js" />
+    <Content Include="Temp\FieldTypes\text-editor\settings.html" />
+    <Content Include="Temp\FieldTypes\textarea\settings.html" />
+    <Content Include="Temp\FieldTypes\textarea\textarea.html" />
+    <Content Include="Temp\FieldTypes\textarea\textarea.js" />
+    <Content Include="Temp\FieldTypes\textbox\settings.html" />
+    <Content Include="Temp\FieldTypes\textbox\textbox.html" />
+    <Content Include="Temp\FieldTypes\textbox\textbox.js" />
+    <Content Include="Temp\FieldTypes\upload-excel\sidebar-settings.html" />
+    <Content Include="Temp\FieldTypes\upload-excel\upload-excel.html" />
+    <Content Include="Temp\FieldTypes\upload-excel\upload-excel.js" />
+    <Content Include="Temp\FieldTypes\upload-file\settings.html" />
+    <Content Include="Temp\FieldTypes\upload-file\upload-file.html" />
+    <Content Include="Temp\FieldTypes\upload-file\upload-file.js" />
+    <Content Include="Temp\FieldTypes\upload-image\settings.html" />
+    <Content Include="Temp\FieldTypes\upload-image\upload-image.html" />
+    <Content Include="Temp\FieldTypes\upload-image\upload-image.js" />
+    <Content Include="Temp\FieldTypes\wizard\board.html" />
+    <Content Include="Temp\FieldTypes\wizard\settings.html" />
+    <Content Include="Temp\FieldTypes\wizard\settings.js" />
+    <Content Include="Temp\FieldTypes\wizard\sidebar-settings.html" />
+    <Content Include="Temp\FieldTypes\wizard\wizard.html" />
+    <Content Include="Temp\FieldTypes\wizard\wizard.js" />
+    <Content Include="Temp\FieldTypes\_System\field-layout.html" />
+    <Content Include="Temp\FieldTypes\_System\field-manage.html" />
+    <Content Include="Temp\FieldTypes\_System\system-settings.html" />
+    <Content Include="Temp\temp.css" />
+    <Content Include="Temp\temp.html" />
+    <Content Include="Temp\temp.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Temp\FieldTypes\raty\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <Content Include="Temp\FieldTypes\_System\_field-types.json" />
+    <Content Include="Temp\temp.json" />
+    <Content Include="web.config" />
+    <None Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="NitroSystem.Dnn.BusinessEngine.Api\NitroSystem.Dnn.BusinessEngine.Api.csproj">
+      <Project>{f75d86ad-7cee-484a-b781-508b53411771}</Project>
+      <Name>NitroSystem.Dnn.BusinessEngine.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="NitroSystem.Dnn.BusinessEngine.Common\NitroSystem.Dnn.BusinessEngine.Common.csproj">
+      <Project>{91678844-5b48-4ee1-bdd0-cfca92ba1924}</Project>
+      <Name>NitroSystem.Dnn.BusinessEngine.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="NitroSystem.Dnn.BusinessEngine.Core\NitroSystem.Dnn.BusinessEngine.Core.csproj">
+      <Project>{a2caf8da-7b01-48d1-8fd6-c6cc8e755987}</Project>
+      <Name>NitroSystem.Dnn.BusinessEngine.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="NitroSystem.Dnn.BusinessEngine.Data\NitroSystem.Dnn.BusinessEngine.Data.csproj">
+      <Project>{57e9a1ea-6603-4cd5-9914-5f79f60923ed}</Project>
+      <Name>NitroSystem.Dnn.BusinessEngine.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="NitroSystem.Dnn.BusinessEngine.Framework\NitroSystem.Dnn.BusinessEngine.Framework.csproj">
+      <Project>{8ef8ff3b-e365-415e-ab70-72aebb897a40}</Project>
+      <Name>NitroSystem.Dnn.BusinessEngine.Framework</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>8712</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:11002/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup>
+    <PostBuildEvent>IF NOT ($(ConfigurationName)) == (Debug) GOTO END
+cd $(ProjectDir)
+copy /y obj\debug\NitroSystem.Dnn.BusinessEngine.dll  D:\Wokstation\Dnn\DnnDev\bin
+:END</PostBuildEvent>
+  </PropertyGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.1.17.0\build\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.1.17.0\build\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.props'))" />
+    <Error Condition="!Exists('packages\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.1.17.0\build\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.1.17.0\build\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.targets'))" />
+  </Target>
+  <Import Project="packages\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.1.17.0\build\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.targets" Condition="Exists('packages\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.1.17.0\build\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

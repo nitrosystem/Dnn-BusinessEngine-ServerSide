@@ -1,0 +1,20 @@
+﻿<div class="mbd-field-uploadfile">
+    <input type="file" placeholder="{{[FIELD].Settings.HelpText}}" class="form-control"
+           ngf-select="bUploadExcel_onUploadExcel($files,$file, $newFiles, $duplicateFiles, $invalidFiles, $event)" />
+
+    <div class="alert alert-info p-10" ng-if="excelWait">Please wait...</div>
+
+    <table class="table table-bordered table-striped table-condensed table-columns-vmiddle" ng-if="[FIELD].Value">
+        <thead>
+            <tr>
+                <th ng-repeat="column in [FIELD].Settings.ColumnList">{{column}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="row in [FIELD].Value">
+                <td ng-repeat="column in [FIELD].Settings.ColumnList">{{row[column]}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
