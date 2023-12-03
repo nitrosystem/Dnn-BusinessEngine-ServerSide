@@ -227,14 +227,14 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.Extensions.Services
             //--------------------------------------------------------------------------------
 
             //5-Library(Client) Resource
-            LibraryResourceRepository.Instance.DeleteLibraryResourcesByExtensionID(this.Extension.ExtensionID);
+            LibraryResourceRepository.Instance.DeleteResourcesByExtensionID(this.Extension.ExtensionID);
 
             foreach (var package in this.Extension.Packages.Where(p => p.PackageType == "ClientResource"))
             {
                 foreach (var item in package.ClientResources ?? Enumerable.Empty<LibraryResourceInfo>())
                 {
-                    item.ExtensionID = this.Extension.ExtensionID;
-                    item.ResourceID = LibraryResourceRepository.Instance.AddLibraryResource(item);
+                    //item.ExtensionID = this.Extension.ExtensionID;
+                    //item.ResourceID = LibraryResourceRepository.Instance.AddResource(item);
                 }
             }
             //--------------------------------------------------------------------------------

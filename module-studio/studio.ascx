@@ -1,4 +1,4 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="studio.ascx.cs" Inherits="NitroSystem.Dnn.BusinessEngine.Web.Modules.Studio" %>
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="studio.ascx.cs" Inherits="NitroSystem.Dnn.BusinessEngine.Modules.Studio" %>
 <%@ Register TagPrefix="dnn" Namespace="DotNetNuke.Web.Client.ClientResourceManagement" Assembly="DotNetNuke.Web.Client" %>
 
 <div id="bEngineStudioBoxs" class="container studio-type-boxs">

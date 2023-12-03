@@ -1,47 +1,37 @@
-﻿using DotNetNuke.Common.Utilities;
-using DotNetNuke.Security.Roles;
-using DotNetNuke.Web.Api;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using NitroSystem.Dnn.BusinessEngine.Api.Dto;
-using NitroSystem.Dnn.BusinessEngine.Api.ViewModels;
-using NitroSystem.Dnn.BusinessEngine.Components;
-using NitroSystem.Dnn.BusinessEngine.Core.ModuleBuilder;
-using NitroSystem.Dnn.BusinessEngine.Data.Entities.Tables;
-using NitroSystem.Dnn.BusinessEngine.Data.Entities.Views;
-using NitroSystem.Dnn.BusinessEngine.Data.Repositories;
-using NitroSystem.Dnn.BusinessEngine.Utilities;
-using NitroSystem.Dnn.BusinessEngine.Api.Base;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.IO;
 using System.Web;
 using System.Web.Http;
+using Newtonsoft.Json;
 using DotNetNuke.Entities.Host;
+using DotNetNuke.Common.Utilities;
+using DotNetNuke.Security.Roles;
+using DotNetNuke.Web.Api;
+using DotNetNuke.Entities.Portals;
+using ICSharpCode.SharpZipLib.Zip;
+using NitroSystem.Dnn.BusinessEngine.Api.Dto;
+using NitroSystem.Dnn.BusinessEngine.Api.ViewModels;
+using NitroSystem.Dnn.BusinessEngine.Core.ModuleBuilder;
+using NitroSystem.Dnn.BusinessEngine.Data.Entities.Tables;
+using NitroSystem.Dnn.BusinessEngine.Data.Entities.Views;
+using NitroSystem.Dnn.BusinessEngine.Data.Repositories;
+using NitroSystem.Dnn.BusinessEngine.Utilities;
 using NitroSystem.Dnn.BusinessEngine.Api.Mapping;
-using NitroSystem.Dnn.BusinessEngine.Core.Models;
 using NitroSystem.Dnn.BusinessEngine.Common.Models;
 using NitroSystem.Dnn.BusinessEngine.Core.Appearance;
-using static Dapper.SqlMapper;
-using System.Web.UI.WebControls;
-using System.Reflection;
-using System.Web.UI;
 using NitroSystem.Dnn.BusinessEngine.Api.Models;
 using NitroSystem.Dnn.BusinessEngine.Common.TypeCasting;
-using System.Web.Http.Results;
-using NitroSystem.Dnn.BusinessEngine.Components.Enums;
-using System.IO;
 using NitroSystem.Dnn.BusinessEngine.Core.Extensions.Services;
-using DotNetNuke.Entities.Portals;
-using DotNetNuke.Abstractions.Portals;
 using NitroSystem.Dnn.BusinessEngine.Core.Extensions.Manifest;
-using ICSharpCode.SharpZipLib.Zip;
+using DotNetNuke.Entities.Tabs;
+using System.Resources;
+using System.Web.UI.WebControls;
 
 namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
 {
@@ -1877,8 +1867,8 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                 objModuleInfo.Skin = includeAllOptions ? module.Skin : objModuleInfo.Skin;
                 objModuleInfo.Template = includeAllOptions ? module.Template : objModuleInfo.Template;
                 objModuleInfo.Theme = includeAllOptions ? module.Theme : objModuleInfo.Theme;
-                objModuleInfo.LayoutTemplate = includeAllOptions ? module.LayoutTemplate : objModuleInfo.LayoutTemplate;
-                objModuleInfo.LayoutCss = includeAllOptions ? module.LayoutCss : objModuleInfo.LayoutCss;
+                objModuleInfo.LayoutTemplate = module.ModuleBuilderType == "HtmlEditor" ? string.Empty : (includeAllOptions ? module.LayoutTemplate : objModuleInfo.LayoutTemplate);
+                objModuleInfo.LayoutCss = module.ModuleBuilderType == "HtmlEditor" ? string.Empty : (includeAllOptions ? module.LayoutCss : objModuleInfo.LayoutCss);
                 objModuleInfo.ModuleBuilderType = module.ModuleBuilderType;
                 objModuleInfo.IsSSR = module.IsSSR;
                 objModuleInfo.IsDisabledFrontFramework = module.IsDisabledFrontFramework;
@@ -1887,6 +1877,18 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                 objModuleInfo.LastModifiedOnDate = DateTime.Now;
                 objModuleInfo.LastModifiedByUserID = this.UserInfo.UserID;
                 objModuleInfo.Settings = module.Settings != null && module.Settings.Count > 0 ? JsonConvert.SerializeObject(module.Settings) : null;
+
+                if (objModuleInfo.ModuleID == Guid.Empty)
+                {
+                    objModuleInfo.CreatedOnDate = DateTime.Now;
+                    objModuleInfo.CreatedByUserID = this.UserInfo.UserID;
+
+                    objModuleInfo.ModuleID = ModuleRepository.Instance.AddModule(objModuleInfo);
+                }
+                else
+                {
+                    ModuleRepository.Instance.UpdateModule(objModuleInfo);
+                }
 
                 if (module.ModuleBuilderType == "HtmlEditor")
                 {
@@ -1902,22 +1904,35 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                         FileUtil.DeleteFile(string.Format("{0}/BusinessEngine/{1}/module--{2}.js", PortalSettings.HomeSystemDirectoryMapPath, scenario.ScenarioName, module.ModuleName), false);
                         FileUtil.DeleteFile(string.Format("{0}/BusinessEngine/{1}/module--{2}.css", PortalSettings.HomeSystemDirectoryMapPath, scenario.ScenarioName, module.ModuleName), false);
                         FileUtil.DeleteFile(string.Format("{0}/BusinessEngine/{1}/module-fields--{2}.css", PortalSettings.HomeSystemDirectoryMapPath, scenario.ScenarioName, module.ModuleName), false);
+
+                        int? tabID = ModuleRepository.Instance.GetModuleTabID(module.DnnModuleID.Value);
+
+                        PageResourceRepository.Instance.DeletePageResources(module.ModuleID);
+
+                        PageResourceRepository.Instance.AddPageResource(new PageResourceInfo()
+                        {
+                            CmsPageID = tabID != null ? tabID.ToString() : null,
+                            ModuleID = module.ModuleID,
+                            ResourceType = "css",
+                            FilePath = string.Format("{0}/BusinessEngine/{1}/module--{2}/custom.css", this.PortalSettings.HomeSystemDirectory, scenario.ScenarioName, module.ModuleName),
+                            IsSystemResource = true,
+                            IsActive = true,
+                            Version = module.Version.ToString(),
+                            LoadOrder = 1,
+                        });
+
+                        PageResourceRepository.Instance.AddPageResource(new PageResourceInfo()
+                        {
+                            CmsPageID = tabID != null ? tabID.ToString() : null,
+                            ModuleID = module.ModuleID,
+                            ResourceType = "js",
+                            FilePath = string.Format("{0}/BusinessEngine/{1}/module--{2}/custom.js", this.PortalSettings.HomeSystemDirectory, scenario.ScenarioName, module.ModuleName),
+                            IsSystemResource = true,
+                            IsActive = true,
+                            Version = module.Version.ToString(),
+                            LoadOrder = 2,
+                        });
                     }
-
-                    module.LayoutTemplate = objModuleInfo.LayoutTemplate = string.Empty;
-                    module.LayoutCss = objModuleInfo.LayoutCss = string.Empty;
-                }
-
-                if (objModuleInfo.ModuleID == Guid.Empty)
-                {
-                    objModuleInfo.CreatedOnDate = DateTime.Now;
-                    objModuleInfo.CreatedByUserID = this.UserInfo.UserID;
-
-                    objModuleInfo.ModuleID = ModuleRepository.Instance.AddModule(objModuleInfo);
-                }
-                else
-                {
-                    ModuleRepository.Instance.UpdateModule(objModuleInfo);
                 }
 
                 ModuleRepository.Instance.UpdateModuleVersion(objModuleInfo.ModuleID);
@@ -1964,9 +1979,28 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
 
                     int? tabID = ModuleRepository.Instance.GetModuleTabID(parentModule.DnnModuleID.Value);
 
-                    var resources = ModuleBuilder.GetModuleResources(parentModule);
+                    var resources = new List<PageResourceInfo>();
 
-                    var fieldResources = ModuleBuilder.GetModuleFieldsLibraryResources(parentModuleID, tabID);
+                    var baseLibraries = ModuleBuilder.GetModuleBaseResources();
+                    foreach (var item in baseLibraries)
+                    {
+                        bool isActive = item.LibraryName == "client-app-debug" ? false : true;
+                        resources.Add(new PageResourceInfo()
+                        {
+                            IsBaseResource = true,
+                            LibraryName = item.LibraryName,
+                            LibraryVersion = item.Version,
+                            LibraryLogo = item.LibraryLogo,
+                            ResourceType = item.ResourceType,
+                            FilePath = item.ResourcePath,
+                            LoadOrder = resources.Count,
+                            IsActive = isActive
+                        });
+                    }
+
+                    resources.AddRange(ModuleBuilder.GetModuleSkinResources(parentModule));
+
+                    var fieldResources = ModuleBuilder.GetModuleFieldsLibraryResources(parentModuleID);
                     foreach (var item in fieldResources)
                     {
                         item.LoadOrder = resources.Count;
@@ -1977,28 +2011,46 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                     string moduleStylesFile = string.Format("{0}/BusinessEngine/{1}/module--{2}.css", PortalSettings.HomeSystemDirectory, parentModule.ScenarioName, parentModule.ModuleName);
                     resources.Add(new PageResourceInfo()
                     {
+                        IsSystemResource = true,
                         ResourceType = "css",
                         FilePath = moduleStylesFile,
-                        LoadOrder = resources.Count
+                        LoadOrder = resources.Count,
+                        IsActive = true
                     });
 
                     string moduleFieldsStylesFile = string.Format("{0}/BusinessEngine/{1}/module-fields--{2}.css", PortalSettings.HomeSystemDirectory, parentModule.ScenarioName, parentModule.ModuleName);
                     resources.Add(new PageResourceInfo()
                     {
+                        IsSystemResource = true,
                         ResourceType = "css",
                         FilePath = moduleFieldsStylesFile,
-                        LoadOrder = resources.Count
+                        LoadOrder = resources.Count,
+                        IsActive = true
                     });
 
                     string moduleScriptsFile = string.Format("{0}/BusinessEngine/{1}/module--{2}.js", PortalSettings.HomeSystemDirectory, parentModule.ScenarioName, parentModule.ModuleName);
                     resources.Add(new PageResourceInfo()
                     {
+                        IsSystemResource = true,
                         ResourceType = "js",
                         FilePath = moduleScriptsFile,
-                        LoadOrder = resources.Count
+                        LoadOrder = resources.Count,
+                        IsActive = true
+                    });
+
+                    string moduleActionFile = string.Format("{0}/BusinessEngine/{1}/module-action--{2}.js", PortalSettings.HomeSystemDirectory, parentModule.ScenarioName, parentModule.ModuleName);
+                    resources.Add(new PageResourceInfo()
+                    {
+                        IsSystemResource = true,
+                        ResourceType = "js",
+                        FilePath = moduleActionFile,
+                        LoadOrder = resources.Count,
+                        IsActive = true
                     });
 
                     PageResourceRepository.Instance.DeletePageResources(parentModuleID);
+
+                    var pageResources = PageResourceRepository.Instance.GetActivePageResourceFilePaths(tabID.Value.ToString());
 
                     foreach (var item in resources ?? Enumerable.Empty<PageResourceInfo>())
                     {
@@ -2006,8 +2058,15 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                         {
                             CmsPageID = tabID != null ? tabID.ToString() : null,
                             ModuleID = parentModuleID,
+                            FieldType = item.FieldType,
+                            LibraryName = item.LibraryName,
+                            LibraryVersion = item.LibraryVersion,
+                            LibraryLogo = item.LibraryLogo,
                             ResourceType = item.ResourceType,
                             FilePath = item.FilePath,
+                            IsBaseResource = item.IsBaseResource,
+                            IsSystemResource = item.IsSystemResource,
+                            IsActive = item.IsActive == false ? item.IsActive : !pageResources.Contains(item.FilePath),
                             Version = module.Version.ToString(),
                             LoadOrder = item.LoadOrder,
                         });
@@ -2697,7 +2756,6 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                     }
                 }
 
-
                 return Request.CreateResponse(HttpStatusCode.OK, form.ModuleID);
             }
             catch (Exception ex)
@@ -3002,6 +3060,78 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
 
                 var extensionController = new ExtensionService(scenarioID, this.PortalSettings, this.UserInfo);
                 extensionController.InstallExtension(extension, extensionUnzipedPath);
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        #endregion
+
+        #region Libraries & Page Resources
+
+        [HttpGet]
+        [ValidateAntiForgeryToken]
+        public HttpResponseMessage GetPages()
+        {
+            var scenarioID = Guid.Parse(Request.Headers.GetValues("ScenarioID").First());
+
+            try
+            {
+                var result = new List<object>();
+                var tabs = new List<int?>();
+
+                var scenarioModules = ModuleRepository.Instance.GetModules(scenarioID).Where(m => m.ParentID == null && m.DnnModuleID != null && m.ModuleType != "Dashboard");
+                foreach (var moduleGroup in scenarioModules.GroupBy(m => m.DnnModuleID))
+                {
+                    var tabID = ModuleRepository.Instance.GetModuleTabID(moduleGroup.First().DnnModuleID.Value);
+                    if (tabs.Contains(tabID)) continue;
+                    tabs.Add(tabID);
+
+                    var tab = TabController.Instance.GetTab(tabID.Value, PortalSettings.PortalId);
+                    var item = new { tab.TabID, tab.TabName, Modules = moduleGroup.OrderBy(m => m.ViewOrder).Select(m => new { m.ModuleID, m.ModuleType, m.ModuleName, m.ModuleTitle }) };
+                    result.Add(item);
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK, result);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [ValidateAntiForgeryToken]
+        public HttpResponseMessage GetPageResources(string cmsPageID)
+        {
+            try
+            {
+                var pageResources = PageResourceRepository.Instance.GetPageResources(cmsPageID);
+
+                var result = pageResources.GroupBy(r => r.ModuleID);
+
+                return Request.CreateResponse(HttpStatusCode.OK, result);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public HttpResponseMessage SetResourceStatus(PageResourceDTO postData)
+        {
+            try
+            {
+                var objPageResourceInfo = PageResourceRepository.Instance.GetPageResource(postData.ResourceID);
+                objPageResourceInfo.IsActive = postData.IsActvive;
+                objPageResourceInfo.DisabledByUserID = this.UserInfo.UserID;
+                PageResourceRepository.Instance.UpdatePageResource(objPageResourceInfo);
 
                 return Request.CreateResponse(HttpStatusCode.OK);
             }

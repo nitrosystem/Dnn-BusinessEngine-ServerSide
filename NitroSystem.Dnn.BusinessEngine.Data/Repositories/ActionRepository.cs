@@ -200,7 +200,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
         {
             using (IDataContext ctx = DataContext.Instance())
             {
-                return ctx.ExecuteQuery<string>(System.Data.CommandType.Text, "Select Distinct ActionType From dbo.BusinessEngine_Actions Where ModuleID in (Select [RowValue] From dbo.ConvertListToTable(',',@0))", modules);
+                return ctx.ExecuteQuery<string>(System.Data.CommandType.Text, "Select Distinct ActionType From dbo.BusinessEngine_Actions Where IsNull(IsServerSide,0) = 0 and ModuleID in (Select [RowValue] From dbo.ConvertListToTable(',',@0))", modules);
             }
         }
 

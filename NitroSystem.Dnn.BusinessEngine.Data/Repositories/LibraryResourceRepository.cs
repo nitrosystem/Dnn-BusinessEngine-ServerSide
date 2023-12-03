@@ -21,7 +21,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
 
         private const string CachePrefix = "BE_LibraryResources_";
 
-        public Guid AddLibraryResource(LibraryResourceInfo objLibraryResourceInfo)
+        public Guid AddResource(LibraryResourceInfo objLibraryResourceInfo)
         {
             objLibraryResourceInfo.ResourceID = Guid.NewGuid();
 
@@ -36,7 +36,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
             }
         }
 
-        public void UpdateLibraryResource(LibraryResourceInfo objLibraryResourceInfo)
+        public void UpdateResource(LibraryResourceInfo objLibraryResourceInfo)
         {
             using (IDataContext ctx = DataContext.Instance())
             {
@@ -47,9 +47,9 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
             DataCache.ClearCache(CachePrefix);
         }
 
-        public void DeleteLibraryResource(Guid resourceID)
+        public void DeleteResource(Guid resourceID)
         {
-            LibraryResourceInfo objLibraryResourceInfo = GetLibraryResource(resourceID);
+            LibraryResourceInfo objLibraryResourceInfo = GetResource(resourceID);
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<LibraryResourceInfo>();
@@ -59,29 +59,19 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
             DataCache.ClearCache(CachePrefix);
         }
 
-        public void DeleteLibraryResources(string objectName)
+        public void DeleteResourcesByExtensionID(Guid extensionID)
         {
+            LibraryResourceInfo objLibraryResourceInfo = GetResource(extensionID);
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<LibraryResourceInfo>();
-                rep.Delete("Where ObjectName = @0", objectName);
+                rep.Delete(objLibraryResourceInfo);
             }
 
             DataCache.ClearCache(CachePrefix);
         }
 
-        public void DeleteLibraryResourcesByExtensionID(Guid extensionID)
-        {
-            using (IDataContext ctx = DataContext.Instance())
-            {
-                var rep = ctx.GetRepository<LibraryResourceInfo>();
-                rep.Delete("Where ExtensionID =@0", extensionID);
-            }
-
-            DataCache.ClearCache(CachePrefix);
-        }
-
-        public LibraryResourceInfo GetLibraryResource(Guid resourceID)
+        public LibraryResourceInfo GetResource(Guid resourceID)
         {
             using (IDataContext ctx = DataContext.Instance())
             {
@@ -90,12 +80,12 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
             }
         }
 
-        public IEnumerable<LibraryResourceInfo> GetLibraryResources(string objectName)
+        public IEnumerable<LibraryResourceInfo> GetResources(Guid libraryID)
         {
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<LibraryResourceInfo>();
-                return rep.Get(objectName).OrderBy(r => r.LoadOrder);
+                return rep.Get(libraryID).OrderBy(r => r.LoadOrder);
             }
         }
     }

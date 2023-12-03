@@ -1,33 +1,35 @@
-﻿using DotNetNuke.Entities.Host;
-using DotNetNuke.Entities.Modules;
+﻿using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Modules.Actions;
-using DotNetNuke.Web.Client.ClientResourceManagement;
-using NitroSystem.Dnn.BusinessEngine.Components;
-using NitroSystem.Dnn.BusinessEngine.Core.Infrastructure.ClientResources;
-using NitroSystem.Dnn.BusinessEngine.Data.Entities.Tables;
-using NitroSystem.Dnn.BusinessEngine.Data.Entities.Views;
+using DotNetNuke.Entities.Portals;
+using NitroSystem.Dnn.BusinessEngine.Core.Contract;
+using NitroSystem.Dnn.BusinessEngine.Core.Infrastructure.SSR;
+using NitroSystem.Dnn.BusinessEngine.Core.ModuleBuilder;
 using NitroSystem.Dnn.BusinessEngine.Data.Repositories;
+using NitroSystem.Dnn.BusinessEngine.Framework.Services;
+using NitroSystem.Dnn.BusinessEngine.Services;
+using NitroSystem.Dnn.BusinessEngine.Utilities;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Web;
+using System.Threading.Tasks;
+using System.Web.Helpers;
 using System.Web.UI;
-using System.Web.UI.WebControls;
 
-namespace NitroSystem.Dnn.BusinessEngine.Modules.Dashboard
+namespace NitroSystem.Dnn.BusinessEngine.Modules
 {
     public partial class Dashboard : PortalModuleBase, IActionable
     {
+        #region Properties
+
         public Guid? ModuleGuid
         {
             get
             {
-                return ModuleRepository.Instance.GetModuleGuidByDnnModuleID(this.ModuleId) ?? Guid.Empty;
+                return ModuleRepository.Instance.GetModuleGuidByDnnModuleID(this.ModuleId) ?? null;
             }
         }
 
@@ -35,7 +37,24 @@ namespace NitroSystem.Dnn.BusinessEngine.Modules.Dashboard
         {
             get
             {
-                return this.ModuleGuid != null ? ModuleRepository.Instance.GetModuleName(this.ModuleGuid.Value) : "";
+                return "Dashboard";
+            }
+        }
+
+        public string ScenarioName
+        {
+            get
+            {
+                return this.ModuleGuid != null ? ModuleRepository.Instance.GetModuleScenarioName(this.ModuleGuid.Value) : "";
+            }
+        }
+
+        public string SiteRoot
+        {
+            get
+            {
+                string domainName = DotNetNuke.Common.Globals.AddHTTP(DotNetNuke.Common.Globals.GetDomainName(this.Context.Request)) + "/";
+                return domainName;
             }
         }
 
@@ -63,56 +82,6 @@ namespace NitroSystem.Dnn.BusinessEngine.Modules.Dashboard
             }
         }
 
-        public DashboardView DashboardInfo
-        {
-            get
-            {
-                return this.ModuleGuid == null ? null : DashboardRepository.Instance.GetDashboardByModuleID(this.ModuleGuid.Value);
-            }
-        }
-
-        public string ScenarioName
-        {
-            get
-            {
-                return this.ModuleGuid != null ? ModuleRepository.Instance.GetModuleScenarioName(this.ModuleGuid.Value) : "";
-            }
-        }
-
-        public string BaseUrl
-        {
-            get
-            {
-                return "/";
-            }
-        }
-
-        public string SiteRoot
-        {
-            get
-            {
-                string domainName = DotNetNuke.Common.Globals.AddHTTP(DotNetNuke.Common.Globals.GetDomainName(this.Context.Request)) + "/";
-                return domainName;
-            }
-        }
-
-        public string ApiBaseUrl
-        {
-            get
-            {
-                string domainName = DotNetNuke.Common.Globals.GetPortalDomainName(this.PortalAlias.HTTPAlias, Request, true);
-                return domainName + "/DesktopModules/";
-            }
-        }
-
-        public bool IsRegisteredPageResources
-        {
-            get
-            {
-                return this.Page.Header.FindControl("bEngine_PageResources") != null;
-            }
-        }
-
         public bool IsRtl
         {
             get
@@ -127,16 +96,14 @@ namespace NitroSystem.Dnn.BusinessEngine.Modules.Dashboard
             {
                 return IsRtl ? "b-rtl" : "";
             }
+
         }
 
-        public string Version
+        public string ConnectionID
         {
             get
             {
-                if (this.UserInfo.IsSuperUser)
-                    return Guid.NewGuid().ToString();
-                else
-                    return Host.CrmVersion.ToString();
+                return Request.AnonymousID;
             }
         }
 
@@ -151,36 +118,57 @@ namespace NitroSystem.Dnn.BusinessEngine.Modules.Dashboard
             }
         }
 
-        public string ConnectionID
+        #endregion
+
+        #region Event Handlers
+
+        protected void Page_Init(object sender, EventArgs e)
         {
-            get
+        }
+
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            if (this.IsSSR)
             {
-                return Request.AnonymousID;
+                var renderedTemplate = Service.RenderSSR(PortalSettings, ModuleGuid.Value, ConnectionID, this.SiteRoot + "default.aspx?" + this.Page.ClientQueryString, this.UserId);
+                if (this.IsSSR && this.IsDisabledFrontFramework)
+                    pnlSSR1.Controls.Add(new LiteralControl(renderedTemplate));
+                else
+                    pnlSSR2.Controls.Add(new LiteralControl(renderedTemplate));
             }
         }
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!this.IsRegisteredPageResources)
+            var code = AntiForgery.GetHtml().ToHtmlString();
+            pnlAntiForgery.Controls.Add(new LiteralControl(code));
+
+            if (this.ModuleGuid != null)
             {
-                RegisterPageResources.RegisterResources(this.TabId, this.pnlStyles, this.pnlScripts, this.Version);
+                var dashboard = DashboardRepository.Instance.GetDashboardByModuleID(this.ModuleGuid.Value);
+                if (dashboard.DashboardType == 1)
+                {
+                    lnkOpenPanel.PostBackUrl = "~/DesktopModules/BusinessEngine/dashboard.aspx?d=" + dashboard.UniqueName;
+                    lnkOpenPanel.Visible = true;
+                }
+                else if (dashboard.DashboardType == 2)
+                {
+                    CtlPageResource.PortalAlias = this.PortalAlias.HTTPAlias;
+                    CtlPageResource.DnnTabID = this.TabId;
+                    CtlPageResource.DnnUserID = this.UserId;
+                    CtlPageResource.ModuleGuid = this.ModuleGuid;
+                    CtlPageResource.ModuleName = this.ModuleName;
 
-                this.Page.Header.Controls.Add(new LiteralControl(@"<span id=""bEngine_PageResources""><!--business engine registered resources--></span>"));
-
-            }
-
-            var module = ModuleRepository.Instance.GetModule(this.ModuleGuid.Value);
-            if (module != null && module.ModuleBuilderType == "HtmlEditor")
-            {
-                var scenarioName = ScenarioRepository.Instance.GetScenarioName(module.ScenarioID);
-
-                var moduleJsPath = string.Format("{0}/BusinessEngine/{1}/module--{2}/custom.js", this.PortalSettings.HomeSystemDirectory, scenarioName, module.ModuleName);
-                Core.Infrastructure.ClientResources.ClientResourceManager.RegisterScript(this.pnlScripts, moduleJsPath, module.Version.ToString());
-
-                var moduleCssPath = string.Format("{0}/BusinessEngine/{1}/module--{2}/custom.css", this.PortalSettings.HomeSystemDirectory, scenarioName, module.ModuleName);
-                Core.Infrastructure.ClientResources.ClientResourceManager.RegisterStyleSheet(this.pnlStyles, moduleCssPath, module.Version.ToString());
+                    CtlPageResource.RegisterPageResources();
+                }
             }
         }
+
+        private void BtnOpenPanel_Click(object sender, EventArgs e)
+        {
+        }
+
+        #endregion
 
         public ModuleActionCollection ModuleActions
         {

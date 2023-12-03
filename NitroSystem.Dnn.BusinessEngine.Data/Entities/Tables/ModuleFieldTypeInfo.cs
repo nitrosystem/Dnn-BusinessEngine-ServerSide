@@ -20,6 +20,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Entities.Tables
         public string FieldComponent { get; set; }
         public string ComponentSubParams { get; set; }
         public string FieldJsPath { get; set; }
+        public string DirectiveJsPath { get; set; }
         public string CustomEvents { get; set; }
         public bool IsGroup { get; set; }
         public bool IsValuable { get; set; }

@@ -25,8 +25,8 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.ViewModels
         public bool IsContent { get; set; }
         public object DefaultSettings { get; set; }
         public string ValidationPattern { get; set; }
+        public int IconType { get; set; }
         public string Icon { get; set; }
-        public string IconUrl { get; set; }
         public DateTime CreatedOnDate { get; set; }
         public int CreateByUserID { get; set; }
         public DateTime LastModifiedOnDate { get; set; }

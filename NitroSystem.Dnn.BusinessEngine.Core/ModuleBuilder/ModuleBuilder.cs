@@ -150,7 +150,56 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.ModuleBuilder
             return scripts.ToString();
         }
 
-        public static List<PageResourceInfo> GetModuleResources(ModuleView module)
+        //public static IEnumerable<string> GetPathsOfUsedExtensions(Guid moduleID)
+        //{
+        //    StringBuilder scripts = new StringBuilder();
+
+        //    List<Guid> moduleIds = new List<Guid>() { moduleID };
+
+        //    bool isParentModule = ModuleRepository.Instance.IsModuleParent(moduleID);
+        //    if (isParentModule)
+        //    {
+        //        moduleIds.AddRange(ModuleRepository.Instance.GetModuleIdsByParentID(moduleID));
+        //    }
+
+        //    var fieldTypes = ModuleFieldTypeRepository.Instance.GetFieldTypes();
+
+        //    var moduleFieldTypes = ModuleFieldRepository.Instance.GetModulesFieldTypes(string.Join(",", moduleIds));
+        //    foreach (var fieldTypeName in moduleFieldTypes)
+        //    {
+        //        var fieldType = fieldTypes.FirstOrDefault(ft => ft.FieldType == fieldTypeName);
+        //        if (fieldType != null && fieldType.ExtensionID != null)
+        //        {
+        //            var extension = ExtensionRepository.Instance.GetExtension(fieldType.ExtensionID);
+
+        //            string jsFilePath = fieldType.FieldJsPath.Replace("[EXTPATH]", "~/DesktopModules/BusinessEngine/extensions");
+        //            var fieldScript = FileUtil.GetFileContent(HttpContext.Current.Server.MapPath(jsFilePath));
+
+        //            scripts.AppendLine(fieldScript);
+
+        //            scripts.AppendLine("//End Field Type : " + fieldTypeName);
+        //            scripts.AppendLine(System.Environment.NewLine);
+        //        }
+        //    }
+
+        //    scripts.AppendLine(System.Environment.NewLine);
+
+        //    return scripts.ToString();
+        //}
+
+        public static List<LibraryView> GetModuleBaseResources()
+        {
+            var result = new List<LibraryView>();
+
+            result.AddRange(LibraryRepository.Instance.GetLibraryResources("angularjs", "1.8.2"));
+            result.AddRange(LibraryRepository.Instance.GetLibraryResources("lodash", "4.17.21"));
+            result.AddRange(LibraryRepository.Instance.GetLibraryResources("client-app", "1.0.0"));
+            result.AddRange(LibraryRepository.Instance.GetLibraryResources("client-app-debug", "1.0.0"));
+
+            return result;
+        }
+
+        public static List<PageResourceInfo> GetModuleSkinResources(ModuleView module)
         {
             var result = new List<PageResourceInfo>();
 
@@ -287,9 +336,9 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.ModuleBuilder
             return result;
         }
 
-        public static IEnumerable<PageResourceInfo> GetModuleFieldsLibraryResources(Guid moduleID, int? tabID)
+        public static IEnumerable<PageResourceInfo> GetModuleFieldsLibraryResources(Guid moduleID)
         {
-            var result = new List<LibraryResourceInfo>();
+            var result = new List<PageResourceInfo>();
 
             List<Guid> moduleIds = new List<Guid>() { moduleID };
 
@@ -302,20 +351,27 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.ModuleBuilder
             var moduleFieldTypes = ModuleFieldRepository.Instance.GetModulesFieldTypes(string.Join(",", moduleIds));
             foreach (var fieldTypeName in moduleFieldTypes)
             {
-                var resources = LibraryResourceRepository.Instance.GetLibraryResources(fieldTypeName);
-
-                result.AddRange(resources);
+                var libraries = ModuleFieldTypeLibraryRepository.Instance.GetLibraries(fieldTypeName);
+                foreach (var lb in libraries)
+                {
+                    var library = LibraryRepository.Instance.GetLibrary(lb.LibraryID);
+                    var resources = LibraryRepository.Instance.GetLibraryResources(library.LibraryName, library.Version);
+                    result.AddRange(resources.Select(item => new PageResourceInfo()
+                    {
+                        ModuleID = moduleID,
+                        LibraryName = library.LibraryName,
+                        LibraryVersion = library.Version,
+                        LibraryLogo = library.Logo,
+                        ResourceType = item.ResourceType,
+                        FilePath = item.ResourcePath,
+                        FieldType = fieldTypeName,
+                        LoadOrder = item.LoadOrder,
+                        IsActive = true
+                    }).OrderBy(item => item.LoadOrder));
+                }
             }
 
-            return result.Select(item => new PageResourceInfo()
-            {
-                CmsPageID = tabID != null ? tabID.ToString() : null,
-                ModuleID = moduleID,
-                ResourceType = item.ResourceType,
-                FilePath = item.ResourcePath,
-                Version = item.Version != null ? item.Version.ToString() : "",
-                LoadOrder = item.LoadOrder,
-            });
+            return result;
         }
     }
 }

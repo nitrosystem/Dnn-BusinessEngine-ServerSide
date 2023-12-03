@@ -112,6 +112,7 @@
     <Compile Include="Dto\GuidDTO.cs" />
     <Compile Include="Dto\ModuleDTO.cs" />
     <Compile Include="Dto\ModuleResourceDTO.cs" />
+    <Compile Include="Dto\PageResourceDTO.cs" />
     <Compile Include="Dto\RenderedModuleDTO.cs" />
     <Compile Include="Enums\FieldDataSourceType.cs" />
     <Compile Include="Mapping\EntityMapping.cs" />

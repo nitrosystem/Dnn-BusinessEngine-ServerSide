@@ -20,15 +20,17 @@ using NitroSystem.Dnn.BusinessEngine.Core.Extensions.Manifest;
 using NitroSystem.Dnn.BusinessEngine.Core.Infrastructure.ClientResources;
 using System.Web.Helpers;
 
-namespace NitroSystem.Dnn.BusinessEngine.Modules.Form
+namespace NitroSystem.Dnn.BusinessEngine.Modules
 {
     public partial class Form : PortalModuleBase, IActionable
     {
+        #region Properties
+
         public Guid? ModuleGuid
         {
             get
             {
-                return ModuleRepository.Instance.GetModuleGuidByDnnModuleID(this.ModuleId) ?? Guid.Empty;
+                return ModuleRepository.Instance.GetModuleGuidByDnnModuleID(this.ModuleId) ?? null;
             }
         }
 
@@ -36,7 +38,24 @@ namespace NitroSystem.Dnn.BusinessEngine.Modules.Form
         {
             get
             {
-                return this.ModuleGuid != null ? ModuleRepository.Instance.GetModuleName(this.ModuleGuid.Value) : "";
+                return "Form";
+            }
+        }
+
+        public string ScenarioName
+        {
+            get
+            {
+                return this.ModuleGuid != null ? ModuleRepository.Instance.GetModuleScenarioName(this.ModuleGuid.Value) : "";
+            }
+        }
+
+        public string SiteRoot
+        {
+            get
+            {
+                string domainName = DotNetNuke.Common.Globals.AddHTTP(DotNetNuke.Common.Globals.GetDomainName(this.Context.Request)) + "/";
+                return domainName;
             }
         }
 
@@ -64,48 +83,6 @@ namespace NitroSystem.Dnn.BusinessEngine.Modules.Form
             }
         }
 
-        public string ScenarioName
-        {
-            get
-            {
-                return this.ModuleGuid != null ? ModuleRepository.Instance.GetModuleScenarioName(this.ModuleGuid.Value) : "";
-            }
-        }
-
-        public string BaseUrl
-        {
-            get
-            {
-                return "/";
-            }
-        }
-
-        public string SiteRoot
-        {
-            get
-            {
-                string domainName = DotNetNuke.Common.Globals.AddHTTP(DotNetNuke.Common.Globals.GetDomainName(this.Context.Request)) + "/";
-                return domainName;
-            }
-        }
-
-        public string ApiBaseUrl
-        {
-            get
-            {
-                string domainName = DotNetNuke.Common.Globals.GetPortalDomainName(this.PortalAlias.HTTPAlias, Request, true);
-                return domainName + "/DesktopModules/";
-            }
-        }
-
-        public bool IsRegisteredPageResources
-        {
-            get
-            {
-                return this.Page.Header.FindControl("bEngine_PageResources") != null;
-            }
-        }
-
         public bool IsRtl
         {
             get
@@ -121,17 +98,6 @@ namespace NitroSystem.Dnn.BusinessEngine.Modules.Form
                 return IsRtl ? "b-rtl" : "";
             }
 
-        }
-
-        public string Version
-        {
-            get
-            {
-                if (this.UserInfo.IsSuperUser)
-                    return Guid.NewGuid().ToString();
-                else
-                    return Host.CrmVersion.ToString();
-            }
         }
 
         public string ConnectionID
@@ -153,11 +119,9 @@ namespace NitroSystem.Dnn.BusinessEngine.Modules.Form
             }
         }
 
-        protected void Page_Init(object sender, EventArgs e)
-        {
-            var code = AntiForgery.GetHtml().ToHtmlString();
-            pnlAntiForgery.Controls.Add(new LiteralControl(code));
-        }
+        #endregion
+
+        #region Event Handlers
 
         protected void Page_PreRender(object sender, EventArgs e)
         {
@@ -173,26 +137,19 @@ namespace NitroSystem.Dnn.BusinessEngine.Modules.Form
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!this.IsRegisteredPageResources)
-            {
-                RegisterPageResources.RegisterResources(this.TabId, this.pnlStyles, this.pnlScripts, this.Version);
+            var code = AntiForgery.GetHtml().ToHtmlString();
+            pnlAntiForgery.Controls.Add(new LiteralControl(code));
 
-                this.Page.Header.Controls.Add(new LiteralControl(@"<span id=""bEngine_PageResources""><!--business engine registered resources--></span>"));
+            CtlPageResource.PortalAlias = this.PortalAlias.HTTPAlias;
+            CtlPageResource.DnnTabID = this.TabId;
+            CtlPageResource.DnnUserID = this.UserId;
+            CtlPageResource.ModuleGuid = this.ModuleGuid;
+            CtlPageResource.ModuleName = this.ModuleName;
 
-            }
-
-            var module = ModuleRepository.Instance.GetModule(this.ModuleGuid.Value);
-            if (module != null && module.ModuleBuilderType == "HtmlEditor")
-            {
-                var scenarioName = ScenarioRepository.Instance.GetScenarioName(module.ScenarioID);
-
-                var moduleJsPath = string.Format("{0}/BusinessEngine/{1}/module--{2}/custom.js", this.PortalSettings.HomeSystemDirectory, scenarioName, module.ModuleName);
-                Core.Infrastructure.ClientResources.ClientResourceManager.RegisterScript(this.pnlScripts, moduleJsPath, module.Version.ToString());
-
-                var moduleCssPath = string.Format("{0}/BusinessEngine/{1}/module--{2}/custom.css", this.PortalSettings.HomeSystemDirectory, scenarioName, module.ModuleName);
-                Core.Infrastructure.ClientResources.ClientResourceManager.RegisterStyleSheet(this.pnlStyles, moduleCssPath, module.Version.ToString());
-            }
+            CtlPageResource.RegisterPageResources();
         }
+
+        #endregion
 
         public ModuleActionCollection ModuleActions
         {

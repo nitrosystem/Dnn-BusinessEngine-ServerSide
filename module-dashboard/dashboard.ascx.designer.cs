@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace NitroSystem.Dnn.BusinessEngine.Modules.Dashboard
+namespace NitroSystem.Dnn.BusinessEngine.Modules
 {
 
 
@@ -15,21 +15,48 @@ namespace NitroSystem.Dnn.BusinessEngine.Modules.Dashboard
     {
 
         /// <summary>
-        /// pnlStyles control.
+        /// CtlPageResource control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder pnlStyles;
+        protected global::NitroSystem.Dnn.BusinessEngine.WebControls.PageResources CtlPageResource;
 
         /// <summary>
-        /// pnlScripts control.
+        /// pnlSSR1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder pnlScripts;
+        protected global::System.Web.UI.WebControls.PlaceHolder pnlSSR1;
+
+        /// <summary>
+        /// pnlSSR2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.PlaceHolder pnlSSR2;
+
+        /// <summary>
+        /// lnkOpenPanel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton lnkOpenPanel;
+
+        /// <summary>
+        /// pnlAntiForgery control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.PlaceHolder pnlAntiForgery;
     }
 }

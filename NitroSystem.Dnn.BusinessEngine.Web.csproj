@@ -172,6 +172,13 @@
     <Compile Include="dashboard.aspx.designer.cs">
       <DependentUpon>dashboard.aspx</DependentUpon>
     </Compile>
+    <Compile Include="page-resources.ascx.cs">
+      <DependentUpon>page-resources.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="page-resources.ascx.designer.cs">
+      <DependentUpon>page-resources.ascx</DependentUpon>
+    </Compile>
     <Compile Include="module-studio\studio.ascx.cs">
       <DependentUpon>studio.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -233,6 +240,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="data\sql-templates\create-entity.sql" />
+    <Content Include="page-resources.ascx" />
     <Content Include="module-studio\container.html" />
     <Content Include="module-studio\module.css" />
     <Content Include="module-studio\studio.ascx" />
@@ -387,6 +395,7 @@
     <Content Include="Temp\temp.js" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="module-page-resources\" />
     <Folder Include="Temp\FieldTypes\raty\" />
   </ItemGroup>
   <ItemGroup>

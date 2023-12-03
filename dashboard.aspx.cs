@@ -79,11 +79,6 @@ namespace NitroSystem.Dnn.BusinessEngine
         {
             get
             {
-                //if (Request.QueryString["_t"] != null)
-                //    return int.Parse(Request.QueryString["_t"]);
-                //else
-                //    return 0;
-
                 return DashboardInfo != null ? ModuleController.Instance.GetModulesByDefinition(Portal.PortalId, "BusinessEngine.Dashboard").Cast<DotNetNuke.Entities.Modules.ModuleInfo>().First(m => m.ModuleID == DashboardInfo.DnnModuleID).TabID : -1;
             }
         }
@@ -108,7 +103,7 @@ namespace NitroSystem.Dnn.BusinessEngine
         {
             get
             {
-                return this.ModuleGuid != null ? ModuleRepository.Instance.GetModuleName(this.ModuleGuid.Value) : "";
+                return "Dashboard";
             }
         }
 
@@ -161,13 +156,20 @@ namespace NitroSystem.Dnn.BusinessEngine
             }
         }
 
-        public string ApiBaseUrl
+        public string HTTPAlias
         {
             get
             {
                 PortalAliasInfo objPortalAliasInfo = PortalAliasController.Instance.GetPortalAlias(DotNetNuke.Common.Globals.GetDomainName(this.Context.Request));
+                return objPortalAliasInfo != null ? objPortalAliasInfo.HTTPAlias : this.Portal.DefaultPortalAlias;
+            }
+        }
 
-                string domainName = DotNetNuke.Common.Globals.GetPortalDomainName(objPortalAliasInfo != null ? objPortalAliasInfo.HTTPAlias : this.Portal.DefaultPortalAlias, Request, true);
+        public string ApiBaseUrl
+        {
+            get
+            {
+                string domainName = DotNetNuke.Common.Globals.GetPortalDomainName(this.HTTPAlias, Request, true);
                 return domainName + "/DesktopModules/";
             }
         }
@@ -197,6 +199,7 @@ namespace NitroSystem.Dnn.BusinessEngine
         }
 
         public string BodyID { get; set; }
+
         public string BodyClass { get; set; }
 
         #endregion
@@ -211,36 +214,20 @@ namespace NitroSystem.Dnn.BusinessEngine
             if (this.UserInfo.UserID == -1 || !(UserInfo.IsSuperUser || string.IsNullOrEmpty(this.DashboardInfo.AuthorizationViewDashboard) || UserInfo.Roles.Any(r => this.DashboardInfo.AuthorizationViewDashboard.Split(',').Contains(r))))
                 Response.Redirect(DotNetNuke.Common.Globals.LoginURL(HttpUtility.UrlEncode(this.Request.Url.PathAndQuery), true));
 
+            var code = AntiForgery.GetHtml().ToHtmlString();
+            pnlAntiForgery.Controls.Add(new LiteralControl(code));
+
             if (this.DashboardInfo != null)
             {
-                List<string> files = new List<string>();
+                CtlPageResource.PortalAlias = this.HTTPAlias;
+                CtlPageResource.DnnTabID = this.DnnTabID;
+                CtlPageResource.DnnUserID = this.UserID;
+                CtlPageResource.ModuleGuid = this.ModuleGuid;
+                CtlPageResource.ModuleName = this.ModuleName;
+                CtlPageResource.IsPanel = true;
+                CtlPageResource.PanelResourcesControl = pnlResources;
 
-                foreach (var item in PageResourceRepository.Instance.GetPageResources(this.DnnTabID.ToString()))
-                {
-                    if (!files.Contains(item.FilePath))
-                    {
-                        string filePath = item.FilePath;
-
-                        string rtlFile = Path.GetDirectoryName(item.FilePath) + @"\" + Path.GetFileNameWithoutExtension(item.FilePath) + ".rtl.css";
-
-                        if (!System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft && File.Exists(MapPath(rtlFile)))
-                            filePath = rtlFile;
-
-                        //if (item.ResourceType == "css")
-                        //    ClientResourceManager.RegisterStyleSheet(this.Page, string.Format("~/{0}", filePath), 0);
-                        //if (item.ResourceType == "js")
-                        //    ClientResourceManager.RegisterScript(this, item.FilePath, 0, "BusinessEngine", "bEngineStyleSheet", item.Version.ToString());
-
-                        string version = this.Version + "-" + item.Version.ToString();
-
-                        if (item.ResourceType == "css")
-                            Core.Infrastructure.ClientResources.ClientResourceManager.RegisterStyleSheet(pnlStyles, string.Format("~/{0}", filePath), version);
-                        if (item.ResourceType == "js")
-                            Core.Infrastructure.ClientResources.ClientResourceManager.RegisterScript(pnlScripts, string.Format("~/{0}", item.FilePath), version);
-
-                        files.Add(item.FilePath);
-                    }
-                }
+                CtlPageResource.RegisterPageResources();
 
                 var skin = ModuleSkinManager.GetSkin(this.DashboardInfo.Skin);
                 if (skin != null)

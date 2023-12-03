@@ -2,6 +2,7 @@
 using DotNetNuke.Entities.Host;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Users;
+using NitroSystem.Dnn.BusinessEngine.Core.Infrastructure.ClientResources;
 using NitroSystem.Dnn.BusinessEngine.Data.Repositories;
 using System;
 using System.Collections.Generic;
@@ -146,6 +147,15 @@ namespace NitroSystem.Dnn.BusinessEngine.Modules.StudioPage
 
             if (!this.UserInfo.IsInRole("Administrators"))
                 Response.Redirect(DotNetNuke.Common.Globals.AccessDeniedURL());
+
+            var resources = StudioResourceRepository.Instance.GetActiveStudioResources();
+            foreach (var item in resources)
+            {
+                if (item.ResourceType == "css")
+                    ClientResourceManager.RegisterStyleSheet(pnlResources, item.FilePath, "");
+                if (item.ResourceType == "js")
+                    ClientResourceManager.RegisterScript(pnlResources, item.FilePath, "");
+            }
         }
 
         #endregion  

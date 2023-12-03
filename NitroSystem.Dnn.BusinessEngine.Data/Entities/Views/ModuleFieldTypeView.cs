@@ -13,6 +13,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Entities.Views
     public class ModuleFieldTypeView
     {
         public Guid TypeID { get; set; }
+        public Guid ExtensionID { get; set; }
         public Guid GroupID { get; set; }
         public string GroupName { get; set; }
         public string FieldType { get; set; }
@@ -20,6 +21,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Entities.Views
         public string FieldComponent { get; set; }
         public string ComponentSubParams { get; set; }
         public string FieldJsPath { get; set; }
+        public string DirectiveJsPath { get; set; }
         public string CustomEvents { get; set; }
         public bool IsGroup { get; set; }
         public bool IsValuable { get; set; }

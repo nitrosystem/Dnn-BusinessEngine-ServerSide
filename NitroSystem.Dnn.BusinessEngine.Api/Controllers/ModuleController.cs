@@ -64,11 +64,13 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                 string connectionID = postData.ConnectionID;
 
                 var module = ModuleRepository.Instance.GetModuleView(moduleGuid);
-
+                if (module == null) throw new Exception("Module Not Config");
+                
                 string moduleTemplateUrl = "";
                 string moduleTemplateCssUrl = "";
 
                 this._moduleData.InitModuleData(moduleGuid, connectionID, this.UserInfo.UserID, null, null, postData.PageUrl, !module.IsSSR);
+                
 
                 await _actionWorker.CallActions(moduleGuid, null, "OnPageInit"); // call "OnPageInit" event actions. Not important server side
 

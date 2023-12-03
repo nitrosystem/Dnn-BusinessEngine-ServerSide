@@ -7,14 +7,15 @@ using DotNetNuke.ComponentModel.DataAnnotations;
 
 namespace NitroSystem.Dnn.BusinessEngine.Data.Entities.Tables
 {
-    [TableName("BusinessEngine_LibraryResources")]
-    [PrimaryKey("ResourceID", AutoIncrement = false)]
-    [Cacheable("BE_LibraryResources_", CacheItemPriority.Default, 20)]
-    [Scope("LibraryID")]
-    public class LibraryResourceInfo
+    [TableName("BusinessEngineView_ModuleFieldTypeLibraries")]
+    [PrimaryKey("ItemID", AutoIncrement = false)]
+    [Cacheable("BE_ModuleFieldTypeLibraries_View_", CacheItemPriority.Default, 20)]
+    [Scope("FieldType")]
+    public class ModuleFieldTypeLibraryView
     {
-        public Guid ResourceID { get; set; }
+        public Guid ItemID { get; set; }
         public Guid LibraryID { get; set; }
+        public string FieldType { get; set; }
         public string ResourceType { get; set; }
         public string ResourcePath { get; set; }
         public int LoadOrder { get; set; }

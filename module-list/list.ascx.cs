@@ -1,40 +1,35 @@
-﻿using DotNetNuke.Entities.Host;
-using DotNetNuke.Entities.Modules;
+﻿using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Modules.Actions;
 using DotNetNuke.Entities.Portals;
-using DotNetNuke.Services.Search.Controllers;
-using DotNetNuke.Web.Client.ClientResourceManagement;
-using Newtonsoft.Json;
-using NitroSystem.Dnn.BusinessEngine.Components;
-using NitroSystem.Dnn.BusinessEngine.Data.Entities.Tables;
+using NitroSystem.Dnn.BusinessEngine.Core.Contract;
+using NitroSystem.Dnn.BusinessEngine.Core.Infrastructure.SSR;
+using NitroSystem.Dnn.BusinessEngine.Core.ModuleBuilder;
 using NitroSystem.Dnn.BusinessEngine.Data.Repositories;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Net.Http;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using NitroSystem.Dnn.BusinessEngine.Utilities;
 using NitroSystem.Dnn.BusinessEngine.Framework.Services;
 using NitroSystem.Dnn.BusinessEngine.Services;
-using NitroSystem.Dnn.BusinessEngine.Core.Infrastructure.ClientResources;
+using NitroSystem.Dnn.BusinessEngine.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Net.Http.Headers;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web.Helpers;
+using System.Web.UI;
 
-namespace NitroSystem.Dnn.BusinessEngine.Modules.List
+namespace NitroSystem.Dnn.BusinessEngine.Modules
 {
     public partial class List : PortalModuleBase, IActionable
     {
+        #region Properties
+
         public Guid? ModuleGuid
         {
             get
             {
-                return ModuleRepository.Instance.GetModuleGuidByDnnModuleID(this.ModuleId) ?? Guid.Empty;
+                return ModuleRepository.Instance.GetModuleGuidByDnnModuleID(this.ModuleId) ?? null;
             }
         }
 
@@ -42,7 +37,24 @@ namespace NitroSystem.Dnn.BusinessEngine.Modules.List
         {
             get
             {
-                return this.ModuleGuid != null ? ModuleRepository.Instance.GetModuleName(this.ModuleGuid.Value) : "";
+                return "List";
+            }
+        }
+
+        public string ScenarioName
+        {
+            get
+            {
+                return this.ModuleGuid != null ? ModuleRepository.Instance.GetModuleScenarioName(this.ModuleGuid.Value) : "";
+            }
+        }
+        
+        public string SiteRoot
+        {
+            get
+            {
+                string domainName = DotNetNuke.Common.Globals.AddHTTP(DotNetNuke.Common.Globals.GetDomainName(this.Context.Request)) + "/";
+                return domainName;
             }
         }
 
@@ -70,48 +82,6 @@ namespace NitroSystem.Dnn.BusinessEngine.Modules.List
             }
         }
 
-        public string ScenarioName
-        {
-            get
-            {
-                return this.ModuleGuid != null ? ModuleRepository.Instance.GetModuleScenarioName(this.ModuleGuid.Value) : "";
-            }
-        }
-
-        public string BaseUrl
-        {
-            get
-            {
-                return "/";
-            }
-        }
-
-        public string SiteRoot
-        {
-            get
-            {
-                string domainName = DotNetNuke.Common.Globals.AddHTTP(DotNetNuke.Common.Globals.GetDomainName(this.Context.Request)) + "/";
-                return domainName;
-            }
-        }
-
-        public string ApiBaseUrl
-        {
-            get
-            {
-                string domainName = DotNetNuke.Common.Globals.GetPortalDomainName(this.PortalAlias.HTTPAlias, Request, true);
-                return domainName + "/DesktopModules/";
-            }
-        }
-
-        public bool IsRegisteredPageResources
-        {
-            get
-            {
-                return this.Page.Header.FindControl("bEngine_PageResources") != null;
-            }
-        }
-
         public bool IsRtl
         {
             get
@@ -129,14 +99,11 @@ namespace NitroSystem.Dnn.BusinessEngine.Modules.List
 
         }
 
-        public string Version
+        public string ConnectionID
         {
             get
             {
-                if (this.UserInfo.IsSuperUser)
-                    return Guid.NewGuid().ToString();
-                else
-                    return Host.CrmVersion.ToString();
+                return Request.AnonymousID;
             }
         }
 
@@ -151,13 +118,9 @@ namespace NitroSystem.Dnn.BusinessEngine.Modules.List
             }
         }
 
-        public string ConnectionID
-        {
-            get
-            {
-                return Request.AnonymousID;
-            }
-        }
+        #endregion
+
+        #region Event Handlers
 
         protected void Page_PreRender(object sender, EventArgs e)
         {
@@ -173,26 +136,19 @@ namespace NitroSystem.Dnn.BusinessEngine.Modules.List
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!this.IsRegisteredPageResources)
-            {
-                RegisterPageResources.RegisterResources(this.TabId, this.pnlStyles, this.pnlScripts, this.Version);
+            var code = AntiForgery.GetHtml().ToHtmlString();
+            pnlAntiForgery.Controls.Add(new LiteralControl(code));
 
-                this.Page.Header.Controls.Add(new LiteralControl(@"<span id=""bEngine_PageResources""><!--business engine registered resources--></span>"));
+            CtlPageResource.PortalAlias = this.PortalAlias.HTTPAlias;
+            CtlPageResource.DnnTabID = this.TabId;
+            CtlPageResource.DnnUserID = this.UserId;
+            CtlPageResource.ModuleGuid = this.ModuleGuid;
+            CtlPageResource.ModuleName = this.ModuleName;
 
-            }
-
-            var module = ModuleRepository.Instance.GetModule(this.ModuleGuid.Value);
-            if (module != null && module.ModuleBuilderType == "HtmlEditor")
-            {
-                var scenarioName = ScenarioRepository.Instance.GetScenarioName(module.ScenarioID);
-
-                var moduleJsPath = string.Format("{0}/BusinessEngine/{1}/module--{2}/custom.js", this.PortalSettings.HomeSystemDirectory, scenarioName, module.ModuleName);
-                Core.Infrastructure.ClientResources.ClientResourceManager.RegisterScript(this.pnlScripts, moduleJsPath, module.Version.ToString());
-
-                var moduleCssPath = string.Format("{0}/BusinessEngine/{1}/module--{2}/custom.css", this.PortalSettings.HomeSystemDirectory, scenarioName, module.ModuleName);
-                Core.Infrastructure.ClientResources.ClientResourceManager.RegisterStyleSheet(this.pnlStyles, moduleCssPath, module.Version.ToString());
-            }
+            CtlPageResource.RegisterPageResources();
         }
+
+        #endregion
 
         public ModuleActionCollection ModuleActions
         {

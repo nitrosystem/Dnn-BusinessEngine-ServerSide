@@ -91,6 +91,7 @@
   <ItemGroup>
     <Compile Include="Appearance\ModuleSkinInfo.cs" />
     <Compile Include="Appearance\ModuleSkinManager.cs" />
+    <Compile Include="Appearance\SkinLibraryInfo.cs" />
     <Compile Include="Appearance\SkinTemplateInfo.cs" />
     <Compile Include="App_Start\DnnFeatureController.cs" />
     <Compile Include="Contract\IExpressionService.cs" />

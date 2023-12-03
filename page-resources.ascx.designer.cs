@@ -7,11 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace NitroSystem.Dnn.BusinessEngine.Modules
+namespace NitroSystem.Dnn.BusinessEngine.WebControls
 {
-
-
-    public partial class Studio
-    {
-    }
+    public partial class PageResources { }
 }

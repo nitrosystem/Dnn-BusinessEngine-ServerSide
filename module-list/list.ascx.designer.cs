@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace NitroSystem.Dnn.BusinessEngine.Modules.List
+namespace NitroSystem.Dnn.BusinessEngine.Modules
 {
 
 
@@ -15,22 +15,13 @@ namespace NitroSystem.Dnn.BusinessEngine.Modules.List
     {
 
         /// <summary>
-        /// pnlStyles control.
+        /// CtlPageResource control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder pnlStyles;
-
-        /// <summary>
-        /// pnlScripts control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder pnlScripts;
+        protected global::NitroSystem.Dnn.BusinessEngine.WebControls.PageResources CtlPageResource;
 
         /// <summary>
         /// pnlSSR1 control.
@@ -49,5 +40,14 @@ namespace NitroSystem.Dnn.BusinessEngine.Modules.List
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.PlaceHolder pnlSSR2;
+
+        /// <summary>
+        /// pnlAntiForgery control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.PlaceHolder pnlAntiForgery;
     }
 }

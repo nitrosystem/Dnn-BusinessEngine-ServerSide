@@ -15,13 +15,22 @@ namespace NitroSystem.Dnn.BusinessEngine
     {
 
         /// <summary>
-        /// pnlStyles control.
+        /// Head control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder pnlStyles;
+        protected global::System.Web.UI.HtmlControls.HtmlHead Head;
+
+        /// <summary>
+        /// CtlPageResource control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::NitroSystem.Dnn.BusinessEngine.WebControls.PageResources CtlPageResource;
 
         /// <summary>
         /// pnlAntiForgery control.
@@ -33,12 +42,12 @@ namespace NitroSystem.Dnn.BusinessEngine
         protected global::System.Web.UI.WebControls.PlaceHolder pnlAntiForgery;
 
         /// <summary>
-        /// pnlScripts control.
+        /// pnlResources control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.PlaceHolder pnlScripts;
+        protected global::System.Web.UI.WebControls.PlaceHolder pnlResources;
     }
 }

@@ -1,22 +1,7 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="list.ascx.cs" Inherits="NitroSystem.Dnn.BusinessEngine.Modules.List.List" %>
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="list.ascx.cs" Inherits="NitroSystem.Dnn.BusinessEngine.Modules.List" %>
+<%@ Register TagPrefix="b" TagName="PageResource" Src="../page-resources.ascx" %>
 
-<asp:PlaceHolder ID="pnlStyles" runat="server"></asp:PlaceHolder>
-
-<script type="text/javascript">
-    window.bEngineGlobalSettings = {
-        siteRoot: '<%=this.SiteRoot%>',
-        apiBaseUrl: '<%=this.ApiBaseUrl%>',
-        modulePath: '/DesktopModules/BusinessEngine/',
-        userID: parseInt('<%=this.UserId%>'),
-        version: '<%=this.Version%>',
-        debugMode: false
-    };
-</script>
-
-<link rel="stylesheet" type="text/css" href="/DesktopModules/BusinessEngine/client-app/main.css?ver=<%=this.Version%>" />
-<script src="/DesktopModules/BusinessEngine/client-app/app.bundle.js?ver=<%=this.Version%>"></script>
-
-<asp:PlaceHolder ID="pnlScripts" runat="server"></asp:PlaceHolder>
+<b:PageResource id="CtlPageResource" runat="server" />
 
 <%if (this.IsSSR && this.IsDisabledFrontFramework)
     { %>
@@ -46,3 +31,5 @@
         });
     });
 </script>
+
+<asp:PlaceHolder ID="pnlAntiForgery" runat="server"></asp:PlaceHolder>

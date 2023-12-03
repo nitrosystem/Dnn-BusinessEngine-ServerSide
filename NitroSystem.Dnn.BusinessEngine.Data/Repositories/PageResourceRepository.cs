@@ -108,7 +108,8 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
             {
                 using (IDataContext ctx = DataContext.Instance())
                 {
-                    result = ctx.ExecuteQuery<PageResourceView>(System.Data.CommandType.Text, "SELECT p.FilePath,p.ResourceType,m.Version FROM dbo.BusinessEngine_PageResources p INNER JOIN dbo.BusinessEngine_Modules m ON p.ModuleID = m.ModuleID WHERE p.CmsPageID = @0 order by LoadOrder", cmsPageID);
+                    var rep = ctx.GetRepository<PageResourceView>();
+                    result = rep.Get(cmsPageID);
                 }
 
                 DataCache.SetCache(CachePrefix + cmsPageID, result);
@@ -116,6 +117,43 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
 
             return result;
         }
+
+        public IEnumerable<PageResourceView> GetActivePageResources(string cmsPageID)
+        {
+            string cacheKey = CachePrefix + cmsPageID + "_IsActived";
+            var result = DataCache.GetCache<IEnumerable<PageResourceView>>(cacheKey);
+            if (result == null)
+            {
+                using (IDataContext ctx = DataContext.Instance())
+                {
+                    var rep = ctx.GetRepository<PageResourceView>();
+                    result = rep.Get(cmsPageID).Where(p => p.IsActive).OrderBy(p => p.LoadOrder);
+                }
+
+                DataCache.SetCache(cacheKey, result);
+            }
+
+            return result;
+        }
+
+        public IEnumerable<string> GetActivePageResourceFilePaths(string cmsPageID)
+        {
+            string cacheKey = CachePrefix + cmsPageID + "_IsActived_FilePaths";
+            var result = DataCache.GetCache<IEnumerable<string>>(cacheKey);
+            if (result == null)
+            {
+                using (IDataContext ctx = DataContext.Instance())
+                {
+                    var rep = ctx.GetRepository<PageResourceView>();
+                    result = rep.Get(cmsPageID).Where(p => p.IsActive).OrderBy(p => p.LoadOrder).Select(p => p.FilePath);
+                }
+
+                DataCache.SetCache(cacheKey, result);
+            }
+
+            return result;
+        }
+
 
         public IEnumerable<PageResourceView> GetPageCustomResources(Guid moduleID)
         {
