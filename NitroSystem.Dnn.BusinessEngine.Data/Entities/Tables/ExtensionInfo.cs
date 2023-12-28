@@ -16,7 +16,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Entities.Tables
         public string ExtensionType { get; set; }
         public string ExtensionName { get; set; }
         public string ExtensionImage { get; set; }
-        public string Title { get; set; }
+        public string FolderName { get; set; }
         public string Summary { get; set; }
         public string Description { get; set; }
         public string ReleaseNotes { get; set; }

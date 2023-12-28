@@ -4,7 +4,6 @@ using Newtonsoft.Json.Linq;
 using NitroSystem.Dnn.BusinessEngine.Api.Dto;
 using NitroSystem.Dnn.BusinessEngine.Api.Mapping;
 using NitroSystem.Dnn.BusinessEngine.Components;
-using NitroSystem.Dnn.BusinessEngine.Core.Manager;
 using NitroSystem.Dnn.BusinessEngine.Core.Models;
 using NitroSystem.Dnn.BusinessEngine.Data.Entities.Tables;
 using NitroSystem.Dnn.BusinessEngine.Data.Repositories;

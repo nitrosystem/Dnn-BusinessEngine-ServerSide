@@ -58,11 +58,11 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
             DataCache.ClearCache(CachePrefix);
         }
 
-        public void DeleteSkinsByExtensionID(Guid extensionID)
+        public void DeleteProvidersByExtensionID(Guid extensionID)
         {
             using (IDataContext ctx = DataContext.Instance())
             {
-                var rep = ctx.GetRepository<SkinInfo>();
+                var rep = ctx.GetRepository<ProviderInfo>();
                 rep.Delete("Where ExtensionID =@0", extensionID);
             }
 

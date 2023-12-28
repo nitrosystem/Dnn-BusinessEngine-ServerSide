@@ -59,6 +59,18 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
             DataCache.ClearCache(CachePrefix);
         }
 
+        public void DeleteLibrariesByExtensionID(Guid extensionID)
+        {
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                var rep = ctx.GetRepository<LibraryInfo>();
+                rep.Delete("Where ExtensionID = @0", extensionID);
+            }
+
+            DataCache.ClearCache(CachePrefix);
+        }
+
+
         public LibraryInfo GetLibrary(Guid libraryID)
         {
             using (IDataContext ctx = DataContext.Instance())
@@ -77,12 +89,12 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
             }
         }
 
-        public IEnumerable<LibraryInfo> GetLibraries(Guid scenarioID)
+        public IEnumerable<LibraryInfo> GetLibraries()
         {
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<LibraryInfo>();
-                return rep.Get(scenarioID);
+                return rep.Get();
             }
         }
     }

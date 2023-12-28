@@ -15,6 +15,9 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Entities.Tables
     {
         public Guid ItemID { get; set; }
         public Guid LibraryID { get; set; }
+        public string LibraryName { get; set; }
+        public string Logo { get; set; }
+        public string Version { get; set; }
         public string FieldType { get; set; }
         public string ResourceType { get; set; }
         public string ResourcePath { get; set; }

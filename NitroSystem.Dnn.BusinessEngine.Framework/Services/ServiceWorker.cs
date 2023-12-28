@@ -3,7 +3,6 @@ using DotNetNuke.Abstractions.Portals;
 using DotNetNuke.Entities.Portals;
 using Newtonsoft.Json;
 using NitroSystem.Dnn.BusinessEngine.Core.Contract;
-using NitroSystem.Dnn.BusinessEngine.Core.Manager;
 using NitroSystem.Dnn.BusinessEngine.Core.Models;
 using NitroSystem.Dnn.BusinessEngine.Data.Contracts;
 using NitroSystem.Dnn.BusinessEngine.Data.Entities.Tables;

@@ -19,7 +19,6 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Entities.Tables
         public Guid? FieldID { get; set; }
         public Guid? ServiceID { get; set; }
         public Guid? PaymentMethodID { get; set; }
-        [IgnoreColumn]
         public Guid? GroupID { get; set; }
         public string ActionName { get; set; }
         public string ActionType { get; set; }

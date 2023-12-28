@@ -96,16 +96,16 @@ namespace NitroSystem.Dnn.BusinessEngine.WebControls
                     if (this.Page.Header.FindControl("bEngine_baseScript") == null)
                     {
                         var baseScript = new LiteralControl(@"
-                    <script type=""text/javascript"">
-                        window.bEngineGlobalSettings = {
-                            siteRoot: '" + this.SiteRoot + @"',
-                            apiBaseUrl: '" + this.ApiBaseUrl + @"',
-                            modulePath: '/DesktopModules/BusinessEngine/',
-                            userID: parseInt('" + this.DnnUserID + @"'),
-                            version: '" + this.Version + @"',
-                            debugMode: false
-                        };
-                    </script>"
+                            <script type=""text/javascript"">
+                                window.bEngineGlobalSettings = {
+                                    siteRoot: '" + this.SiteRoot + @"',
+                                    apiBaseUrl: '" + this.ApiBaseUrl + @"',
+                                    modulePath: '/DesktopModules/BusinessEngine/',
+                                    userID: parseInt('" + this.DnnUserID + @"'),
+                                    version: '" + this.Version + @"',
+                                    debugMode: false
+                                };
+                            </script>"
                             );
 
                         baseScript.ID = "bEngine_baseScript";
@@ -121,37 +121,6 @@ namespace NitroSystem.Dnn.BusinessEngine.WebControls
                         }
 
                         this.Page.Header.Controls.Add(new LiteralControl(@"<span id=""bEngine_PageResources""><!--business engine registered resources--></span>"));
-                    }
-
-                    var module = ModuleRepository.Instance.GetModule(this.ModuleGuid.Value);
-                    var skin = ModuleSkinManager.GetSkin(module.Skin);
-                    if (skin != null)
-                    {
-                        IEnumerable<SkinLibraryInfo> libraries = new List<SkinLibraryInfo>();
-                        switch (this.ModuleName)
-                        {
-                            case "Dashboard":
-                                libraries = ((skin.DashboardTemplates ?? new List<SkinTemplateInfo>()).FirstOrDefault(t => t.TemplateName == module.Template) ?? new SkinTemplateInfo()).Libraries;
-                                break;
-                            case "Form":
-                                libraries = ((skin.FormTemplates ?? new List<SkinTemplateInfo>()).FirstOrDefault(t => t.TemplateName == module.Template) ?? new SkinTemplateInfo()).Libraries;
-                                break;
-                            case "List":
-                                libraries = ((skin.ListTemplates ?? new List<SkinTemplateInfo>()).FirstOrDefault(t => t.TemplateName == module.Template) ?? new SkinTemplateInfo()).Libraries;
-                                break;
-                            case "Details":
-                                libraries = ((skin.DetailsTemplates ?? new List<SkinTemplateInfo>()).FirstOrDefault(t => t.TemplateName == module.Template) ?? new SkinTemplateInfo()).Libraries;
-                                break;
-                        }
-
-                        foreach (var library in libraries ?? Enumerable.Empty<SkinLibraryInfo>())
-                        {
-                            var resources = LibraryRepository.Instance.GetLibraryResources(library.LibraryName, library.Version);
-                            foreach (var item in resources ?? Enumerable.Empty<LibraryView>())
-                            {
-                                RegisterPageResources(item.ResourceType, item.ResourcePath, item.LoadOrder);
-                            }
-                        }
                     }
                 }
             }

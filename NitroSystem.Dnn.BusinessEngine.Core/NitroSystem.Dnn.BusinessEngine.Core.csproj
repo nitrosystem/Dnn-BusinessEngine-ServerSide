@@ -106,7 +106,9 @@
     <Compile Include="Extensions\Manifest\ExtensionPackage.cs" />
     <Compile Include="Extensions\Manifest\ExtensionResource.cs" />
     <Compile Include="Extensions\Manifest\ExtensionSqlProvider.cs" />
-    <Compile Include="Extensions\Manifest\ExtensionManifestInfo.cs" />
+    <Compile Include="Extensions\Manifest\ExtensionManifest.cs" />
+    <Compile Include="Extensions\Manifest\PackageModels\FieldTypeInfo.cs" />
+    <Compile Include="Extensions\Manifest\PackageModels\LibraryInfo.cs" />
     <Compile Include="Extensions\Services\ExtensionService.cs" />
     <Compile Include="General.cs" />
     <Compile Include="Infrastructure\Caching\CacheData.cs" />
@@ -117,7 +119,6 @@
     <Compile Include="Infrastructure\SSR\ImageType.cs" />
     <Compile Include="Infrastructure\SSR\ServerSideRendering.cs" />
     <Compile Include="Infrastructure\TypeProvider\TypeProvider.cs" />
-    <Compile Include="Manager\ServiceManager.cs" />
     <Compile Include="Models\ExpressionInfo.cs" />
     <Compile Include="Models\ParamInfo.cs" />
     <Compile Include="Models\PaymentInfo.cs" />

@@ -89,6 +89,14 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
             }
         }
 
+        public string GetServiceTypeIcon(string serviceType)
+        {
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                return ctx.ExecuteScalar<string>(System.Data.CommandType.Text, "Select Icon From dbo.BusinessEngine_ServiceTypes Where ServiceType = @0", serviceType);
+            }
+        }
+
         public IEnumerable<ServiceTypeView> GetServiceTypes(string groupType)
         {
             using (IDataContext ctx = DataContext.Instance())

@@ -95,7 +95,8 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Mapping
                 .ForMember(dest => dest.AuthorizationRunService, map => map.MapFrom(source => source.AuthorizationRunService.Split(',')))
                 .ForMember(dest => dest.Params, map => map.MapFrom(source => ServiceParamRepository.Instance.GetParams(source.ServiceID)))
                 .ForMember(dest => dest.Settings, map => map.MapFrom(source => TypeCastingUtil<IDictionary<string, object>>.TryJsonCasting(source.Settings)))
-                .ForMember(dest => dest.ResultType, map => map.MapFrom(source => (ServiceResultType)source.ResultType));
+                .ForMember(dest => dest.ResultType, map => map.MapFrom(source => (ServiceResultType)source.ResultType))
+                .ForMember(dest => dest.ServiceTypeIcon, map => map.MapFrom(source => ServiceTypeRepository.Instance.GetServiceTypeIcon(source.ServiceType)));
             });
 
             IMapper mapper = config.CreateMapper();

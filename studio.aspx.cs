@@ -152,9 +152,9 @@ namespace NitroSystem.Dnn.BusinessEngine.Modules.StudioPage
             foreach (var item in resources)
             {
                 if (item.ResourceType == "css")
-                    ClientResourceManager.RegisterStyleSheet(pnlResources, item.FilePath, "");
+                    ClientResourceManager.RegisterStyleSheet(pnlResources, item.FilePath, this.Version);
                 if (item.ResourceType == "js")
-                    ClientResourceManager.RegisterScript(pnlResources, item.FilePath, "");
+                    ClientResourceManager.RegisterScript(pnlResources, item.FilePath, this.Version);
             }
         }
 

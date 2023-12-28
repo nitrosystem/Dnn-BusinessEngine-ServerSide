@@ -15,9 +15,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Entities.Tables
     {
         public Guid ServiceID { get; set; }
         public Guid ScenarioID { get; set; }
-        [IgnoreColumn]
         public Guid? GroupID { get; set; }
-        public Guid? DatabaseID { get; set; }
         public string ServiceName { get; set; }
         public string ServiceType { get; set; }
         public string ServiceSubtype { get; set; }

@@ -205,7 +205,7 @@ namespace NitroSystem.Dnn.BusinessEngine
         #endregion
 
         protected void Page_Init(object sender, EventArgs e)
-        {
+         {
             pnlAntiForgery.Controls.Add(new LiteralControl(AntiForgery.GetHtml().ToHtmlString()));
         }
 

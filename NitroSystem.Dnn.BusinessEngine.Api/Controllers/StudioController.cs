@@ -32,6 +32,8 @@ using NitroSystem.Dnn.BusinessEngine.Core.Extensions.Manifest;
 using DotNetNuke.Entities.Tabs;
 using System.Resources;
 using System.Web.UI.WebControls;
+using NitroSystem.Dnn.BusinessEngine.Core.Infrastructure.TypeProvider;
+using System.Web.Hosting;
 
 namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
 {
@@ -477,7 +479,6 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                 {
                     EntityID = entity.EntityID,
                     ScenarioID = entity.ScenarioID,
-                    DatabaseID = entity.DatabaseID,
                     GroupID = entity.GroupID,
                     EntityType = entity.EntityType,
                     EntityName = entity.EntityName,
@@ -677,6 +678,41 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
 
         [HttpGet]
         [ValidateAntiForgeryToken]
+        public HttpResponseMessage GetViewModelsFromEntity(Guid entityID)
+        {
+            try
+            {
+                var entity = EntityMapping.GetEntityViewModel(entityID);
+
+                var viewModel = new ViewModelViewModel()
+                {
+                    ScenarioID = entity.ScenarioID,
+                    ViewModelName = entity.EntityName + "ViewModel",
+                    ViewOrder = entity.ViewOrder,
+                    CreatedOnDate = DateTime.Now,
+                    CreatedByUserID = this.UserInfo.UserID,
+                    LastModifiedOnDate = DateTime.Now,
+                    LastModifiedByUserID = this.UserInfo.UserID,
+                    Description = entity.Description,
+                    Properties = entity.Columns.Select(c => new ViewModelPropertyInfo()
+                    {
+                        PropertyName = c.ColumnName,
+                        PropertyType = TypeProvider.ConvertSqlServerFormatToCSharp(c.ColumnType) ?? "nvarchar(max)",
+                        ViewOrder = c.ViewOrder
+                    })
+                };
+
+                return Request.CreateResponse(HttpStatusCode.OK, viewModel);
+            }
+            catch (Exception ex)
+            {
+
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
+        [HttpGet]
+        [ValidateAntiForgeryToken]
         public HttpResponseMessage GetViewModel()
         {
             return GetViewModel(Guid.Empty);
@@ -812,10 +848,13 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
 
                 var services = ServiceMapping.GetServicesViewModel(scenarioID);
 
+                var serviceTypes = ServiceMapping.GetServiceTypesViewModel();
+
                 return Request.CreateResponse(HttpStatusCode.OK, new
                 {
                     Scenarios = scenarios,
-                    Services = services
+                    Services = services,
+                    ServiceTypes = serviceTypes
                 });
             }
             catch (Exception ex)
@@ -918,7 +957,6 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                 {
                     ServiceID = service.ServiceID,
                     ScenarioID = service.ScenarioID,
-                    DatabaseID = service.DatabaseID,
                     ServiceType = service.ServiceType,
                     ServiceName = service.ServiceName,
                     ServiceSubtype = service.ServiceSubtype,
@@ -996,65 +1034,6 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                 // or use EXEC sp_helptext N'dbo.GetFolders'
 
                 return Request.CreateResponse(HttpStatusCode.OK/*, result*/);
-            }
-            catch (Exception ex)
-            {
-
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
-            }
-        }
-
-        #endregion
-
-        #region Extensions
-
-        [HttpGet]
-        [ValidateAntiForgeryToken]
-        public HttpResponseMessage GetExtensions()
-        {
-            try
-            {
-                var extensions = ExtensionRepository.Instance.GetExtensions();
-
-                return Request.CreateResponse(HttpStatusCode.OK, extensions);
-            }
-            catch (Exception ex)
-            {
-
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
-            }
-        }
-
-        #endregion
-
-        #region Providers
-
-        [HttpGet]
-        [ValidateAntiForgeryToken]
-        public HttpResponseMessage GetProvider(Guid providerID)
-        {
-            try
-            {
-                var provider = ProviderRepository.Instance.GetProvider(providerID);
-
-                return Request.CreateResponse(HttpStatusCode.OK, provider);
-            }
-            catch (Exception ex)
-            {
-
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
-            }
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public HttpResponseMessage SaveProvider(ProviderInfo provider)
-        {
-            try
-            {
-                ProviderRepository.Instance.UpdateProvider(provider);
-
-                return Request.CreateResponse(HttpStatusCode.OK);
             }
             catch (Exception ex)
             {
@@ -1696,7 +1675,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                 var module = ModuleMapping.GetModuleViewModel(moduleID);
 
                 var parentID = module.ParentID != null ? module.ParentID.Value : module.ModuleID;
-                var customResources = PageResourceRepository.Instance.GetPageCustomResources(parentID);
+                var customResources = PageResourceRepository.Instance.GetModuleResources(parentID).Where(r => r.IsCustomResource);
 
                 var skins = SkinRepository.Instance.GetSkins().Select(s =>
                 {
@@ -1800,7 +1779,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
         {
             try
             {
-                var layoutTemplate = FileUtil.GetFileContent(HttpContext.Current.Request.MapPath(layoutTemplatePath));
+                var layoutTemplate = FileUtil.GetFileContent(HttpContext.Current.Server.MapPath(layoutTemplatePath));
 
                 return Request.CreateResponse(HttpStatusCode.OK, new { LayoutTemplate = layoutTemplate });
             }
@@ -1981,6 +1960,10 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
 
                     var resources = new List<PageResourceInfo>();
 
+                    //Get skin libraries & resources
+                    resources.AddRange(ModuleBuilder.GetModuleSkinResources(parentModule));
+
+                    //Get module base libraries resources
                     var baseLibraries = ModuleBuilder.GetModuleBaseResources();
                     foreach (var item in baseLibraries)
                     {
@@ -1997,8 +1980,6 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                             IsActive = isActive
                         });
                     }
-
-                    resources.AddRange(ModuleBuilder.GetModuleSkinResources(parentModule));
 
                     var fieldResources = ModuleBuilder.GetModuleFieldsLibraryResources(parentModuleID);
                     foreach (var item in fieldResources)
@@ -2989,6 +2970,72 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
 
         #region Extensions
 
+        [HttpGet]
+        [ValidateAntiForgeryToken]
+        public HttpResponseMessage GetExtensions()
+        {
+            try
+            {
+                var extensions = ExtensionRepository.Instance.GetExtensions();
+
+                var availableExtensions = new List<AvailableExtensionDTO>();
+
+                var dir = HttpContext.Current.Server.MapPath("~/DesktopModules/BusinessEngine/install");
+                var ext = new List<string> { "extension", "b" };
+                var extFiles = Directory
+                    .EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
+                    .Where(s => ext.Contains(Path.GetExtension(s).TrimStart('.').ToLowerInvariant()));
+                foreach (var filePath in extFiles)
+                {
+                    var json = FileUtil.GetFileContent(filePath);
+                    var model = JsonConvert.DeserializeObject<AvailableExtensionDTO>(json);
+                    availableExtensions.Add(model);
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK, new
+                {
+                    Extensions = extensions,
+                    AvailableExtensions = availableExtensions
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public HttpResponseMessage InstallAvailableExtensions(AvailableExtensionDTO postData)
+        {
+            try
+            {
+                var scenarioID = Guid.Parse(Request.Headers.GetValues("ScenarioID").First());
+                var scenarioName = ScenarioRepository.Instance.GetScenarioName(scenarioID);
+
+                var installPath = HttpContext.Current.Server.MapPath("~/DesktopModules/BusinessEngine/install/");
+
+                var filename = (installPath + postData.ExtensionFile);
+                var extensionUnzipedPath = this.PortalSettings.HomeSystemDirectoryMapPath + @"BusinessEngine\Temp\" + scenarioName + @"\" + Path.GetFileNameWithoutExtension(filename);
+                var manifestFile = this.UnzipExtensionFile(extensionUnzipedPath, filename);
+
+                File.Delete(installPath + postData.ManifestFile);
+
+                return Request.CreateResponse(HttpStatusCode.OK, new
+                {
+                    ExtensionJson = FileUtil.GetFileContent(manifestFile),
+                    ManifestFilePath = manifestFile,
+                    ExtensionUnzipedPath = extensionUnzipedPath
+                });
+            }
+            catch (Exception ex)
+            {
+
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<HttpResponseMessage> UploadExtensionPackage()
@@ -3020,19 +3067,17 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                     string filename = streamProvider.FileData[0].LocalFileName;
 
                     var extensionUnzipedPath = this.PortalSettings.HomeSystemDirectoryMapPath + @"BusinessEngine\Temp\" + scenarioName + @"\" + Path.GetFileNameWithoutExtension(filename);
-                    FastZip fastZip = new FastZip();
-                    fastZip.ExtractZip(filename, extensionUnzipedPath, null); //Will always overwrite if target filenames already exist
 
-                    File.Delete(filename);
+                    var manifestFile = this.UnzipExtensionFile(extensionUnzipedPath, filename);
 
-                    var files = Directory.GetFiles(extensionUnzipedPath);
-                    var manifestFile = files.FirstOrDefault(f => Path.GetFileName(f) == "manifest.json");
+                    var monitoringFilePath = string.Format("{0}/BusinessEngine/Temp/monitoring.txt", this.PortalSettings.HomeSystemDirectory);
 
                     return Request.CreateResponse(HttpStatusCode.OK, new
                     {
                         ExtensionJson = FileUtil.GetFileContent(manifestFile),
                         ManifestFilePath = manifestFile,
-                        ExtensionUnzipedPath = extensionUnzipedPath
+                        ExtensionUnzipedPath = extensionUnzipedPath,
+                        MonitoringFilePath = monitoringFilePath
                     });
                 }
                 else
@@ -3054,7 +3099,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
             try
             {
                 var extensionJson = FileUtil.GetFileContent(manifestFilePath);
-                var extension = JsonConvert.DeserializeObject<ExtensionManifestInfo>(extensionJson);
+                var extension = JsonConvert.DeserializeObject<ExtensionManifest>(extensionJson);
 
                 var scenarioID = Guid.Parse(Request.Headers.GetValues("ScenarioID").First());
 
@@ -3069,9 +3114,79 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
             }
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public HttpResponseMessage DeleteExtension(GuidDTO postData)
+        {
+            try
+            {
+                ExtensionService.Instance.UninstallExtension(postData.ID);
+
+                return Request.CreateResponse(HttpStatusCode.OK, new { Success = true });
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
+        #endregion
+
+        #region Providers
+
+        [HttpGet]
+        [ValidateAntiForgeryToken]
+        public HttpResponseMessage GetProvider(Guid providerID)
+        {
+            try
+            {
+                var provider = ProviderRepository.Instance.GetProvider(providerID);
+
+                return Request.CreateResponse(HttpStatusCode.OK, provider);
+            }
+            catch (Exception ex)
+            {
+
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public HttpResponseMessage SaveProvider(ProviderInfo provider)
+        {
+            try
+            {
+                ProviderRepository.Instance.UpdateProvider(provider);
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
         #endregion
 
         #region Libraries & Page Resources
+
+        [HttpGet]
+        [ValidateAntiForgeryToken]
+        public HttpResponseMessage GetLibraries()
+        {
+            try
+            {
+                var libraries = LibraryMapping.GetLibrariesViewModel();
+
+                return Request.CreateResponse(HttpStatusCode.OK, libraries);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
 
         [HttpGet]
         [ValidateAntiForgeryToken]
@@ -3122,6 +3237,24 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
             }
         }
 
+        [HttpGet]
+        [ValidateAntiForgeryToken]
+        public HttpResponseMessage GetModuleResources(Guid moduleID)
+        {
+            try
+            {
+                var moduleResources = PageResourceRepository.Instance.GetModuleResources(moduleID);
+
+                var result = moduleResources.GroupBy(r => r.ModuleID);
+
+                return Request.CreateResponse(HttpStatusCode.OK, result);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public HttpResponseMessage SetResourceStatus(PageResourceDTO postData)
@@ -3139,6 +3272,39 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
             {
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public HttpResponseMessage DeletePageResource(GuidDTO postData)
+        {
+            try
+            {
+                PageResourceRepository.Instance.DeletePageResource(postData.ID);
+
+                return Request.CreateResponse(HttpStatusCode.OK, new { Success = true });
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private string UnzipExtensionFile(string extensionUnzipedPath, string filename)
+        {
+            FastZip fastZip = new FastZip();
+            fastZip.ExtractZip(filename, extensionUnzipedPath, null); //Will always overwrite if target filenames already exist
+
+            File.Delete(filename);
+
+            var files = Directory.GetFiles(extensionUnzipedPath);
+            var manifestFile = files.FirstOrDefault(f => Path.GetFileName(f) == "manifest.json");
+
+            return manifestFile;
         }
 
         #endregion

@@ -154,32 +154,15 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
             return result;
         }
 
-
-        public IEnumerable<PageResourceView> GetPageCustomResources(Guid moduleID)
-        {
-            string cacheKey = CachePrefix + "CustomResources_" + moduleID;
-            var result = DataCache.GetCache<IEnumerable<PageResourceView>>(cacheKey);
-            if (result == null)
-            {
-                using (IDataContext ctx = DataContext.Instance())
-                {
-                    result = ctx.ExecuteQuery<PageResourceView>(System.Data.CommandType.Text, "SELECT * FROM dbo.BusinessEngine_PageResources WHERE ModuleID = @0 and IsCustomResource = 1 order by LoadOrder", moduleID);
-                }
-
-                DataCache.SetCache(cacheKey, result);
-            }
-
-            return result;
-        }
-
-        public IEnumerable<PageResourceView> GetPageResources(Guid moduleID)
+        public IEnumerable<PageResourceView> GetModuleResources(Guid moduleID)
         {
             var result = DataCache.GetCache<IEnumerable<PageResourceView>>(CachePrefix + moduleID);
             if (result == null)
             {
                 using (IDataContext ctx = DataContext.Instance())
                 {
-                    result = ctx.ExecuteQuery<PageResourceView>(System.Data.CommandType.Text, "SELECT p.FilePath,p.ResourceType,m.Version FROM dbo.BusinessEngine_PageResources p INNER JOIN dbo.BusinessEngine_Modules m ON p.ModuleID = m.ModuleID WHERE p.ModuleID = @0", moduleID);
+                    var rep = ctx.GetRepository<PageResourceView>();
+                    result = rep.Find("Where ModuleID = @0", moduleID);
                 }
 
                 DataCache.SetCache(CachePrefix + moduleID, result);

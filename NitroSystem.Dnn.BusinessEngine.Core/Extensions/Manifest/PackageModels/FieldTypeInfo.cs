@@ -1,24 +1,19 @@
-﻿using System;
+﻿using DotNetNuke.ComponentModel.DataAnnotations;
+using NitroSystem.Dnn.BusinessEngine.Data.Entities.Tables;
 using System.Collections.Generic;
+using System;
 using System.Linq;
-using System.Web;
-using System.Web.Caching;
-using DotNetNuke.ComponentModel.DataAnnotations;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace NitroSystem.Dnn.BusinessEngine.Data.Entities.Tables
+namespace NitroSystem.Dnn.BusinessEngine.Core.Extensions.Manifest.PackageModels
 {
-    [TableName("BusinessEngine_ModuleFieldTypes")]
-    [PrimaryKey("TypeID", AutoIncrement = false)]
-    [Cacheable("BE_ModuleFieldTypes_", CacheItemPriority.Default, 20)]
-    public class ModuleFieldTypeInfo
+    public class FieldTypeInfo
     {
-        public Guid TypeID { get; set; }
-        public Guid ExtensionID { get; set; }
-        public Guid GroupID { get; set; }
+        public string GroupName { get; set; }
         public string FieldType { get; set; }
-        public string Title  { get; set; }
+        public string Title { get; set; }
         public string FieldComponent { get; set; }
-        public string ComponentSubParams { get; set; }
         public string FieldJsPath { get; set; }
         public string DirectiveJsPath { get; set; }
         public string CustomEvents { get; set; }
@@ -34,5 +29,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Entities.Tables
         public bool IsEnabled { get; set; }
         public string Description { get; set; }
         public int ViewOrder { get; set; }
+        public IEnumerable<ModuleFieldTypeTemplateInfo> Templates { get; set; }
+        public IEnumerable<ModuleFieldTypeLibraryInfo> Libraries { get; set; }
     }
 }

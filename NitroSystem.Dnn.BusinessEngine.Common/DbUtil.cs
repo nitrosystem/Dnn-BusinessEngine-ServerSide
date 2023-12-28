@@ -68,7 +68,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Utilities
         {
             var result = new SqlResultInfo() { IsSuccess = true, Query = query };
 
-            using (SqlConnection connection = new SqlConnection(DotNetNuke.Data.DataProvider.Instance().ConnectionString))
+            using (SqlConnection connection = new SqlConnection(DataProvider.Instance().ConnectionString))
             {
                 connection.Open();
 
@@ -91,6 +91,8 @@ namespace NitroSystem.Dnn.BusinessEngine.Utilities
 
                     // Attempt to commit the transaction.
                     transaction.Commit();
+
+                    transaction.Dispose();
                 }
                 catch (Exception ex)
                 {

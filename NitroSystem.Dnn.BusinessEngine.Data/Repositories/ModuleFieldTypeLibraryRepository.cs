@@ -73,7 +73,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<ModuleFieldTypeLibraryView>();
-                return rep.Get(fieldType);
+                return rep.Get(fieldType).OrderBy(l => l.LoadOrder); 
             }
         }
     }

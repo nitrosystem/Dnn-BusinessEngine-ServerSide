@@ -254,9 +254,7 @@
     <Content Include="module-list\list.ascx" />
     <Content Include="module-form\form.ascx" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="module-page-resources\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
     <Content Include="web.config" />

@@ -5,28 +5,11 @@
     <div class="row">
         <div class="col-sm-4">
             <div class="st-box">
-                <small class="note-ribbon">Recommended</small>
+                <small class="note-ribbon">Get Started</small>
                 <img src="/Portals/0/Images/logo.png" />
                 <hr />
                 <p class="box-text">Open studio in standalone page(high performance)</p>
-                <button type="button" class="box-button" data-mode="1">Goto Admin Panel</button>
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="st-box">
-                <img src="/Portals/0/Images/logo.png" />
-                <hr />
-                <p class="box-text">Open studio on dnn full screen(with dnn opetions)</p>
-                <button type="button" class="box-button" data-mode="2">Goto Admin Panel</button>
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="st-box">
-                <small class="note-ribbon not-recommended">Not Recommended</small>
-                <img src="/Portals/0/Images/logo.png" />
-                <hr />
-                <p class="box-text">Open studio on dnn(bad ui & ux screen)</p>
-                <button type="button" class="box-button" data-mode="3">Goto Admin Panel</button>
+                <a href="/DesktopModules/BusinessEngine/studio.aspx?p=<%=this.PortalId%>&a=<%=this.PortalAlias.PortalAliasID%>" target="_blank" class="box-button" >Goto Studio Panel</a>
             </div>
         </div>
     </div>

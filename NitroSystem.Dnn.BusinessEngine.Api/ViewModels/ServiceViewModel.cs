@@ -29,5 +29,6 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.ViewModels
         public IEnumerable<string> AuthorizationRunService { get; set; }
         public IEnumerable<ServiceParamInfo> Params { get; set; }
         public IDictionary<string, object> Settings { get; set; }
+        public string ServiceTypeIcon { get; set; }
     }
 }

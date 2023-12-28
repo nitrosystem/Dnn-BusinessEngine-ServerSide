@@ -206,14 +206,147 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.ModuleBuilder
             var skin = ModuleSkinManager.GetSkin(module.Skin);
             if (skin != null)
             {
+                IEnumerable<SkinLibraryInfo> libraries = new List<SkinLibraryInfo>();
 
+                if (module.ModuleType == "Dashboard")
+                {
+                    var template = skin.DashboardTemplates.FirstOrDefault(t => t.TemplateName == module.Template) ?? new SkinTemplateInfo();
+
+                    //Get skin libraries & resources
+                    libraries = template.Libraries ?? new List<SkinLibraryInfo>();
+                    result.AddRange(GetTemplateLibraryResources(libraries));
+
+                    foreach (var item in template.CssFiles ?? Enumerable.Empty<string>())
+                    {
+                        result.Add(new PageResourceInfo()
+                        {
+                            ResourceType = "css",
+                            FilePath = skin.SkinPath + "/" + item,
+                            LoadOrder = result.Count,
+                            IsSystemResource = true,
+                            IsActive = true
+                        });
+                    }
+
+                    foreach (var item in template.JsFiles ?? Enumerable.Empty<string>())
+                    {
+                        result.Add(new PageResourceInfo()
+                        {
+                            ResourceType = "js",
+                            FilePath = skin.SkinPath + "/" + item,
+                            LoadOrder = result.Count,
+                            IsSystemResource = true,
+                            IsActive = true
+                        });
+                    }
+                }
+                else if (module.ModuleType == "Form")
+                {
+                    var template = skin.FormTemplates.FirstOrDefault(t => t.TemplateName == module.Template) ?? new SkinTemplateInfo();
+
+                    //Get skin libraries & resources
+                    libraries = template.Libraries ?? new List<SkinLibraryInfo>();
+                    result.AddRange(GetTemplateLibraryResources(libraries));
+
+                    foreach (var item in template.CssFiles ?? Enumerable.Empty<string>())
+                    {
+                        result.Add(new PageResourceInfo()
+                        {
+                            ResourceType = "css",
+                            FilePath = skin.SkinPath + "/" + item,
+                            LoadOrder = result.Count,
+                            IsBaseResource = true,
+                            IsActive = true
+                        });
+                    }
+
+                    foreach (var item in template.JsFiles ?? Enumerable.Empty<string>())
+                    {
+                        result.Add(new PageResourceInfo()
+                        {
+                            ResourceType = "js",
+                            FilePath = skin.SkinPath + "/" + item,
+                            LoadOrder = result.Count,
+                            IsBaseResource = true,
+                            IsActive = true
+                        });
+                    }
+                }
+                else if (module.ModuleType == "List")
+                {
+                    var template = skin.ListTemplates.FirstOrDefault(t => t.TemplateName == module.Template) ?? new SkinTemplateInfo();
+
+                    //Get skin libraries & resources
+                    libraries = template.Libraries ?? new List<SkinLibraryInfo>();
+                    result.AddRange(GetTemplateLibraryResources(libraries));
+
+                    foreach (var item in template.CssFiles ?? Enumerable.Empty<string>())
+                    {
+                        result.Add(new PageResourceInfo()
+                        {
+                            ResourceType = "css",
+                            FilePath = skin.SkinPath + "/" + item,
+                            LoadOrder = result.Count,
+                            IsBaseResource = true,
+                            IsActive = true
+                        });
+                    }
+
+                    foreach (var item in template.JsFiles ?? Enumerable.Empty<string>())
+                    {
+                        result.Add(new PageResourceInfo()
+                        {
+                            ResourceType = "js",
+                            FilePath = skin.SkinPath + "/" + item,
+                            LoadOrder = result.Count,
+                            IsBaseResource = true,
+                            IsActive = true
+                        });
+                    }
+                }
+                else if (module.ModuleType == "Details")
+                {
+                    var template = skin.DetailsTemplates.FirstOrDefault(t => t.TemplateName == module.Template) ?? new SkinTemplateInfo();
+
+                    //Get skin libraries & resources
+                    libraries = template.Libraries ?? new List<SkinLibraryInfo>();
+                    result.AddRange(GetTemplateLibraryResources(libraries));
+
+                    foreach (var item in template.CssFiles ?? Enumerable.Empty<string>())
+                    {
+                        result.Add(new PageResourceInfo()
+                        {
+                            ResourceType = "css",
+                            FilePath = skin.SkinPath + "/" + item,
+                            LoadOrder = result.Count,
+                            IsBaseResource = true,
+                            IsActive = true
+                        });
+                    }
+
+                    foreach (var item in template.JsFiles ?? Enumerable.Empty<string>())
+                    {
+                        result.Add(new PageResourceInfo()
+                        {
+                            ResourceType = "js",
+                            FilePath = skin.SkinPath + "/" + item,
+                            LoadOrder = result.Count,
+                            IsBaseResource = true,
+                            IsActive = true
+                        });
+                    }
+                }
+
+                //Add skin base resources
                 foreach (var item in skin.BaseCssFiles ?? Enumerable.Empty<string>())
                 {
                     result.Add(new PageResourceInfo()
                     {
                         ResourceType = "css",
                         FilePath = skin.SkinPath + "/" + item,
-                        LoadOrder = result.Count
+                        LoadOrder = result.Count,
+                        IsBaseResource = true,
+                        IsActive = true
                     });
                 }
 
@@ -223,113 +356,10 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.ModuleBuilder
                     {
                         ResourceType = "js",
                         FilePath = skin.SkinPath + "/" + item,
-                        LoadOrder = result.Count
+                        LoadOrder = result.Count,
+                        IsBaseResource = true,
+                        IsActive = true
                     });
-                }
-
-                if (module.ModuleType == "Dashboard")
-                {
-                    foreach (var template in skin.DashboardTemplates ?? Enumerable.Empty<SkinTemplateInfo>())
-                    {
-                        foreach (var item in template.CssFiles ?? Enumerable.Empty<string>())
-                        {
-                            result.Add(new PageResourceInfo()
-                            {
-                                ResourceType = "css",
-                                FilePath = skin.SkinPath + "/" + item,
-                                LoadOrder = result.Count
-                            });
-                        }
-
-                        foreach (var item in template.JsFiles ?? Enumerable.Empty<string>())
-                        {
-                            result.Add(new PageResourceInfo()
-                            {
-                                ResourceType = "js",
-                                FilePath = skin.SkinPath + "/" + item,
-                                LoadOrder = result.Count
-                            });
-                        }
-                    }
-                }
-
-                if (module.ModuleType == "Form")
-                {
-                    foreach (var template in skin.FormTemplates ?? Enumerable.Empty<SkinTemplateInfo>())
-                    {
-                        foreach (var item in template.CssFiles ?? Enumerable.Empty<string>())
-                        {
-                            result.Add(new PageResourceInfo()
-                            {
-                                ResourceType = "css",
-                                FilePath = skin.SkinPath + "/" + item,
-                                LoadOrder = result.Count
-                            });
-                        }
-
-                        foreach (var item in template.JsFiles ?? Enumerable.Empty<string>())
-                        {
-                            result.Add(new PageResourceInfo()
-                            {
-                                ResourceType = "js",
-                                FilePath = skin.SkinPath + "/" + item,
-                                LoadOrder = result.Count
-                            });
-                        }
-                    }
-                }
-
-                if (module.ModuleType == "List")
-                {
-
-                    foreach (var template in skin.ListTemplates ?? Enumerable.Empty<SkinTemplateInfo>())
-                    {
-                        foreach (var item in template.CssFiles ?? Enumerable.Empty<string>())
-                        {
-                            result.Add(new PageResourceInfo()
-                            {
-                                ResourceType = "css",
-                                FilePath = skin.SkinPath + "/" + item,
-                                LoadOrder = result.Count
-                            });
-                        }
-
-                        foreach (var item in template.JsFiles ?? Enumerable.Empty<string>())
-                        {
-                            result.Add(new PageResourceInfo()
-                            {
-                                ResourceType = "js",
-                                FilePath = skin.SkinPath + "/" + item,
-                                LoadOrder = result.Count
-                            });
-                        }
-                    }
-                }
-                if (module.ModuleType == "Details")
-                {
-
-                    foreach (var template in skin.DetailsTemplates ?? Enumerable.Empty<SkinTemplateInfo>())
-                    {
-                        foreach (var item in template.CssFiles ?? Enumerable.Empty<string>())
-                        {
-                            result.Add(new PageResourceInfo()
-                            {
-                                ResourceType = "css",
-                                FilePath = skin.SkinPath + "/" + item,
-                                LoadOrder = result.Count
-                            });
-                        }
-
-                        foreach (var item in template.JsFiles ?? Enumerable.Empty<string>())
-                        {
-                            result.Add(new PageResourceInfo()
-                            {
-                                ResourceType = "js",
-                                FilePath = skin.SkinPath + "/" + item,
-                                LoadOrder = result.Count
-                            });
-                        }
-                    }
                 }
             }
 
@@ -351,23 +381,46 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.ModuleBuilder
             var moduleFieldTypes = ModuleFieldRepository.Instance.GetModulesFieldTypes(string.Join(",", moduleIds));
             foreach (var fieldTypeName in moduleFieldTypes)
             {
-                var libraries = ModuleFieldTypeLibraryRepository.Instance.GetLibraries(fieldTypeName);
-                foreach (var lb in libraries)
+                var resources = ModuleFieldTypeLibraryRepository.Instance.GetLibraries(fieldTypeName);
+                foreach (var resource in resources)
                 {
-                    var library = LibraryRepository.Instance.GetLibrary(lb.LibraryID);
-                    var resources = LibraryRepository.Instance.GetLibraryResources(library.LibraryName, library.Version);
-                    result.AddRange(resources.Select(item => new PageResourceInfo()
+                    result.Add(new PageResourceInfo()
                     {
                         ModuleID = moduleID,
+                        LibraryName = resource.LibraryName,
+                        LibraryVersion = resource.Version,
+                        LibraryLogo = resource.Logo,
+                        ResourceType = resource.ResourceType,
+                        FilePath = resource.ResourcePath,
+                        FieldType = fieldTypeName,
+                        LoadOrder = resource.LoadOrder,
+                        IsActive = true
+                    });
+                }
+            }
+
+            return result;
+        }
+
+        private static List<PageResourceInfo> GetTemplateLibraryResources(IEnumerable<SkinLibraryInfo> libraries)
+        {
+            var result = new List<PageResourceInfo>();
+
+            foreach (var library in libraries)
+            {
+                var resources = LibraryRepository.Instance.GetLibraryResources(library.LibraryName, library.Version);
+                foreach (var item in resources ?? Enumerable.Empty<LibraryView>())
+                {
+                    result.Add(new PageResourceInfo()
+                    {
                         LibraryName = library.LibraryName,
                         LibraryVersion = library.Version,
-                        LibraryLogo = library.Logo,
                         ResourceType = item.ResourceType,
                         FilePath = item.ResourcePath,
-                        FieldType = fieldTypeName,
                         LoadOrder = item.LoadOrder,
+                        IsSystemResource = true,
                         IsActive = true
-                    }).OrderBy(item => item.LoadOrder));
+                    });
                 }
             }
 

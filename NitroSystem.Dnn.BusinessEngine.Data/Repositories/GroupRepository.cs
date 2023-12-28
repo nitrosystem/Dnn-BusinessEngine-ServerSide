@@ -35,7 +35,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
             }
         }
 
-        public Guid CheckExistsGroupOrCreateGroup(Guid scenarioID, string groupType, string groupName)
+        public Guid CheckExistsGroupOrCreateGroup(Guid scenarioID, int userID, string groupType, string groupName)
         {
             var group = GetGroupByName(scenarioID, groupType, groupName);
 
@@ -50,7 +50,9 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
                         GroupType = groupType,
                         GroupName = groupName,
                         CreatedOnDate = DateTime.Now,
-                        LastModifiedOnDate = DateTime.Now
+                        LastModifiedOnDate = DateTime.Now,
+                        CreatedByUserID = userID,
+                        LastModifiedByUserID = userID,
                     };
 
                     var rep = ctx.GetRepository<GroupInfo>();
@@ -94,6 +96,18 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
             {
                 var rep = ctx.GetRepository<GroupInfo>();
                 return rep.GetById(groupID);
+            }
+        }
+
+        public Guid? GetGroupID(string groupType, string groupName)
+        {
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                var rep = ctx.GetRepository<GroupInfo>();
+                var result = rep.Find("Where GroupType =@0 and GroupName =@1", groupType, groupName);
+                if (result.Any())
+                    return result.First().GroupID;
+                else return null;
             }
         }
 

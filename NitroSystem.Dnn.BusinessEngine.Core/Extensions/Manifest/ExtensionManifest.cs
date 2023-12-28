@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace NitroSystem.Dnn.BusinessEngine.Core.Extensions.Manifest
 {
-    public class ExtensionManifestInfo
+    public class ExtensionManifest
     {
         public Guid ExtensionID { get; set; }
         public string ExtensionName { get; set; }
         public string ExtensionType { get; set; }
         public string ExtensionImage { get; set; }
-        public string Title { get; set; }
+        public string FolderName { get; set; }
         public string VersionType { get; set; }
         public string Version { get; set; }
         public string Summary { get; set; }

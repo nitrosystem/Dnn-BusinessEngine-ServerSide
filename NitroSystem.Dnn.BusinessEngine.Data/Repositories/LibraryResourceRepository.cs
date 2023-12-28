@@ -59,18 +59,6 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
             DataCache.ClearCache(CachePrefix);
         }
 
-        public void DeleteResourcesByExtensionID(Guid extensionID)
-        {
-            LibraryResourceInfo objLibraryResourceInfo = GetResource(extensionID);
-            using (IDataContext ctx = DataContext.Instance())
-            {
-                var rep = ctx.GetRepository<LibraryResourceInfo>();
-                rep.Delete(objLibraryResourceInfo);
-            }
-
-            DataCache.ClearCache(CachePrefix);
-        }
-
         public LibraryResourceInfo GetResource(Guid resourceID)
         {
             using (IDataContext ctx = DataContext.Instance())

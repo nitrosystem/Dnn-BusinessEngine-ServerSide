@@ -105,7 +105,7 @@
     <Compile Include="Controllers\ServiceController.cs" />
     <Compile Include="Dto\DashboardPageSortDTO.cs" />
     <Compile Include="Dto\ExplorerItemDTO.cs" />
-    <Compile Include="Dto\ExtensionInstallDto.cs" />
+    <Compile Include="Dto\AvailableExtensionDTO.cs" />
     <Compile Include="Dto\FieldDataSourceDTO.cs" />
     <Compile Include="Dto\FieldDTO.cs" />
     <Compile Include="Dto\FieldSortDTO.cs" />
@@ -115,6 +115,7 @@
     <Compile Include="Dto\PageResourceDTO.cs" />
     <Compile Include="Dto\RenderedModuleDTO.cs" />
     <Compile Include="Enums\FieldDataSourceType.cs" />
+    <Compile Include="Mapping\LibraryMapping.cs" />
     <Compile Include="Mapping\EntityMapping.cs" />
     <Compile Include="Mapping\DashboardMapping.cs" />
     <Compile Include="Mapping\DefinedListMapping.cs" />
@@ -137,6 +138,7 @@
     <Compile Include="Startup\RouteMapper.cs" />
     <Compile Include="Startup\Startup.cs" />
     <Compile Include="ViewModels\ActionResultViewModel.cs" />
+    <Compile Include="ViewModels\LibraryViewModel.cs" />
     <Compile Include="ViewModels\ModuleVariableViewModel.cs" />
     <Compile Include="ViewModels\ServiceTypeViewModel.cs" />
     <Compile Include="ViewModels\ActionTypeViewModel.cs" />
