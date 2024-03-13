@@ -26,6 +26,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Dto
         public bool IsValuable { get; set; }
         public bool IsJsonValue { get; set; }
         public string Value { get; set; }
+        public string ThemeCssClass { get; set; }
         public IEnumerable<IExpressionInfo> ShowConditions { get; set; }
         public IEnumerable<IExpressionInfo> EnableConditions { get; set; }
         public IEnumerable<FieldValueInfo> FieldValues { get; set; }

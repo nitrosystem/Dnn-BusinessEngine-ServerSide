@@ -14,12 +14,10 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Entities.Tables
     public class ModuleFieldTypeLibraryInfo
     {
         public Guid ItemID { get; set; }
-        public Guid LibraryID { get; set; }
         public string FieldType { get; set; }
-        
-        [IgnoreColumn]
         public string LibraryName { get; set; }
-        [IgnoreColumn]
         public string Version { get; set; }
+        public int LoadOrder { get; set; }
+
     }
 }

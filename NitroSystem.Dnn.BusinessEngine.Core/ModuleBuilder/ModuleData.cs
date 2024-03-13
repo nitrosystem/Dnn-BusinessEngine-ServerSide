@@ -26,19 +26,19 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.ModuleBuilder
         private static IEnumerable<ModuleVariableInfo> _moduleVariables { get; set; }
 
         public event EventHandler OnChangeModuleData;
-        public Guid ModuleID { get; set; }
+        public Guid? ModuleID { get; set; }
 
         public ModuleData(IExpressionService expressionService)
         {
             this._expressionService = expressionService;
         }
 
-        public void InitModuleData(Guid moduleID, string connectionID, int userID, IDictionary<string, object> form, IDictionary<string, object> field, string pageUrl, bool clearData = false)
+        public void InitModuleData(Guid? moduleID, string connectionID, int userID, IDictionary<string, object> form, IDictionary<string, object> field, string pageUrl, bool clearData = false)
         {
             this.ModuleID = moduleID;
             this._connectionID = connectionID;
 
-            if (!clearData)
+            if (!clearData && moduleID!=null)
             {
                 var items = GetDbModuleData();
                 foreach (var item in items) this.Add(item.Key, item.Value);
@@ -223,7 +223,8 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.ModuleBuilder
 
         public void SetPageParam(string pageUrl)
         {
-            this._pageParams = new Uri(pageUrl).DecodeQueryParameters();
+            if (!string.IsNullOrWhiteSpace(pageUrl))
+                this._pageParams = new Uri(pageUrl).DecodeQueryParameters();
             //this._pageParams = !string.IsNullOrWhiteSpace(pageUrl) ? new Uri(pageUrl) : null;
         }
 
@@ -239,7 +240,9 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.ModuleBuilder
 
         internal IEnumerable<ModuleVariableInfo> GetVariables(Guid? moduleID = null)
         {
-            var result = ModuleVariableRepository.Instance.GetVariables(moduleID == null ? this.ModuleID : moduleID.Value);
+            if (moduleID == null && this.ModuleID == null) return Enumerable.Empty<ModuleVariableInfo>();
+
+            var result = ModuleVariableRepository.Instance.GetVariables(moduleID == null ? this.ModuleID.Value : moduleID.Value);
             return result;
         }
 
@@ -259,6 +262,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.ModuleBuilder
 
         private void UpdateDbModuleData()
         {
+            if (this.ModuleID == null) return;
 
             var spParams = new Dictionary<string, object>();
             spParams.Add("@ConnectionID", this._connectionID);

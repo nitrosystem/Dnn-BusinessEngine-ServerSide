@@ -97,7 +97,7 @@
     <Compile Include="Contract\IExpressionService.cs" />
     <Compile Include="Contract\IModuleData.cs" />
     <Compile Include="Contract\TokenBase.cs" />
-    <Compile Include="Dto\ModuleVariableDto.cs" />
+    <Compile Include="DTO\ModuleVariableDto.cs" />
     <Compile Include="Enums\Scope.cs" />
     <Compile Include="Enums\VariableScope.cs" />
     <Compile Include="Extensions\InstallProgressInfo.cs" />
@@ -149,7 +149,6 @@
     <Folder Include="Infrastructure\Logging\" />
     <Folder Include="Infrastructure\Middleware\" />
     <Folder Include="Infrastructure\Upgrade\" />
-    <Folder Include="Security\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

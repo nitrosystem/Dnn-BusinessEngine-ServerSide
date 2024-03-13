@@ -1,22 +1,14 @@
-﻿using DotNetNuke.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using DotNetNuke.DependencyInjection;
 using NitroSystem.Dnn.BusinessEngine.Framework.Contracts;
 using NitroSystem.Dnn.BusinessEngine.Framework.Services;
 using NitroSystem.Dnn.BusinessEngine.Core.Contract;
 using NitroSystem.Dnn.BusinessEngine.Core.ModuleBuilder;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Http;
-using NitroSystem.Dnn.BusinessEngine.Api.Base;
-using DotNetNuke.Abstractions.Portals;
-using DotNetNuke.Entities.Portals;
+
 
 namespace NitroSystem.Dnn.BusinessEngine.Api.Startup
 {
-    class Startup : IDnnStartup
+    internal class Startup : IDnnStartup
     {
         public void ConfigureServices(IServiceCollection services)
         {

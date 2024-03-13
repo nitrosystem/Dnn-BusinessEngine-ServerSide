@@ -79,7 +79,15 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
 
         public ServiceInfo GetServiceByName(Guid scenarioID, string serviceName, bool isEnabled)
         {
-            return GetServices().FirstOrDefault(s => s.ScenarioID == scenarioID && s.ServiceName == serviceName && (!isEnabled || s.IsEnabled));
+            return GetServices().FirstOrDefault(s => s.ScenarioID == scenarioID && s.ServiceName == serviceName && s.IsEnabled == isEnabled);
+        }
+
+        public ServiceInfo GetServiceByName(string scenarioName, string serviceName, bool isEnabled)
+        {
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                return ctx.ExecuteSingleOrDefault<ServiceInfo>(System.Data.CommandType.Text, "SELECT sr.* FROM dbo.BusinessEngine_Services sr INNER JOIN dbo.BusinessEngine_Scenarios s on sr.ScenarioID = sr.ScenarioID WHERE s.ScenarioName = @0 and sr.ServiceName = @1 and sr.IsEnabled = @2", scenarioName, serviceName, isEnabled);
+            }
         }
 
         public ServiceInfo GetServiceByID(int portalid, Guid serviceID, bool isEnabled)

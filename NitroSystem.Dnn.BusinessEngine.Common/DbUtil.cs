@@ -64,6 +64,60 @@ namespace NitroSystem.Dnn.BusinessEngine.Utilities
             ExecuteScalarSqlTransaction(query);
         }
 
+        public static SqlResultInfo ExecuteSqlTransaction(string query)
+        {
+            var result = new SqlResultInfo() { IsSuccess = true, Query = query };
+
+            using (SqlConnection connection = new SqlConnection(DataProvider.Instance().ConnectionString))
+            {
+                connection.Open();
+
+                SqlCommand command = connection.CreateCommand();
+                SqlTransaction transaction;
+
+                // Start a local transaction.
+                transaction = connection.BeginTransaction("SampleTransaction");
+
+                // Must assign both transaction object and connection
+                // to Command object for a pending local transaction
+                command.Connection = connection;
+                command.Transaction = transaction;
+
+                try
+                {
+                    command.CommandText = query;
+
+                    command.ExecuteNonQuery();
+
+                    // Attempt to commit the transaction.
+                    transaction.Commit();
+
+                    transaction.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    result.IsSuccess = false;
+                    result.ResultMessage = ex.Message;
+
+                    // Attempt to roll back the transaction.
+                    try
+                    {
+                        transaction.Rollback();
+                    }
+                    catch (Exception ex2)
+                    {
+                        // This catch block will handle any errors that may have occurred
+                        // on the server that would cause the rollback to fail, such as
+                        // a closed connection.
+                    }
+
+                    throw new Exception(ex.Message, ex);
+                }
+            }
+
+            return result;
+        }
+
         public static SqlResultInfo ExecuteScalarSqlTransaction(string query)
         {
             var result = new SqlResultInfo() { IsSuccess = true, Query = query };
@@ -376,21 +430,21 @@ namespace NitroSystem.Dnn.BusinessEngine.Utilities
 	                ) REFERENCES dbo.{3}
 	                (
 	                {4}
-	                ) ON UPDATE  {5}
-	                 ON DELETE  {6}
+	                ) {5}
+	                 {6}
             ";
 
             query += relationship.EnforceForReplication ? "" : "\n NOT FOR REPLICATION";
             query += relationship.EnforceForeignKeyConstraint ? "" : "\n ALTER TABLE dbo.{1} NOCHECK CONSTRAINT {0}";
 
-            relationship.DELETESpecification = relationship.DELETESpecification.Replace("NO_ACTION", "NO ACTION");
-            relationship.UPDATESpecification = relationship.UPDATESpecification.Replace("NO_ACTION", "NO ACTION");
+            relationship.DELETESpecification = string.IsNullOrEmpty(relationship.DELETESpecification) ? "" : "ON DELETE " + (relationship.DELETESpecification ?? "").Replace("NO_ACTION", "NO ACTION");
+            relationship.UPDATESpecification = string.IsNullOrEmpty(relationship.UPDATESpecification) ? "" : "ON UPDATE " + (relationship.UPDATESpecification ?? "").Replace("NO_ACTION", "NO ACTION");
 
-            relationship.DELETESpecification = relationship.DELETESpecification.Replace("SET_NULL", "SET NULL");
-            relationship.UPDATESpecification = relationship.UPDATESpecification.Replace("SET_NULL", "SET NULL");
+            relationship.DELETESpecification = (relationship.DELETESpecification ?? "").Replace("SET_NULL", "SET NULL");
+            relationship.UPDATESpecification = (relationship.UPDATESpecification ?? "").Replace("SET_NULL", "SET NULL");
 
-            relationship.DELETESpecification = relationship.DELETESpecification.Replace("SET_DEFAULT", "SET DEFAULT");
-            relationship.UPDATESpecification = relationship.UPDATESpecification.Replace("SET_DEFAULT", "SET DEFAULT");
+            relationship.DELETESpecification = (relationship.DELETESpecification ?? "").Replace("SET_DEFAULT", "SET DEFAULT");
+            relationship.UPDATESpecification = (relationship.UPDATESpecification ?? "").Replace("SET_DEFAULT", "SET DEFAULT");
 
             query = string.Format(query, relationship.RelationshipName, relationship.ChildEntityTableName, string.Join(",", relationship.Columns.Select(c => c.PrimaryKey)), relationship.ParentEntityTableName, string.Join(",", relationship.Columns.Select(c => c.ForeignKey)), relationship.UPDATESpecification, relationship.DELETESpecification);
 
@@ -398,5 +452,32 @@ namespace NitroSystem.Dnn.BusinessEngine.Utilities
 
             return result;
         }
+
+        public static bool AddColumnDefaultValue(string tableName, string columnName, object defaultValue, string prefix = "dbo")
+        {
+            string queryTemplate = @"ALTER TABLE {0}{1} ADD CONSTRAINT DF_{1}_{2} DEFAULT {3} FOR {2}";
+
+            prefix = string.IsNullOrWhiteSpace(prefix) ? "" : prefix + ".";
+
+            var query = string.Format(queryTemplate, prefix, tableName, columnName, defaultValue);
+
+            var result = ExecuteSqlTransaction(query);
+
+            return result.IsSuccess;
+        }
+
+        public static bool RemoveColumnDefaultValue(string tableName, string columnName, string prefix = "dbo")
+        {
+            string queryTemplate = @"ALTER TABLE {0}{1} DROP CONSTRAINT DF_{1}_{2}";
+
+            prefix = string.IsNullOrWhiteSpace(prefix) ? "" : prefix + ".";
+
+            var query = string.Format(queryTemplate, prefix, tableName, columnName);
+
+            var result = ExecuteSqlTransaction(query);
+
+            return result.IsSuccess;
+        }
+        
     }
 }

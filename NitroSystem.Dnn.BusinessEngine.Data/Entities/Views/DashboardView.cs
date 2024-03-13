@@ -16,7 +16,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Entities.Views
         public Guid DashboardID { get; set; }
         public Guid ModuleID { get; set; }
         public Guid ScenarioID { get; set; }
-        public int DashboardType { get; set; }
+        public byte DashboardType { get; set; }
         public string UniqueName { get; set; }
         public string ModuleName { get; set; }
         public string ModuleTitle { get; set; }

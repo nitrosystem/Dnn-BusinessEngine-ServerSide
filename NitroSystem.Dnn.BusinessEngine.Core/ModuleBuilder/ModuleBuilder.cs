@@ -42,7 +42,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.ModuleBuilder
             return styles.ToString();
         }
 
-        public static string GetModuleFieldsStyles(Guid moduleID)
+        public static string GetModuleFieldsThemeStyles(Guid moduleID)
         {
             StringBuilder styles = new StringBuilder();
 
@@ -54,7 +54,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.ModuleBuilder
                 moduleIds.AddRange(ModuleRepository.Instance.GetModuleIdsByParentID(moduleID));
             }
 
-            var cssFiles = ModuleFieldRepository.Instance.GetModulesFieldsCss(string.Join(",", moduleIds));
+            var cssFiles = ModuleFieldTypeThemeRepository.Instance.GetFieldsThemeCss(string.Join(",", moduleIds));
             foreach (var item in cssFiles)
             {
                 string cssFilePath = item.Replace("[EXTPATH]", "~/DesktopModules/BusinessEngine/extensions");
@@ -63,7 +63,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.ModuleBuilder
                 if (!string.IsNullOrEmpty(fieldStyle))
                 {
                     styles.AppendLine("/* --------------------------------------------------------");
-                    styles.AppendLine(string.Format("/* -----   {0}   -----", cssFilePath));
+                    styles.AppendLine(string.Format(" -----   {0}   -----", cssFilePath));
                     styles.AppendLine("-----------------------------------------------------------*/");
 
                     styles.AppendLine(fieldStyle);
@@ -94,17 +94,33 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.ModuleBuilder
             foreach (var fieldTypeName in moduleFieldTypes)
             {
                 var fieldType = fieldTypes.FirstOrDefault(ft => ft.FieldType == fieldTypeName);
-                if (fieldType != null && !string.IsNullOrEmpty(fieldType.FieldJsPath))
+                if (fieldType != null)
                 {
-                    scripts.AppendLine("//Start Field Type : " + fieldTypeName);
+                    if (!string.IsNullOrEmpty(fieldType.FieldJsPath))
+                    {
+                        scripts.AppendLine("//Start Field Type : " + fieldTypeName);
 
-                    string jsFilePath = fieldType.FieldJsPath.Replace("[EXTPATH]", "~/DesktopModules/BusinessEngine/extensions");
-                    var fieldScript = FileUtil.GetFileContent(HttpContext.Current.Server.MapPath(jsFilePath));
+                        string jsFilePath = fieldType.FieldJsPath.Replace("[EXTPATH]", "~/DesktopModules/BusinessEngine/extensions");
+                        var fieldScript = FileUtil.GetFileContent(HttpContext.Current.Server.MapPath(jsFilePath));
 
-                    scripts.AppendLine(fieldScript);
+                        scripts.AppendLine(fieldScript);
 
-                    scripts.AppendLine("//End Field Type : " + fieldTypeName);
-                    scripts.AppendLine(System.Environment.NewLine);
+                        scripts.AppendLine("//End Field Type : " + fieldTypeName);
+                        scripts.AppendLine(System.Environment.NewLine);
+                    }
+
+                    if (!string.IsNullOrEmpty(fieldType.DirectiveJsPath))
+                    {
+                        scripts.AppendLine("//Start Directive of Field Type : " + fieldTypeName);
+
+                        string jsFilePath = fieldType.DirectiveJsPath.Replace("[EXTPATH]", "~/DesktopModules/BusinessEngine/extensions");
+                        var fieldScript = FileUtil.GetFileContent(HttpContext.Current.Server.MapPath(jsFilePath));
+
+                        scripts.AppendLine(fieldScript);
+
+                        scripts.AppendLine("//End Directive of Field Type : " + fieldTypeName);
+                        scripts.AppendLine(System.Environment.NewLine);
+                    }
                 }
             }
 
@@ -203,7 +219,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.ModuleBuilder
         {
             var result = new List<PageResourceInfo>();
 
-            var skin = ModuleSkinManager.GetSkin(module.Skin);
+            var skin = ModuleSkinManager.GetSkin(module.ModuleID, module.ModuleName, module.ParentID, module.Skin);
             if (skin != null)
             {
                 IEnumerable<SkinLibraryInfo> libraries = new List<SkinLibraryInfo>();
@@ -381,21 +397,27 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.ModuleBuilder
             var moduleFieldTypes = ModuleFieldRepository.Instance.GetModulesFieldTypes(string.Join(",", moduleIds));
             foreach (var fieldTypeName in moduleFieldTypes)
             {
-                var resources = ModuleFieldTypeLibraryRepository.Instance.GetLibraries(fieldTypeName);
-                foreach (var resource in resources)
+                var libraries = ModuleFieldTypeLibraryRepository.Instance.GetLibraries(fieldTypeName);
+                foreach (var library in libraries)
                 {
-                    result.Add(new PageResourceInfo()
+                    var logo = LibraryRepository.Instance.GetLibraryLogo(library.LibraryName, library.Version);
+
+                    var resources = LibraryRepository.Instance.GetLibraryResources(library.LibraryName, library.Version);
+                    foreach (var resource in resources)
                     {
-                        ModuleID = moduleID,
-                        LibraryName = resource.LibraryName,
-                        LibraryVersion = resource.Version,
-                        LibraryLogo = resource.Logo,
-                        ResourceType = resource.ResourceType,
-                        FilePath = resource.ResourcePath,
-                        FieldType = fieldTypeName,
-                        LoadOrder = resource.LoadOrder,
-                        IsActive = true
-                    });
+                        result.Add(new PageResourceInfo()
+                        {
+                            ModuleID = moduleID,
+                            LibraryName = library.LibraryName,
+                            LibraryVersion = library.Version,
+                            LibraryLogo = logo,
+                            ResourceType = resource.ResourceType,
+                            FilePath = resource.ResourcePath,
+                            FieldType = fieldTypeName,
+                            IsActive = true
+                        });
+                    }
+
                 }
             }
 

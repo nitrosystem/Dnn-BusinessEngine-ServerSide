@@ -38,7 +38,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Modules
         {
             get
             {
-                return "Form";
+                return this.ModuleGuid != null ? ModuleRepository.Instance.GetModuleName(this.ModuleGuid.Value) : "";
             }
         }
 

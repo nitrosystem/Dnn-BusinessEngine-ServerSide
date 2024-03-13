@@ -80,6 +80,14 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
             }
         }
 
+        public string GetLibraryLogo(string libraryName, string version)
+        {
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                return ctx.ExecuteScalar<string>(System.Data.CommandType.Text, "Select Logo From dbo.BusinessEngine_Libraries Where LibraryName = @0 and Version = @1", libraryName, version);
+            }
+        }
+
         public IEnumerable<LibraryView> GetLibraryResources(string libraryName, string version)
         {
             using (IDataContext ctx = DataContext.Instance())

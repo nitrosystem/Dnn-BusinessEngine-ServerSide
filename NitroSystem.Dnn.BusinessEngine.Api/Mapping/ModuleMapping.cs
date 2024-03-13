@@ -55,7 +55,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Mapping
             {
                 cfg.CreateMap<ModuleInfo, ModuleViewModel>()
                 .ForMember(dest => dest.Settings, map => map.MapFrom(source => TypeCastingUtil<IDictionary<string, object>>.TryJsonCasting(source.Settings)))
-                .ForMember(dest => dest.ModuleSkin, map => { map.PreCondition(source => source != null && source.ModuleID != Guid.Empty); map.MapFrom(source => ModuleSkinManager.GetSkin(objModuleInfo.ParentID != null ? ModuleRepository.Instance.GetModule(objModuleInfo.ParentID.Value).Skin : objModuleInfo.Skin) ?? new ModuleSkinInfo()); });
+                .ForMember(dest => dest.ModuleSkin, map => { map.PreCondition(source => source != null && source.ModuleID != Guid.Empty); map.MapFrom(source => ModuleSkinManager.GetSkin(objModuleInfo.ModuleID, objModuleInfo.ModuleName, objModuleInfo.ParentID ,(objModuleInfo.ParentID != null ? ModuleRepository.Instance.GetModule(objModuleInfo.ParentID.Value).Skin : objModuleInfo.Skin)) ?? new ModuleSkinInfo()); });
             });
 
             IMapper mapper = config.CreateMapper();
@@ -66,9 +66,9 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Mapping
                 var scenarioName = ScenarioRepository.Instance.GetScenarioName(result.ScenarioID);
                 var ps = new PortalSettings(result.PortalID);
 
-                    result.CustomHtml = FileUtil.GetFileContent(string.Format("{0}/BusinessEngine/{1}/module--{2}/custom.html", ps.HomeSystemDirectoryMapPath, scenarioName, result.ModuleName));
-                    result.CustomJs = FileUtil.GetFileContent(string.Format("{0}/BusinessEngine/{1}/module--{2}/custom.js", ps.HomeSystemDirectoryMapPath, scenarioName, result.ModuleName));
-                    result.CustomCss = FileUtil.GetFileContent(string.Format("{0}/BusinessEngine/{1}/module--{2}/custom.css", ps.HomeSystemDirectoryMapPath, scenarioName, result.ModuleName));
+                result.CustomHtml = FileUtil.GetFileContent(string.Format("{0}/BusinessEngine/{1}/module--{2}/custom.html", ps.HomeSystemDirectoryMapPath, scenarioName, result.ModuleName));
+                result.CustomJs = FileUtil.GetFileContent(string.Format("{0}/BusinessEngine/{1}/module--{2}/custom.js", ps.HomeSystemDirectoryMapPath, scenarioName, result.ModuleName));
+                result.CustomCss = FileUtil.GetFileContent(string.Format("{0}/BusinessEngine/{1}/module--{2}/custom.css", ps.HomeSystemDirectoryMapPath, scenarioName, result.ModuleName));
             }
 
             return result;

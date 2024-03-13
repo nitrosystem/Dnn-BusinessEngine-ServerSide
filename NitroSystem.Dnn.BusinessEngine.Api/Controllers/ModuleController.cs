@@ -65,14 +65,14 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
 
                 var module = ModuleRepository.Instance.GetModuleView(moduleGuid);
                 if (module == null) throw new Exception("Module Not Config");
-                
+
                 string moduleTemplateUrl = "";
+                string moduleTemplateJsUrl = "";
                 string moduleTemplateCssUrl = "";
 
                 this._moduleData.InitModuleData(moduleGuid, connectionID, this.UserInfo.UserID, null, null, postData.PageUrl, !module.IsSSR);
-                
 
-                await _actionWorker.CallActions(moduleGuid, null, "OnPageInit"); // call "OnPageInit" event actions. Not important server side
+                await this._actionWorker.CallActions(moduleGuid, null, "OnPageInit"); // call "OnPageInit" event actions. Not important server side
 
                 IEnumerable<FieldDTO> fields = null;
                 if (module.ModuleBuilderType != "HtmlEditor")
@@ -82,15 +82,18 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
 
                 if (!module.IsSSR)
                 {
-                    await _actionWorker.CallActions(moduleGuid, null, "OnPageLoad"); // call "OnPageLoad" event actions that are server side
+                    await this._actionWorker.CallActions(moduleGuid, null, "OnPageLoad"); // call "OnPageLoad" event actions that are server side
 
                     var modulePath = (PortalSettings.PortalId == module.PortalID ? PortalSettings.HomeSystemDirectory : new PortalSettings(module.PortalID).HomeSystemDirectory) + @"BusinessEngine/";
                     moduleTemplateUrl = module.ModuleBuilderType != "HtmlEditor" ?
                         string.Format("{0}/{1}/module--{2}.html?ver={3}-{4}", modulePath, module.ScenarioName, module.ModuleName, Host.CrmVersion, module.Version) :
                         string.Format("{0}/{1}/module--{2}/custom.html?ver={3}-{4}", modulePath, module.ScenarioName, module.ModuleName, Host.CrmVersion, module.Version);
 
-                    if (module.ParentID != null && module.ModuleBuilderType == "HtmlEditor")
+                    if (module.ModuleBuilderType == "HtmlEditor")
+                    {
+                        moduleTemplateJsUrl = string.Format("{0}/{1}/module--{2}/custom.js?ver={3}-{4}", modulePath, module.ScenarioName, module.ModuleName, Host.CrmVersion, module.Version);
                         moduleTemplateCssUrl = string.Format("{0}/{1}/module--{2}/custom.css?ver={3}-{4}", modulePath, module.ScenarioName, module.ModuleName, Host.CrmVersion, module.Version);
+                    }
                 }
 
                 foreach (var field in fields ?? Enumerable.Empty<FieldDTO>())
@@ -127,6 +130,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                     Actions = actions,
                     ModuleBuilderType = module.ModuleBuilderType,
                     ModuleTemplateUrl = moduleTemplateUrl,
+                    ModuleTemplateJsUrl = moduleTemplateJsUrl,
                     ModuleTemplateCssUrl = moduleTemplateCssUrl,
                     ConnectionID = connectionID,
                     Variables = variables,
@@ -190,7 +194,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
             {
                 this._moduleData.InitModuleData(action.ModuleID, action.ConnectionID, this.UserInfo.UserID, action.Form, action.Field, action.PageUrl);
 
-                var result = await _actionWorker.CallAction(action.ActionID);
+                var result = await this._actionWorker.CallAction(action.ActionID);
 
                 var serviceResult = (result as ServiceResult);
                 if (serviceResult != null && serviceResult.IsError)

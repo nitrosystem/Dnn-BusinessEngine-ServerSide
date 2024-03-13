@@ -35,7 +35,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.ViewModels
         public string Description { get; set; }
         public int ViewOrder { get; set; }
         public int GroupViewOrder { get; set; }
-
         public IEnumerable<ModuleFieldTypeTemplateInfo> Templates { get; set; }
+        public IEnumerable<ModuleFieldTypeThemeInfo> Themes { get; set; }
     }
 }

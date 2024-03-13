@@ -15,6 +15,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.Appearance
         public string LayoutCssPath { get; set; }
         public string Description { get; set; }
         public bool IsPanel { get; set; }
+        public bool ShowInDashboard { get; set; }
         public JObject BodyOptions { get; set; }
         public IEnumerable<SkinLibraryInfo> Libraries { get; set; }
         public string[] CssFiles { get; set; }

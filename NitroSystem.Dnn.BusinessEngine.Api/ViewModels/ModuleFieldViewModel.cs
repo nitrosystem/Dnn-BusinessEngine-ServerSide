@@ -20,6 +20,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.ViewModels
         public Guid? ParentID { get; set; }
         public string PaneName { get; set; }
         public string Template { get; set; }
+        public string Theme { get; set; }
         public string FieldType { get; set; }
         public string FieldText { get; set; }
         public bool IsGroup { get; set; }

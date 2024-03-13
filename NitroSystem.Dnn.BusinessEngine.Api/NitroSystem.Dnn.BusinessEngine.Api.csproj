@@ -73,6 +73,7 @@
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
@@ -99,21 +100,21 @@
     <Compile Include="Components\Enums\FileUploadType.cs" />
     <Compile Include="Components\Enums\ListType.cs" />
     <Compile Include="Components\General.cs" />
+    <Compile Include="Contracts\IJWTAttribute.cs" />
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\ModuleController.cs" />
     <Compile Include="Controllers\StudioController.cs" />
-    <Compile Include="Controllers\ServiceController.cs" />
-    <Compile Include="Dto\DashboardPageSortDTO.cs" />
-    <Compile Include="Dto\ExplorerItemDTO.cs" />
-    <Compile Include="Dto\AvailableExtensionDTO.cs" />
-    <Compile Include="Dto\FieldDataSourceDTO.cs" />
-    <Compile Include="Dto\FieldDTO.cs" />
-    <Compile Include="Dto\FieldSortDTO.cs" />
-    <Compile Include="Dto\GuidDTO.cs" />
-    <Compile Include="Dto\ModuleDTO.cs" />
-    <Compile Include="Dto\ModuleResourceDTO.cs" />
-    <Compile Include="Dto\PageResourceDTO.cs" />
-    <Compile Include="Dto\RenderedModuleDTO.cs" />
+    <Compile Include="DTO\DashboardPageSortDTO.cs" />
+    <Compile Include="DTO\ExplorerItemDTO.cs" />
+    <Compile Include="DTO\AvailableExtensionDTO.cs" />
+    <Compile Include="DTO\FieldDataSourceDTO.cs" />
+    <Compile Include="DTO\FieldDTO.cs" />
+    <Compile Include="DTO\FieldSortDTO.cs" />
+    <Compile Include="DTO\GuidDTO.cs" />
+    <Compile Include="DTO\ModuleDTO.cs" />
+    <Compile Include="DTO\ModuleResourceDTO.cs" />
+    <Compile Include="DTO\PageResourceDTO.cs" />
+    <Compile Include="DTO\RenderedModuleDTO.cs" />
     <Compile Include="Enums\FieldDataSourceType.cs" />
     <Compile Include="Mapping\LibraryMapping.cs" />
     <Compile Include="Mapping\EntityMapping.cs" />
@@ -159,9 +160,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Contract\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\NitroSystem.Dnn.BusinessEngine.Common\NitroSystem.Dnn.BusinessEngine.Common.csproj">
       <Project>{91678844-5b48-4ee1-bdd0-cfca92ba1924}</Project>

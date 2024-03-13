@@ -135,7 +135,29 @@ namespace NitroSystem.Dnn.BusinessEngine.WebControls
             if (this.IsPanel && this.PanelResourcesControl != null)
             {
                 if (resourceType == "css")
-                    Core.Infrastructure.ClientResources.ClientResourceManager.RegisterStyleSheet(this.PanelResourcesControl, filepath, this.Version);
+                {
+                    bool notFound = true;
+
+                    if (1 == 1 || CultureInfo.CurrentCulture.TextInfo.IsRightToLeft)
+                    {
+                        string rtlFilePath = string.Empty;
+                        var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filepath);
+                        if (!string.IsNullOrEmpty(fileNameWithoutExtension) && fileNameWithoutExtension.ToLower().EndsWith(".min"))
+                            rtlFilePath = Path.GetDirectoryName(filepath) + @"\" + Path.GetFileNameWithoutExtension(fileNameWithoutExtension) + ".rtl.min" + Path.GetExtension(filepath);
+                        else
+                            rtlFilePath = Path.GetDirectoryName(filepath) + @"\" +
+                                Path.GetFileNameWithoutExtension(filepath) + ".rtl" + Path.GetExtension(filepath);
+
+                        if (File.Exists(MapPath(rtlFilePath)))
+                        {
+                            Core.Infrastructure.ClientResources.ClientResourceManager.RegisterStyleSheet(this.PanelResourcesControl, rtlFilePath, this.Version);
+                            notFound = false;
+                        }
+                    }
+
+                    if (notFound) Core.Infrastructure.ClientResources.ClientResourceManager.RegisterStyleSheet(this.PanelResourcesControl, filepath, this.Version);
+
+                }
                 if (resourceType == "js")
                     Core.Infrastructure.ClientResources.ClientResourceManager.RegisterScript(this.PanelResourcesControl, filepath, this.Version);
             }

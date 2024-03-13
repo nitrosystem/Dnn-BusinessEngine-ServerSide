@@ -34,6 +34,10 @@ using System.Resources;
 using System.Web.UI.WebControls;
 using NitroSystem.Dnn.BusinessEngine.Core.Infrastructure.TypeProvider;
 using System.Web.Hosting;
+using static Dapper.SqlMapper;
+using System.Text.RegularExpressions;
+using DotNetNuke.Entities.Controllers;
+using System.Reflection;
 
 namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
 {
@@ -44,11 +48,11 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public HttpResponseMessage AddDnnHostVersion()
+        public HttpResponseMessage ClearCacheAndAddCmsVersion()
         {
             try
             {
-                DotNetNuke.Entities.Controllers.HostController.Instance.Update("CrmVersion", (Host.CrmVersion + 1).ToString());
+                HostController.Instance.Update("CrmVersion", (Host.CrmVersion + 1).ToString());
 
                 DataCache.ClearCache();
 
@@ -116,7 +120,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public HttpResponseMessage SaveGroup(GroupInfo group)
         {
@@ -435,10 +439,11 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
             {
                 var scenarios = ScenarioRepository.Instance.GetScenarios();
 
-                var databases = DatabaseRepository.Instance.GetDatabases();
-
                 var scenarioID = Guid.Parse(Request.Headers.GetValues("ScenarioID").First());
+
                 var entities = EntityMapping.GetEntitiesViewModel(scenarioID);
+
+                var groups = GroupRepository.Instance.GetGroups(scenarioID).Where(g => g.ObjectType == "Entity");
 
                 var entity = EntityMapping.GetEntityViewModel(entityID);
 
@@ -450,8 +455,8 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                 return Request.CreateResponse(HttpStatusCode.OK, new
                 {
                     Scenarios = scenarios,
-                    Databases = databases,
                     Entities = entities,
+                    Groups = groups,
                     Entity = entity,
                     Relationships = relationships
                 });
@@ -506,7 +511,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                         query = query.Replace("{PrimaryColumnType}", primaryColumn.ColumnType);
                         query = query.Replace("{PrimaryIsIdentity}", primaryColumn.IsIdentity ? "IDENTITY (1, 1)" : "");
 
-                        var result = DbUtil.ExecuteScalarSqlTransaction(query);
+                        var result = DbUtil.ExecuteSqlTransaction(query);
 
                         if (!result.IsSuccess) throw new Exception(result.ResultMessage);
 
@@ -563,6 +568,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                         IsIdentity = column.IsIdentity,
                         IsComputedColumn = column.ColumnType.Trim().StartsWith("as "),
                         AllowNulls = column.AllowNulls,
+                        DefaultValue = column.DefaultValue,
                         Description = column.Description,
                         ViewOrder = viewOrder++
                     };
@@ -592,7 +598,12 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                             //column type is changes
                             else if (oldColumn != null && (column.ColumnType != oldColumn.ColumnType || column.AllowNulls != oldColumn.AllowNulls))
                                 DbUtil.ExecuteSql(string.Format("ALTER TABLE {0} ALTER COLUMN {1} {2} {3}", entity.TableName, column.ColumnName, column.ColumnType, !column.AllowNulls ? "NOT NULL" : "NULL"));
+
+                            //Remove the default value if deleted by the user
+                            if (!string.IsNullOrWhiteSpace(oldColumn.DefaultValue)) DbUtil.RemoveColumnDefaultValue(entity.TableName, column.ColumnName);
                         }
+
+                        if (!string.IsNullOrWhiteSpace(column.DefaultValue)) DbUtil.AddColumnDefaultValue(entity.TableName, column.ColumnName, column.DefaultValue);
                     }
 
                     if (isNewColumn)
@@ -682,6 +693,14 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
         {
             try
             {
+                var scenarioID = Guid.Parse(Request.Headers.GetValues("ScenarioID").First());
+
+                var scenarios = ScenarioRepository.Instance.GetScenarios();
+
+                var groups = GroupRepository.Instance.GetGroups(scenarioID).Where(g => g.ObjectType == "ViewModel");
+
+                var viewModels = ViewModelRepository.Instance.GetViewModels(scenarioID);
+
                 var entity = EntityMapping.GetEntityViewModel(entityID);
 
                 var viewModel = new ViewModelViewModel()
@@ -726,17 +745,20 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
             {
                 var scenarioID = Guid.Parse(Request.Headers.GetValues("ScenarioID").First());
 
-                var viewModel = ViewModelMapping.GetViewModelViewModel(viewModelID);
-
                 var scenarios = ScenarioRepository.Instance.GetScenarios();
+
+                var groups = GroupRepository.Instance.GetGroups(scenarioID).Where(g => g.ObjectType == "ViewModel");
 
                 var viewModels = ViewModelRepository.Instance.GetViewModels(scenarioID);
 
+                var viewModel = ViewModelMapping.GetViewModelViewModel(viewModelID);
+
                 return Request.CreateResponse(HttpStatusCode.OK, new
                 {
-                    ViewModel = viewModel,
                     Scenarios = scenarios,
+                    Groups = groups,
                     ViewModels = viewModels,
+                    ViewModel = viewModel,
                 });
             }
             catch (Exception ex)
@@ -880,9 +902,11 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
 
                 var scenarios = ScenarioRepository.Instance.GetScenarios();
 
-                var databases = DatabaseRepository.Instance.GetDatabases();
+                var scenarioID = Guid.Parse(Request.Headers.GetValues("ScenarioID").First());
 
-                var serviceTypes = ServiceMapping.GetServiceTypesViewModel();
+                var groups = GroupRepository.Instance.GetGroups(scenarioID).Where(g => g.ObjectType == "Service");
+
+                var serviceTypes = ServiceTypeRepository.Instance.GetServiceTypes();
 
                 IEnumerable<string> roles = null;
                 roles = RoleController.Instance.GetRoles(PortalSettings.PortalId).Cast<RoleInfo>().Select(r => r.RoleName);
@@ -894,7 +918,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                 {
                     Service = service,
                     Scenarios = scenarios,
-                    Databases = databases,
+                    Groups = groups,
                     Roles = roles,
                     ServiceTypes = serviceTypes
                 });
@@ -1742,8 +1766,6 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
         {
             try
             {
-                //var skins = ModuleSkinManager.GetSkins();
-
                 var skins = SkinRepository.Instance.GetSkins().Select(s =>
                 {
                     s.SkinImage = s.SkinImage.Replace("[ModulePath]", "/DesktopModules/BusinessEngine"); return s;
@@ -1759,11 +1781,13 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
 
         [HttpGet]
         [ValidateAntiForgeryToken]
-        public HttpResponseMessage GetModuleSkin(string skinName)
+        public HttpResponseMessage GetModuleSkin(Guid moduleID, string skinName)
         {
             try
             {
-                var skin = ModuleSkinManager.GetSkin(skinName);
+                var module = ModuleRepository.Instance.GetModule(moduleID);
+
+                var skin = ModuleSkinManager.GetSkin(moduleID, module.ModuleType, module.ParentID, skinName);
 
                 return Request.CreateResponse(HttpStatusCode.OK, skin);
             }
@@ -1862,7 +1886,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                     objModuleInfo.CreatedOnDate = DateTime.Now;
                     objModuleInfo.CreatedByUserID = this.UserInfo.UserID;
 
-                    objModuleInfo.ModuleID = ModuleRepository.Instance.AddModule(objModuleInfo);
+                    objModuleInfo.ModuleID = module.ModuleID = ModuleRepository.Instance.AddModule(objModuleInfo);
                 }
                 else
                 {
@@ -1872,6 +1896,8 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                 if (module.ModuleBuilderType == "HtmlEditor")
                 {
                     var scenario = ScenarioRepository.Instance.GetScenario(module.ScenarioID);
+
+                    HostController.Instance.Update("CrmVersion", (Host.CrmVersion + 1).ToString());
 
                     FileUtil.CreateTextFile(string.Format("{0}/BusinessEngine/{1}/module--{2}/custom.html", PortalSettings.HomeSystemDirectoryMapPath, scenario.ScenarioName, module.ModuleName), module.CustomHtml, true);
                     FileUtil.CreateTextFile(string.Format("{0}/BusinessEngine/{1}/module--{2}/custom.js", PortalSettings.HomeSystemDirectoryMapPath, scenario.ScenarioName, module.ModuleName), module.CustomJs, true);
@@ -1887,6 +1913,21 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                         int? tabID = ModuleRepository.Instance.GetModuleTabID(module.DnnModuleID.Value);
 
                         PageResourceRepository.Instance.DeletePageResources(module.ModuleID);
+
+                        var actionScripts = ModuleBuilder.GetModuleActionsScripts(module.ModuleID);
+                        var moduleActionFile = string.Format("{0}/BusinessEngine/{1}/module--{2}/custom-actions.js", this.PortalSettings.HomeSystemDirectory, scenario.ScenarioName, module.ModuleName);
+                        FileUtil.CreateTextFile(HttpContext.Current.Server.MapPath(moduleActionFile), actionScripts, true);
+                        PageResourceRepository.Instance.AddPageResource(new PageResourceInfo()
+                        {
+                            CmsPageID = tabID != null ? tabID.ToString() : null,
+                            ModuleID = module.ModuleID,
+                            ResourceType = "js",
+                            FilePath = moduleActionFile,
+                            IsSystemResource = true,
+                            IsActive = true,
+                            Version = module.Version.ToString(),
+                            LoadOrder = 0,
+                        });
 
                         PageResourceRepository.Instance.AddPageResource(new PageResourceInfo()
                         {
@@ -1911,6 +1952,29 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                             Version = module.Version.ToString(),
                             LoadOrder = 2,
                         });
+
+                        //Get module base libraries resources
+                        var baseLibraries = ModuleBuilder.GetModuleBaseResources();
+                        foreach (var item in baseLibraries)
+                        {
+                            bool isActive = item.LibraryName == "client-app-debug" ? false : true;
+                            PageResourceRepository.Instance.AddPageResource(new PageResourceInfo()
+                            {
+                                CmsPageID = tabID != null ? tabID.ToString() : null,
+                                ModuleID = module.ModuleID,
+                                IsBaseResource = true,
+                                LibraryName = item.LibraryName,
+                                LibraryVersion = item.Version,
+                                LibraryLogo = item.LibraryLogo,
+                                ResourceType = item.ResourceType,
+                                FilePath = item.ResourcePath,
+                                LoadOrder = item.LoadOrder,
+                                IsActive = isActive,
+                                Version = module.Version.ToString(),
+                            });
+                        }
+
+                        ModuleRepository.Instance.UpdateModuleVersion(module.ModuleID);
                     }
                 }
 
@@ -1918,6 +1982,8 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
 
                 DataCache.ClearCache("BEModule_" + objModuleInfo.ModuleID);
                 DataCache.ClearCache("BEModuleFieldsView_" + objModuleInfo.ModuleID);
+
+                ClearCacheAndAddCmsVersion();
 
                 return Request.CreateResponse(HttpStatusCode.OK, objModuleInfo.ModuleID);
             }
@@ -1944,15 +2010,19 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                     var parentModuleID = postData.ParentID != null ? module.ParentID.Value : module.ModuleID;
                     var parentModule = parentModuleID == moduleGuid ? module : ModuleRepository.Instance.GetModuleView(parentModuleID);
 
+                    //Create module custom css styles in module--[module-name].css
                     var moduleStyles = ModuleBuilder.GetModuleStyles(parentModuleID);
                     FileUtil.CreateTextFile(string.Format("{0}/BusinessEngine/{1}/module--{2}.css", PortalSettings.HomeSystemDirectoryMapPath, parentModule.ScenarioName, parentModule.ModuleName), moduleStyles, true);
 
-                    var fieldsStyles = ModuleBuilder.GetModuleFieldsStyles(parentModuleID);
+                    //Create module fields custom css styles in module-fields--.[module-name].css
+                    var fieldsStyles = ModuleBuilder.GetModuleFieldsThemeStyles(parentModuleID);
                     FileUtil.CreateTextFile(string.Format("{0}/BusinessEngine/{1}/module-fields--{2}.css", PortalSettings.HomeSystemDirectoryMapPath, parentModule.ScenarioName, parentModule.ModuleName), fieldsStyles, true);
 
+                    //Create module custom javascripts in module--.[module-name].js
                     var fieldScripts = ModuleBuilder.GetModuleFieldsScripts(parentModuleID);
                     FileUtil.CreateTextFile(string.Format("{0}/BusinessEngine/{1}/module--{2}.js", PortalSettings.HomeSystemDirectoryMapPath, parentModule.ScenarioName, parentModule.ModuleName), fieldScripts, true);
 
+                    //Create module actions in module-action--.[module-name].js
                     var actionScripts = ModuleBuilder.GetModuleActionsScripts(parentModuleID);
                     FileUtil.CreateTextFile(string.Format("{0}/BusinessEngine/{1}/module-action--{2}.js", PortalSettings.HomeSystemDirectoryMapPath, parentModule.ScenarioName, parentModule.ModuleName), actionScripts, true);
 
@@ -1981,6 +2051,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                         });
                     }
 
+                    //Get used libraries for fields of the module 
                     var fieldResources = ModuleBuilder.GetModuleFieldsLibraryResources(parentModuleID);
                     foreach (var item in fieldResources)
                     {
@@ -2033,6 +2104,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
 
                     var pageResources = PageResourceRepository.Instance.GetActivePageResourceFilePaths(tabID.Value.ToString());
 
+                    var index = 0;
                     foreach (var item in resources ?? Enumerable.Empty<PageResourceInfo>())
                     {
                         PageResourceRepository.Instance.AddPageResource(new PageResourceInfo()
@@ -2049,7 +2121,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                             IsSystemResource = item.IsSystemResource,
                             IsActive = item.IsActive == false ? item.IsActive : !pageResources.Contains(item.FilePath),
                             Version = module.Version.ToString(),
-                            LoadOrder = item.LoadOrder,
+                            LoadOrder = index++,
                         });
                     }
 
@@ -2061,6 +2133,8 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                 DataCache.ClearCache("BEModule_");
                 DataCache.ClearCache("BEModuleFieldsView_");
                 DataCache.ClearCache("BEDashboardModuleTemplate_");
+
+                ClearCacheAndAddCmsVersion();
 
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
@@ -2089,8 +2163,9 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                         ModuleID = moduleID,
                         CmsPageID = tabID != null ? tabID.ToString() : null,
                         ResourceType = item.ResourceType,
-                        IsCustomResource = true,
                         FilePath = item.FilePath,
+                        IsCustomResource = true,
+                        IsActive = true,
                         Version = module.Version.ToString(),
                         LoadOrder = item.LoadOrder,
                     });
@@ -2159,6 +2234,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                     FieldName = field.FieldName,
                     PaneName = field.PaneName,
                     Template = field.Template,
+                    Theme = field.Theme,
                     ParentID = field.ParentID,
                     FieldText = field.FieldText,
                     IsGroup = field.IsGroup,

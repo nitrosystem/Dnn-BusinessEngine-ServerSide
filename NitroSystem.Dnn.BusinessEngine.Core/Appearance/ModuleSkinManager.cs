@@ -25,7 +25,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.Appearance
                 var skins = SkinRepository.Instance.GetSkins();
                 foreach (var objSkinInfo in skins)
                 {
-                    result.Add(GetSkin(objSkinInfo));
+                    result.Add(GetSkin(Guid.Empty, string.Empty, null, objSkinInfo));
                 }
 
                 DataCache.SetCache(cachePrefix, result);
@@ -34,7 +34,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.Appearance
             return result;
         }
 
-        public static ModuleSkinInfo GetSkin(SkinInfo objSkinInfo)
+        public static ModuleSkinInfo GetSkin(Guid moduleID, string moduleType, Guid? parentID, SkinInfo objSkinInfo)
         {
             if (objSkinInfo == null) return null;
 
@@ -49,6 +49,18 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.Appearance
 
                 result = JsonConvert.DeserializeObject<ModuleSkinInfo>(skinJson);
                 result.SkinPath = objSkinInfo.SkinPath.Replace("[ModulePath]", "/DesktopModules/BusinessEngine");
+                if (moduleType == "Dashboard")
+                {
+                    var dashboardType = DashboardRepository.Instance.GetDashboardType(moduleID);
+                    result.DashboardTemplates = result.DashboardTemplates.Where(t => (t.IsPanel && dashboardType == 1) || (!t.IsPanel && dashboardType == 2));
+                }
+
+                else if (moduleType != "Dashboard" && parentID == null)
+                {
+                    result.FormTemplates = result.FormTemplates.Where(t => (!t.ShowInDashboard));
+                    result.ListTemplates = result.ListTemplates.Where(t => (!t.ShowInDashboard));
+                    result.DetailsTemplates = result.DetailsTemplates.Where(t => (!t.ShowInDashboard));
+                }
 
                 DataCache.SetCache(cachePrefix, result);
             }
@@ -56,10 +68,10 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.Appearance
             return result;
         }
 
-        public static ModuleSkinInfo GetSkin(string skinName)
+        public static ModuleSkinInfo GetSkin(Guid moduleID, string moduleType, Guid? moduleParentID, string skinName)
         {
             SkinInfo objSkinInfo = SkinRepository.Instance.GetSkin(skinName);
-            return GetSkin(objSkinInfo);
+            return GetSkin(moduleID, moduleType, moduleParentID, objSkinInfo);
         }
     }
 }

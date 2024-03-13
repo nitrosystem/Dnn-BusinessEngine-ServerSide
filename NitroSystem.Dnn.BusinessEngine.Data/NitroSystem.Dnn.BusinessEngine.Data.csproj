@@ -69,6 +69,7 @@
     <Compile Include="Entities\Tables\ModuleFieldTypeLibraryInfo.cs" />
     <Compile Include="Entities\Tables\LibraryInfo.cs" />
     <Compile Include="Entities\Tables\LogInfo.cs" />
+    <Compile Include="Entities\Tables\ModuleFieldTypeThemeInfo.cs" />
     <Compile Include="Entities\Tables\ModuleFieldTypeTemplateInfo.cs" />
     <Compile Include="Entities\Tables\LibraryResourceInfo.cs" />
     <Compile Include="Entities\Tables\ExtensionInfo.cs" />
@@ -122,6 +123,7 @@
     <Compile Include="Repositories\ModuleFieldTypeLibraryRepository.cs" />
     <Compile Include="Repositories\LibraryRepository.cs" />
     <Compile Include="Repositories\LogRepository.cs" />
+    <Compile Include="Repositories\ModuleFieldTypeThemeRepository.cs" />
     <Compile Include="Repositories\ModuleFieldTypeTemplateRepository.cs" />
     <Compile Include="Repositories\LibraryResourceRepository.cs" />
     <Compile Include="Repositories\ExtensionRepository.cs" />

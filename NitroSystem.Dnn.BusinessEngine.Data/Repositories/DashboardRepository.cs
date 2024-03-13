@@ -116,5 +116,10 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
 
             return result;
         }
+
+        public byte GetDashboardType(Guid moduleID)
+        {
+            return (this.GetDashboardByModuleID(moduleID) ?? new DashboardView()).DashboardType;
+        }
     }
 }

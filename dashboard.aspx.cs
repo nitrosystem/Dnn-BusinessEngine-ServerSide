@@ -202,10 +202,20 @@ namespace NitroSystem.Dnn.BusinessEngine
 
         public string BodyClass { get; set; }
 
+        public DateTime Today
+        {
+            get
+            {
+                return DateTime.Today;
+            }
+        }
+
         #endregion
 
+        #region Methods
+
         protected void Page_Init(object sender, EventArgs e)
-         {
+        {
             pnlAntiForgery.Controls.Add(new LiteralControl(AntiForgery.GetHtml().ToHtmlString()));
         }
 
@@ -229,7 +239,7 @@ namespace NitroSystem.Dnn.BusinessEngine
 
                 CtlPageResource.RegisterPageResources();
 
-                var skin = ModuleSkinManager.GetSkin(this.DashboardInfo.Skin);
+                var skin = ModuleSkinManager.GetSkin(this.DashboardInfo.ModuleID, this.DashboardInfo.ModuleName, null, this.DashboardInfo.Skin);
                 if (skin != null)
                 {
                     var template = skin.DashboardTemplates.FirstOrDefault(t => t.TemplateName == this.DashboardInfo.Template);
@@ -243,5 +253,7 @@ namespace NitroSystem.Dnn.BusinessEngine
 
             if (string.IsNullOrEmpty(this.BodyID)) this.BodyID = "bEngineDashboard";
         }
+
+        #endregion
     }
 }

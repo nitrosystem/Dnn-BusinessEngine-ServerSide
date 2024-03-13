@@ -4,7 +4,7 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml" dir="rtl" ng-app="BusinessEngineClientApp">
+<html xmlns="http://www.w3.org/1999/xhtml" ng-app="BusinessEngineClientApp">
 <head id="Head" runat="server" ViewStateMode="Disabled">
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -14,9 +14,9 @@
 </head>
 <body id="<%=this.BodyID%>" class="<%=this.BodyClass%>">
     <b:PageResource id="CtlPageResource" runat="server" />
-    <div id="pnlDashboard<%=this.ModuleGuid%>" ng-controller="dashboardController as $" ng-init="$.onInitModule('<%=this.ModuleGuid%>', '<%=this.ModuleName%>','<%=this.ConnectionID%>')">
+    <div id="pnlDashboard<%=this.ModuleGuid%>" ng-controller="dashboardController as $" ng-init="$.onInitModule('<%=this.ModuleGuid%>', '<%=this.ModuleName%>','<%=this.ConnectionID%>','<%=this.Today %>')">
         <div id="pnlBusinessEngine<%=this.ModuleGuid%>" data-module="<%=this.ModuleGuid%>" ng-controller="moduleController as $"
-            ng-init="$.onInitModule('<%=this.ModuleGuid%>', '<%=this.ModuleName%>','<%=this.ConnectionID%>')">
+            ng-init="$.onInitModule(<%=this.DnnModuleID%>,'<%=this.ModuleGuid%>', '<%=this.ModuleName%>','<%=this.ConnectionID%>')">
         </div>
         <div id="dashboardNgScripts"></div>
     </div>

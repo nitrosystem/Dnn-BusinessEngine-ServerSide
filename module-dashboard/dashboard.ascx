@@ -12,9 +12,9 @@
 
 <%else
     { %>
-<div b-ng-app="BusinessEngineClientApp" data-module="<%=this.ModuleGuid%>" id="pnlDashboard<%=this.ModuleGuid%>" ng-controller="dashboardController as $" ng-init="$.onInitModule('<%=this.ModuleGuid%>', '<%=this.ModuleName%>','<%=this.ConnectionID%>')" class="b-engine-module <%=this.bRtlCssClass%>">
+<div b-ng-app="BusinessEngineClientApp" data-module="<%=this.ModuleGuid%>" id="pnlDashboard<%=this.ModuleGuid%>" ng-controller="dashboardController as $" ng-init="$.onInitModule(<%=this.ModuleId%>,'<%=this.ModuleGuid%>', '<%=this.ModuleName%>','<%=this.ConnectionID%>')" class="b-engine-module <%=this.bRtlCssClass%>">
     <div id="pnlBusinessEngine<%=this.ModuleGuid%>" data-module="<%=this.ModuleGuid%>" ng-controller="moduleController as $"
-        ng-init="$.onInitModule('<%=this.ModuleGuid%>', '<%=this.ModuleName%>','<%=this.ConnectionID%>')">
+        ng-init="$.onInitModule(<%=this.ModuleId%>,'<%=this.ModuleGuid%>', '<%=this.ModuleName%>','<%=this.ConnectionID%>')">
         <asp:PlaceHolder ID="pnlSSR2" runat="server"></asp:PlaceHolder>
     </div>
     <div id="dashboardNgScripts"></div>

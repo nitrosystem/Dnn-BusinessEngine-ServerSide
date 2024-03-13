@@ -11,11 +11,11 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.Contract
 {
     public interface IModuleData
     {
-        Guid ModuleID { get; set; }
+        Guid? ModuleID { get; set; }
 
         event EventHandler OnChangeModuleData;
 
-        void InitModuleData(Guid moduleID, string connectionID, int userID, IDictionary<string, object> form, IDictionary<string, object> field, string pageUrl, bool clearData = false);
+        void InitModuleData(Guid? moduleID, string connectionID, int userID, IDictionary<string, object> form, IDictionary<string, object> field, string pageUrl, bool clearData = false);
 
         void SetFieldItem(string fieldName, object field);
 

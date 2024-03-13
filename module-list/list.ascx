@@ -12,7 +12,7 @@
 
 <%else
     { %>
-<div id="pnlBusinessEngine<%=this.ModuleGuid%>" data-module="<%=this.ModuleGuid%>" b-ng-app="BusinessEngineClientApp" ng-controller="moduleController as $" ng-init="$.onInitModule('<%=this.ModuleGuid%>', '<%=this.ModuleName%>','<%=this.ConnectionID%>','<%=this.IsSSR%>','<%=this.IsDisabledFrontFramework%>')" class="b-engine-module  <%=this.bRtlCssClass%>">
+<div id="pnlBusinessEngine<%=this.ModuleGuid%>" data-module="<%=this.ModuleGuid%>" b-ng-app="BusinessEngineClientApp" ng-controller="moduleController as $" ng-init="$.onInitModule(<%=this.ModuleId%>,'<%=this.ModuleGuid%>', '<%=this.ModuleName%>','<%=this.ConnectionID%>','<%=this.IsSSR%>','<%=this.IsDisabledFrontFramework%>')" class="b-engine-module  <%=this.bRtlCssClass%>">
     <asp:PlaceHolder ID="pnlSSR2" runat="server"></asp:PlaceHolder>
 </div>
 <%} %>

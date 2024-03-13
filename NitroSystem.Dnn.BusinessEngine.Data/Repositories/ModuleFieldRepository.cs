@@ -119,13 +119,5 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
                 return ctx.ExecuteQuery<string>(System.Data.CommandType.Text, "Select Distinct LayoutCss From dbo.BusinessEngine_Modules Where LayoutCss is not null and ModuleID in (Select [RowValue] From dbo.ConvertListToTable(',',@0))", modules);
             }
         }
-
-        public IEnumerable<string> GetModulesFieldsCss(string modules)
-        {
-            using (IDataContext ctx = DataContext.Instance())
-            {
-                return ctx.ExecuteQuery<string>(System.Data.CommandType.Text, "Select Distinct CssPath From dbo.BusinessEngine_ModuleFieldTypeTemplates t inner join dbo.BusinessEngine_ModuleFields f on t.FieldType=f.FieldType Where t.CssPath is not null and f.ModuleID in (Select [RowValue] From dbo.ConvertListToTable(',',@0))", modules);
-            }
-        }
     }
 }

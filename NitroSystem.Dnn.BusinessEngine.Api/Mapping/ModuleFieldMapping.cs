@@ -59,7 +59,8 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Mapping
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<ModuleFieldTypeView, ModuleFieldTypeViewModel>()
-                .ForMember(dest => dest.Templates, map => map.MapFrom(source => ModuleFieldTypeTemplateRepository.Instance.GetTemplates(source.FieldType)));
+                .ForMember(dest => dest.Templates, map => map.MapFrom(source => ModuleFieldTypeTemplateRepository.Instance.GetTemplates(source.FieldType)))
+                .ForMember(dest => dest.Themes, map => map.MapFrom(source => ModuleFieldTypeThemeRepository.Instance.GetThemes(source.FieldType)));
             });
 
             IMapper mapper = config.CreateMapper();
@@ -197,6 +198,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Mapping
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<ModuleFieldInfo, FieldDTO>()
+                .ForMember(dest => dest.ThemeCssClass, map => map.MapFrom(source => ModuleFieldTypeThemeRepository.Instance.GetThemeCssClass(source.FieldType, source.Theme)))
                 .ForMember(dest => dest.ShowConditions, map => map.MapFrom(source => TypeCastingUtil<IEnumerable<ExpressionInfo>>.TryJsonCasting(source.ShowConditions)))
                 .ForMember(dest => dest.EnableConditions, map => map.MapFrom(source => TypeCastingUtil<IEnumerable<ExpressionInfo>>.TryJsonCasting(source.EnableConditions)))
                 .ForMember(dest => dest.FieldValues, map => map.MapFrom(source => TypeCastingUtil<IEnumerable<FieldValueInfo>>.TryJsonCasting(source.FieldValues)))
