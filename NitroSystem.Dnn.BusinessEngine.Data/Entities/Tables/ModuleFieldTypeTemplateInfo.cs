@@ -20,5 +20,8 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Entities.Tables
         public string TemplatePath { get; set; }
         public string Description { get; set; }
         public int ViewOrder { get; set; }
+
+        [IgnoreColumn]
+        public bool IsSkinTemplate { get; set; }
     }
 }

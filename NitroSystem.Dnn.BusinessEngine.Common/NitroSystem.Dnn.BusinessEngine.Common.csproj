@@ -91,6 +91,7 @@
     <Compile Include="CoockieUtil.cs" />
     <Compile Include="CustomMultipartFormDataStreamProviderChangeFileName.cs" />
     <Compile Include="CustomMultipartFormDataStreamProvider.cs" />
+    <Compile Include="DirectoryExtensions.cs" />
     <Compile Include="Models\TableRelationshipColumnInfo.cs" />
     <Compile Include="Models\SpParamInfo.cs" />
     <Compile Include="Models\SqlResultInfo.cs" />

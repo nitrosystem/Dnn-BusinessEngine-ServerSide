@@ -15,5 +15,6 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.Appearance
         public IEnumerable<SkinTemplateInfo> FormTemplates { get; set; }
         public IEnumerable<SkinTemplateInfo> ListTemplates { get; set; }
         public IEnumerable<SkinTemplateInfo> DetailsTemplates { get; set; }
+        public IEnumerable<FieldTypeInfo> FieldTypes { get; set; }
     }
 }

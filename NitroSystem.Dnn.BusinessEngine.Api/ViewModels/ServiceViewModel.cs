@@ -14,6 +14,8 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.ViewModels
         public Guid ServiceID { get; set; }
         public Guid ScenarioID { get; set; }
         public Guid? DatabaseID { get; set; }
+        public Guid? GroupID { get; set; }
+        public Guid? ViewModelID { get; set; }
         public string ServiceName { get; set; }
         public string ServiceType { get; set; }
         public string ServiceSubtype { get; set; }

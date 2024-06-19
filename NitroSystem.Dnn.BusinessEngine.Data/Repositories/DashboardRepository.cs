@@ -117,9 +117,27 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
             return result;
         }
 
-        public byte GetDashboardType(Guid moduleID)
+        public int GetDashboardType(Guid moduleID)
         {
             return (this.GetDashboardByModuleID(moduleID) ?? new DashboardView()).DashboardType;
+        }
+
+        public bool IsStandaloneDashboard(Guid moduleID)
+        {
+            string cacheKey = CachePrefix + "IsStandaloneDashboard_" + moduleID;
+
+            var result = DataCache.GetCache<bool?>(cacheKey);
+            if (result == null )
+            {
+                using (IDataContext ctx = DataContext.Instance())
+                {
+                    result = ctx.ExecuteScalar<bool?>(System.Data.CommandType.Text, "SELECT CASE WHEN EXISTS(SELECT TOP 1 DashboardID FROM dbo.BusinessEngine_Dashboards WHERE DashboardType = 1 and ModuleID = @0) THEN 1 ELSE 0 END", moduleID); ;
+
+                    DataCache.SetCache(cacheKey, result);
+                }
+            }
+
+            return result != null ? result.Value : false;
         }
     }
 }

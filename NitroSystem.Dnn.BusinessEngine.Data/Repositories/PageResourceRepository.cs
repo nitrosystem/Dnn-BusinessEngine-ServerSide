@@ -70,6 +70,17 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
             DataCache.ClearCache(CachePrefix);
         }
 
+        public void DeletePageResourcesByTabID(int tabID)
+        {
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                var rep = ctx.GetRepository<PageResourceInfo>();
+                rep.Delete("Where CmsPageID = @0", tabID);
+            }
+
+            DataCache.ClearCache(CachePrefix);
+        }
+
         public void DeleteCustomPageResources(Guid moduleID)
         {
             using (IDataContext ctx = DataContext.Instance())
@@ -145,7 +156,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
                 using (IDataContext ctx = DataContext.Instance())
                 {
                     var rep = ctx.GetRepository<PageResourceView>();
-                    result = rep.Get(cmsPageID).Where(p => p.IsActive).OrderBy(p => p.LoadOrder).Select(p => p.FilePath);
+                    result = rep.Get(cmsPageID).Where(p => p.IsActive).OrderBy(p => p.LoadOrder).Select(p => p.ResourcePath);
                 }
 
                 DataCache.SetCache(cacheKey, result);

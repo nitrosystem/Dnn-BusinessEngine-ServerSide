@@ -12,7 +12,7 @@
     </div>
 
     <script type="text/javascript">
-        var require = { paths: { 'vs': '/DesktopModules/BusinessEngine/client-resources/components/monaco-editor/0.44.0/vs' } };
+        var require = { paths: { 'vs': '/DesktopModules/BusinessEngine/client-resources/components/monaco-editor/0.47.0/vs' } };
 
         window.bEngineGlobalSettings = {
             scenarioName: '<%=this.ScenarioNameParam%>',

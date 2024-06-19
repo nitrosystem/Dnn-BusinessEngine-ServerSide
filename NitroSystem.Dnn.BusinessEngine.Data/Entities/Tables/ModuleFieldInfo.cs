@@ -17,8 +17,13 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Entities.Tables
         public Guid ModuleID { get; set; }
         public Guid? ParentID { get; set; }
         public string PaneName { get; set; }
+        public bool InheritTemplate { get; set; }
+        public bool InheritTheme { get; set; }
+        public bool IsSkinTemplate { get; set; }
+        public bool IsSkinTheme { get; set; }
         public string Template { get; set; }
         public string Theme { get; set; }
+        public string ThemeCssClass { get; set; }
         public string FieldType { get; set; }
         public string FieldName { get; set; }
         public string ViewModelProperty { get; set; }
@@ -33,6 +38,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Entities.Tables
         public string ShowConditions { get; set; }
         public string EnableConditions { get; set; }
         public string FieldValues { get; set; }
+        public string DataSource { get; set; }
         public string AuthorizationViewField { get; set; }
         public string Description { get; set; }
         public DateTime CreatedOnDate { get; set; }

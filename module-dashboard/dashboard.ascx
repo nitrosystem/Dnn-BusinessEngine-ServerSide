@@ -3,25 +3,23 @@
 
 <b:PageResource id="CtlPageResource" runat="server" />
 
-<%if (this.IsSSR && this.IsDisabledFrontFramework)
-    { %>
+<%if (this.IsSSR && this.IsDisabledFrontFramework){ %>
 <div class="b-engine-module">
     <asp:PlaceHolder ID="pnlSSR1" runat="server"></asp:PlaceHolder>
 </div>
 <%} %>
 
-<%else
-    { %>
-<div b-ng-app="BusinessEngineClientApp" data-module="<%=this.ModuleGuid%>" id="pnlDashboard<%=this.ModuleGuid%>" ng-controller="dashboardController as $" ng-init="$.onInitModule(<%=this.ModuleId%>,'<%=this.ModuleGuid%>', '<%=this.ModuleName%>','<%=this.ConnectionID%>')" class="b-engine-module <%=this.bRtlCssClass%>">
+<%else if (this.DashboardType==2){ %>
+<div b-ng-app="BusinessEngineClientApp" data-module="<%=this.ModuleGuid%>" id="pnlDashboard<%=this.ModuleGuid%>" ng-controller="dashboardController as $" ng-init="$.onInitModule('<%=this.ModuleGuid%>','<%=this.ModuleName%>','<%=this.ConnectionID%>')" class="b-engine-module <%=this.bRtlCssClass%>">
     <div id="pnlBusinessEngine<%=this.ModuleGuid%>" data-module="<%=this.ModuleGuid%>" ng-controller="moduleController as $"
-        ng-init="$.onInitModule(<%=this.ModuleId%>,'<%=this.ModuleGuid%>', '<%=this.ModuleName%>','<%=this.ConnectionID%>')">
+        ng-init="$.onInitModule(<%=this.ModuleId%>,'<%=this.ModuleGuid%>','<%=this.ModuleName%>','<%=this.ConnectionID%>')">
         <asp:PlaceHolder ID="pnlSSR2" runat="server"></asp:PlaceHolder>
     </div>
     <div id="dashboardNgScripts"></div>
 </div>
 <%} %>
 
-<asp:LinkButton ID="lnkOpenPanel"  CssClass="btn btn-primary margin-auto" Text="Goto Dashboard Panel" Visible="false" runat="server"/>
+<asp:LinkButton ID="lnkOpenPanel" CssClass="btn btn-primary margin-auto" Text="Goto Dashboard Panel" Visible="false" runat="server" />
 
 <script type="text/javascript">
     var bAppRegistered = [];

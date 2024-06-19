@@ -24,6 +24,7 @@
         scenarioName: '<%=this.ScenarioNameParam%>',
         portalID: parseInt('<%=this.PortalId%>'),
         portalAliasID: parseInt('<%=this.PortalAlias.PortalAliasID%>'),
+        userID: parseInt('<%=this.UserId%>'),
         dnnModuleID: parseInt('<%=this.ModuleId%>'),
         moduleID: '<%=this.ModuleGuid%>',
         moduleType: '<%=this.ModuleTypeParam%>',

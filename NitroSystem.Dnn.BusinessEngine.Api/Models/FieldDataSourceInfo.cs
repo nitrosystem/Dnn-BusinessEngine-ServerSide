@@ -23,5 +23,6 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Models
         public bool? RunServiceClientSide { get; set; }
         public IEnumerable<ParamInfo> ServiceParams { get; set; }
         public IEnumerable<ExpressionInfo> ListFilters { get; set; }
+        public IEnumerable<object> Items { get; set; }
     }
 }

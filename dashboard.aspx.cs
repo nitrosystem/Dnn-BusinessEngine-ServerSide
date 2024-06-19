@@ -19,6 +19,7 @@ using NitroSystem.Dnn.BusinessEngine.Core.Appearance;
 using System.Web.Security;
 using System.Web.Helpers;
 using System.Web.UI;
+using NitroSystem.Dnn.BusinessEngine.Services;
 
 namespace NitroSystem.Dnn.BusinessEngine
 {
@@ -156,6 +157,30 @@ namespace NitroSystem.Dnn.BusinessEngine
             }
         }
 
+        public bool IsSSR
+        {
+            get
+            {
+                if (this.ModuleGuid == null) return false;
+
+                var _isSSr = ModuleRepository.Instance.IsSSR(this.ModuleGuid.Value);
+
+                return _isSSr == null ? false : _isSSr.Value;
+            }
+        }
+
+        public bool IsDisabledFrontFramework
+        {
+            get
+            {
+                if (this.ModuleGuid == null) return false;
+
+                var _isDisabledFrontFramework = ModuleRepository.Instance.IsDisabledFrontFramework(this.ModuleGuid.Value);
+
+                return _isDisabledFrontFramework == null ? false : _isDisabledFrontFramework.Value;
+            }
+        }
+
         public string HTTPAlias
         {
             get
@@ -248,6 +273,15 @@ namespace NitroSystem.Dnn.BusinessEngine
                         this.BodyID = template.BodyOptions.Value<string>("id");
                         this.BodyClass = template.BodyOptions.Value<string>("class");
                     }
+                }
+
+                if (this.IsSSR)
+                {
+                    var renderedTemplate = Service.RenderSSR(this.Portal, this.ModuleGuid.Value, this.ConnectionID, this.SiteRoot + "default.aspx?" + this.Page.ClientQueryString, this.UserID);
+                    if (this.IsSSR && this.IsDisabledFrontFramework)
+                        pnlSSR1.Controls.Add(new LiteralControl(renderedTemplate));
+                    else
+                        pnlSSR2.Controls.Add(new LiteralControl(renderedTemplate));
                 }
             }
 

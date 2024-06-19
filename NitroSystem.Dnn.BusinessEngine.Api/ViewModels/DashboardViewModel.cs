@@ -21,6 +21,9 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.ViewModels
         public string Theme { get; set; }
         public int PortalID { get; set; }
         public int DnnModuleID { get; set; }
+        public string ModuleBuilderType { get; set; }
+        public bool IsSSR { get; set; }
+        public bool IsDisabledFrontFramework { get; set; }
         public string Description { get; set; }
         public DateTime CreatedOnDate { get; set; }
         public int CreatedByUserID { get; set; }

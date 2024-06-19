@@ -25,6 +25,7 @@ using System.Linq;
 using NitroSystem.Dnn.BusinessEngine.Modules;
 using NitroSystem.Dnn.BusinessEngine.Data.Entities.Views;
 using System.Resources;
+using System.Security.AccessControl;
 
 namespace NitroSystem.Dnn.BusinessEngine.WebControls
 {
@@ -37,12 +38,15 @@ namespace NitroSystem.Dnn.BusinessEngine.WebControls
         public int DnnTabID { get; set; }
 
         public int DnnUserID { get; set; }
+        public string DnnUserDisplayName { get; set; }
 
         public Guid? ModuleGuid { get; set; }
 
         public string ModuleName { get; set; }
 
         public bool IsPanel { get; set; }
+
+        public bool IsModuleInAllTabs { get; set; }
 
         public Control PanelResourcesControl { get; set; }
 
@@ -101,7 +105,8 @@ namespace NitroSystem.Dnn.BusinessEngine.WebControls
                                     siteRoot: '" + this.SiteRoot + @"',
                                     apiBaseUrl: '" + this.ApiBaseUrl + @"',
                                     modulePath: '/DesktopModules/BusinessEngine/',
-                                    userID: parseInt('" + this.DnnUserID + @"'),
+                                    userID: " + this.DnnUserID + @",
+                                    userDisplayName: '" + this.DnnUserDisplayName + @"',
                                     version: '" + this.Version + @"',
                                     debugMode: false
                                 };
@@ -112,15 +117,28 @@ namespace NitroSystem.Dnn.BusinessEngine.WebControls
                         this.Page.Header.Controls.Add(baseScript);
                     }
 
+                    List<string> registeredResources = new List<string>();
+
                     if (!this.IsRegisteredPageResources)
                     {
                         var resources = PageResourceRepository.Instance.GetActivePageResources(this.DnnTabID.ToString());
                         foreach (var item in resources)
                         {
-                            RegisterPageResources(item.ResourceType, item.FilePath, item.LoadOrder);
+                            registeredResources.Add(item.ResourcePath);
+
+                            RegisterPageResources(item.ResourceType, item.ResourcePath, item.LoadOrder);
                         }
 
                         this.Page.Header.Controls.Add(new LiteralControl(@"<span id=""bEngine_PageResources""><!--business engine registered resources--></span>"));
+                    }
+
+                    if (this.IsModuleInAllTabs && this.ModuleGuid != null)
+                    {
+                        var moduleResources = PageResourceRepository.Instance.GetModuleResources(this.ModuleGuid.Value).Where(r => r.IsActive && registeredResources.Contains(r.ResourcePath) == false);
+                        foreach (var item in moduleResources)
+                        {
+                            RegisterPageResources(item.ResourceType, item.ResourcePath, item.LoadOrder);
+                        }
                     }
                 }
             }
@@ -130,7 +148,7 @@ namespace NitroSystem.Dnn.BusinessEngine.WebControls
             }
         }
 
-        private void RegisterPageResources(string resourceType, string filepath, int priority)
+        private void RegisterPageResources(string resourceType, string resourcePath, int priority)
         {
             if (this.IsPanel && this.PanelResourcesControl != null)
             {
@@ -141,12 +159,12 @@ namespace NitroSystem.Dnn.BusinessEngine.WebControls
                     if (1 == 1 || CultureInfo.CurrentCulture.TextInfo.IsRightToLeft)
                     {
                         string rtlFilePath = string.Empty;
-                        var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filepath);
+                        var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(resourcePath);
                         if (!string.IsNullOrEmpty(fileNameWithoutExtension) && fileNameWithoutExtension.ToLower().EndsWith(".min"))
-                            rtlFilePath = Path.GetDirectoryName(filepath) + @"\" + Path.GetFileNameWithoutExtension(fileNameWithoutExtension) + ".rtl.min" + Path.GetExtension(filepath);
+                            rtlFilePath = Path.GetDirectoryName(resourcePath) + @"\" + Path.GetFileNameWithoutExtension(fileNameWithoutExtension) + ".rtl.min" + Path.GetExtension(resourcePath);
                         else
-                            rtlFilePath = Path.GetDirectoryName(filepath) + @"\" +
-                                Path.GetFileNameWithoutExtension(filepath) + ".rtl" + Path.GetExtension(filepath);
+                            rtlFilePath = Path.GetDirectoryName(resourcePath) + @"\" +
+                                Path.GetFileNameWithoutExtension(resourcePath) + ".rtl" + Path.GetExtension(resourcePath);
 
                         if (File.Exists(MapPath(rtlFilePath)))
                         {
@@ -155,18 +173,18 @@ namespace NitroSystem.Dnn.BusinessEngine.WebControls
                         }
                     }
 
-                    if (notFound) Core.Infrastructure.ClientResources.ClientResourceManager.RegisterStyleSheet(this.PanelResourcesControl, filepath, this.Version);
+                    if (notFound) Core.Infrastructure.ClientResources.ClientResourceManager.RegisterStyleSheet(this.PanelResourcesControl, resourcePath, this.Version);
 
                 }
                 if (resourceType == "js")
-                    Core.Infrastructure.ClientResources.ClientResourceManager.RegisterScript(this.PanelResourcesControl, filepath, this.Version);
+                    Core.Infrastructure.ClientResources.ClientResourceManager.RegisterScript(this.PanelResourcesControl, resourcePath, this.Version);
             }
             else
             {
                 if (resourceType == "css")
-                    ClientResourceManager.RegisterStyleSheet(base.Page, filepath, priority);
+                    ClientResourceManager.RegisterStyleSheet(base.Page, resourcePath, priority);
                 if (resourceType == "js")
-                    ClientResourceManager.RegisterScript(base.Page, filepath, priority);
+                    ClientResourceManager.RegisterScript(base.Page, resourcePath, priority);
             }
         }
     }

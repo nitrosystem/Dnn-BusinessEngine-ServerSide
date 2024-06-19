@@ -113,8 +113,9 @@
     <Compile Include="DTO\GuidDTO.cs" />
     <Compile Include="DTO\ModuleDTO.cs" />
     <Compile Include="DTO\ModuleResourceDTO.cs" />
+    <Compile Include="DTO\ModuleSkinDTO.cs" />
     <Compile Include="DTO\PageResourceDTO.cs" />
-    <Compile Include="DTO\RenderedModuleDTO.cs" />
+    <Compile Include="DTO\ModuleBuildDTO.cs" />
     <Compile Include="Enums\FieldDataSourceType.cs" />
     <Compile Include="Mapping\LibraryMapping.cs" />
     <Compile Include="Mapping\EntityMapping.cs" />
@@ -128,6 +129,7 @@
     <Compile Include="Mapping\ModuleMapping.cs" />
     <Compile Include="Mapping\ModuleFieldMapping.cs" />
     <Compile Include="Mapping\_ViewModelMappingTemp.cs" />
+    <Compile Include="Models\CheckModuleNameModel.cs" />
     <Compile Include="Models\FieldDataSourceResult.cs" />
     <Compile Include="Models\FieldDataSourceInfo.cs" />
     <Compile Include="Models\FieldTypeCustomEventInfo.cs" />

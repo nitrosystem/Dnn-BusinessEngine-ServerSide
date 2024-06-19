@@ -25,6 +25,9 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Entities.Views
         public string Theme { get; set; }
         public int PortalID { get; set; }
         public int DnnModuleID { get; set; }
+        public string ModuleBuilderType { get; set; }
+        public bool IsSSR { get; set; }
+        public bool IsDisabledFrontFramework { get; set; }
         public string AuthorizationViewDashboard { get; set; }
         public object Settings { get; set; }
         public string Description { get; set; }

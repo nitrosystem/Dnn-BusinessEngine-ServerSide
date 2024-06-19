@@ -52,14 +52,14 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.Appearance
                 if (moduleType == "Dashboard")
                 {
                     var dashboardType = DashboardRepository.Instance.GetDashboardType(moduleID);
-                    result.DashboardTemplates = result.DashboardTemplates.Where(t => (t.IsPanel && dashboardType == 1) || (!t.IsPanel && dashboardType == 2));
+                    result.DashboardTemplates = result.DashboardTemplates.Where(t => (dashboardType == 1 && t.DashboardType == "Standalone") || (dashboardType == 2 && t.DashboardType == "Dnn"));
                 }
 
-                else if (moduleType != "Dashboard" && parentID == null)
+                else if (moduleType != "Dashboard")
                 {
-                    result.FormTemplates = result.FormTemplates.Where(t => (!t.ShowInDashboard));
-                    result.ListTemplates = result.ListTemplates.Where(t => (!t.ShowInDashboard));
-                    result.DetailsTemplates = result.DetailsTemplates.Where(t => (!t.ShowInDashboard));
+                    result.FormTemplates = result.FormTemplates.Where(t => (!t.IsDashboardTemplate && parentID == null) || (t.IsDashboardTemplate && parentID != null));
+                    result.ListTemplates = result.ListTemplates.Where(t => (!t.IsDashboardTemplate && parentID == null) || (t.IsDashboardTemplate && parentID != null));
+                    result.DetailsTemplates = result.DetailsTemplates.Where(t => (!t.IsDashboardTemplate && parentID == null) || (t.IsDashboardTemplate && parentID != null));
                 }
 
                 DataCache.SetCache(cachePrefix, result);
@@ -68,10 +68,12 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.Appearance
             return result;
         }
 
-        public static ModuleSkinInfo GetSkin(Guid moduleID, string moduleType, Guid? moduleParentID, string skinName)
+        public static ModuleSkinInfo GetSkin(Guid moduleID, string moduleType, Guid? parentID, string skinName)
         {
+            if (string.IsNullOrEmpty(skinName)) return null;
+
             SkinInfo objSkinInfo = SkinRepository.Instance.GetSkin(skinName);
-            return GetSkin(moduleID, moduleType, moduleParentID, objSkinInfo);
+            return GetSkin(moduleID, moduleType, parentID, objSkinInfo);
         }
     }
 }

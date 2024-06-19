@@ -89,13 +89,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Appearance\ModuleSkinInfo.cs" />
-    <Compile Include="Appearance\ModuleSkinManager.cs" />
-    <Compile Include="Appearance\SkinLibraryInfo.cs" />
-    <Compile Include="Appearance\SkinTemplateInfo.cs" />
+    <Compile Include="Appearance\AppearanceService.cs" />
+    <Compile Include="Appearance\Models\FieldTypeInfo.cs" />
+    <Compile Include="Appearance\Models\FieldTypeTemplateInfo.cs" />
+    <Compile Include="Appearance\Models\FieldTypeThemeInfo.cs" />
+    <Compile Include="Appearance\Models\ModuleSkinInfo.cs" />
+    <Compile Include="Appearance\Models\ModuleSkinManager.cs" />
+    <Compile Include="Appearance\Models\SkinLibraryInfo.cs" />
+    <Compile Include="Appearance\Models\SkinTemplateInfo.cs" />
     <Compile Include="App_Start\DnnFeatureController.cs" />
+    <Compile Include="Common\ProgressMonitoring.cs" />
     <Compile Include="Contract\IExpressionService.cs" />
     <Compile Include="Contract\IModuleData.cs" />
+    <Compile Include="Contract\ISkinTemplate.cs" />
     <Compile Include="Contract\TokenBase.cs" />
     <Compile Include="DTO\ModuleVariableDto.cs" />
     <Compile Include="Enums\Scope.cs" />
@@ -124,9 +130,10 @@
     <Compile Include="Models\PaymentInfo.cs" />
     <Compile Include="Models\PaymentResultInfo.cs" />
     <Compile Include="ModuleBuilder\Evaluator.cs" />
-    <Compile Include="ModuleBuilder\ModuleBuilder.cs" />
+    <Compile Include="ModuleBuilder\ModuleResourceService.cs" />
     <Compile Include="ModuleBuilder\ModuleData.cs" />
     <Compile Include="ModuleBuilder\ExpressionService.cs" />
+    <Compile Include="ModuleBuilder\ModuleResourcesContentService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\PaymentGateway\ISendToPaymentGateway.cs" />
     <Compile Include="Providers\PaymentGateway\PaymentGatewayParams.cs" />

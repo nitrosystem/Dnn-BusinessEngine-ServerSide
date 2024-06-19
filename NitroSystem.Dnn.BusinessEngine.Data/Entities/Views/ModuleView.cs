@@ -24,6 +24,10 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Entities.Views
         public string Skin { get; set; }
         public string Template { get; set; }
         public string Theme { get; set; }
+        public bool EnableFieldsDefaultTemplate { get; set; }
+        public bool EnableFieldsDefaultTheme { get; set; }
+        public string FieldsDefaultTemplate { get; set; }
+        public string FieldsDefaultTheme { get; set; }
         public string LayoutTemplate { get; set; }
         public string LayoutCss { get; set; }
         public string ModuleBuilderType { get; set; }

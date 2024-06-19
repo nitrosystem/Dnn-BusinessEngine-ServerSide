@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Data;
+using NitroSystem.Dnn.BusinessEngine.Data.Contracts;
 using NitroSystem.Dnn.BusinessEngine.Data.Entities.Tables;
 
 namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
@@ -104,11 +105,21 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
             }
         }
 
-        public IEnumerable<string> GetModulesFieldTypes(string modules)
+        public IEnumerable<string> GetFieldTypes(string modules)
         {
+
             using (IDataContext ctx = DataContext.Instance())
             {
                 return ctx.ExecuteQuery<string>(System.Data.CommandType.Text, "Select Distinct FieldType From dbo.BusinessEngine_ModuleFields Where ModuleID in (Select [RowValue] From dbo.ConvertListToTable(',',@0))", modules);
+            }
+        }
+
+        public IEnumerable<Contracts.ModuleFieldTypeInfo> GetModulesFieldTypes(string modules)
+        {
+
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                return ctx.ExecuteQuery<Contracts.ModuleFieldTypeInfo>(System.Data.CommandType.Text, "Select Distinct ModuleID,FieldType From dbo.BusinessEngine_ModuleFields Where ModuleID in (Select [RowValue] From dbo.ConvertListToTable(',',@0))", modules);
             }
         }
 

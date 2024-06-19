@@ -245,7 +245,6 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.Extensions.Services
                         IsContent = item.IsContent,
                         DefaultSettings = item.DefaultSettings,
                         ValidationPattern = item.ValidationPattern,
-                        IconType = item.IconType,
                         Icon = item.Icon,
                         IsEnabled = item.IsEnabled,
                         Description = item.Description,

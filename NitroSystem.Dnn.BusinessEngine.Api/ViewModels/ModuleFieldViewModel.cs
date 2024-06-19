@@ -19,8 +19,13 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.ViewModels
         public Guid ModuleID { get; set; }
         public Guid? ParentID { get; set; }
         public string PaneName { get; set; }
+        public bool InheritTemplate { get; set; }
+        public bool InheritTheme { get; set; }
         public string Template { get; set; }
         public string Theme { get; set; }
+        public string ThemeCssClass { get; set; }
+        public bool IsSkinTemplate { get; set; }
+        public bool IsSkinTheme { get; set; }
         public string FieldType { get; set; }
         public string FieldText { get; set; }
         public bool IsGroup { get; set; }
@@ -42,7 +47,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.ViewModels
         public IEnumerable<ExpressionInfo> EnableConditions { get; set; }
         public IEnumerable<FieldValueInfo> FieldValues { get; set; }
         public IEnumerable<ActionViewModel> Actions { get; set; }
-        public FieldDataSourceResult DataSource { get; set; }
+        public FieldDataSourceInfo DataSource { get; set; }
         public IDictionary<string, object> Settings { get; set; }
     }
 }

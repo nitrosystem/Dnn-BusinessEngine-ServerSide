@@ -55,7 +55,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Mapping
             {
                 cfg.CreateMap<ModuleInfo, ModuleViewModel>()
                 .ForMember(dest => dest.Settings, map => map.MapFrom(source => TypeCastingUtil<IDictionary<string, object>>.TryJsonCasting(source.Settings)))
-                .ForMember(dest => dest.ModuleSkin, map => { map.PreCondition(source => source != null && source.ModuleID != Guid.Empty); map.MapFrom(source => ModuleSkinManager.GetSkin(objModuleInfo.ModuleID, objModuleInfo.ModuleName, objModuleInfo.ParentID ,(objModuleInfo.ParentID != null ? ModuleRepository.Instance.GetModule(objModuleInfo.ParentID.Value).Skin : objModuleInfo.Skin)) ?? new ModuleSkinInfo()); });
+                .ForMember(dest => dest.SkinObject, map => { map.PreCondition(source => source != null && source.Skin != null); map.MapFrom(source => ModuleSkinManager.GetSkin(objModuleInfo.ModuleID, objModuleInfo.ModuleType, objModuleInfo.ParentID, objModuleInfo.Skin)); });
             });
 
             IMapper mapper = config.CreateMapper();

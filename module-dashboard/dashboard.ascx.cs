@@ -33,6 +33,14 @@ namespace NitroSystem.Dnn.BusinessEngine.Modules
             }
         }
 
+        public int DashboardType
+        {
+            get
+            {
+                return this.ModuleGuid == null ? 0 : DashboardRepository.Instance.GetDashboardType(this.ModuleGuid.Value);
+            }
+        }
+
         public string ModuleName
         {
             get
@@ -156,6 +164,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Modules
                     CtlPageResource.PortalAlias = this.PortalAlias.HTTPAlias;
                     CtlPageResource.DnnTabID = this.TabId;
                     CtlPageResource.DnnUserID = this.UserId;
+                    CtlPageResource.DnnUserDisplayName = this.UserInfo.DisplayName;
                     CtlPageResource.ModuleGuid = this.ModuleGuid;
                     CtlPageResource.ModuleName = this.ModuleName;
 

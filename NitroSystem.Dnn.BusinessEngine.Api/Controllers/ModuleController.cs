@@ -77,7 +77,25 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                 IEnumerable<FieldDTO> fields = null;
                 if (module.ModuleBuilderType != "HtmlEditor")
                 {
-                    fields = ModuleFieldMappings.GetFieldsDTO(module.ModuleID, this._serviceWorker, this.UserInfo);
+                    fields = ModuleFieldMappings.GetFieldsDTO(module.ModuleID, this.UserInfo);
+                    foreach (var field in fields ?? Enumerable.Empty<FieldDTO>())
+                    {
+                        var lightField = new
+                        {
+                            field.FieldID,
+                            field.FieldName,
+                            field.Value,
+                            field.DataSource,
+                            field.Settings
+                        };
+
+                        this._moduleData.SetFieldItem(field.FieldName, lightField);
+                    }
+
+                    foreach (var field in fields.Where(f => f.IsSelective && !string.IsNullOrWhiteSpace(f.DataSource.DataSourceJson)))
+                    {
+                        field.DataSource = ModuleFieldMappings.GetFieldDataSource(field.DataSource.DataSourceJson, this._serviceWorker, false);
+                    }
                 }
 
                 if (!module.IsSSR)
@@ -93,25 +111,6 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                     {
                         moduleTemplateJsUrl = string.Format("{0}/{1}/module--{2}/custom.js?ver={3}-{4}", modulePath, module.ScenarioName, module.ModuleName, Host.CrmVersion, module.Version);
                         moduleTemplateCssUrl = string.Format("{0}/{1}/module--{2}/custom.css?ver={3}-{4}", modulePath, module.ScenarioName, module.ModuleName, Host.CrmVersion, module.Version);
-                    }
-                }
-
-                foreach (var field in fields ?? Enumerable.Empty<FieldDTO>())
-                {
-                    var lightField = new
-                    {
-                        field.FieldID,
-                        field.FieldName,
-                        field.Value,
-                        field.DataSource,
-                        field.Settings
-                    };
-
-                    this._moduleData.SetFieldItem(field.FieldName, lightField);
-
-                    if (field.IsSelective && field.Settings != null && field.Settings.ContainsKey("DataSource"))
-                    {
-                        field.DataSource = ModuleFieldMappings.GetFieldDataSourceItems(field.Settings["DataSource"].ToString(), this._serviceWorker, true);
                     }
                 }
 
@@ -162,9 +161,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
 
                     }, false);
 
-                var dataSourceSettings = ModuleFieldSettingRepository.Instance.GetFieldSetting(objModuleFieldInfo.FieldID, "DataSource");
-
-                var result = ModuleFieldMappings.GetFieldDataSourceItems(dataSourceSettings.SettingValue, this._serviceWorker, false);
+                var result = ModuleFieldMappings.GetFieldDataSource(objModuleFieldInfo.DataSource, this._serviceWorker, false);
 
                 var moduleData = this._moduleData.GetModuleData(postData.ConnectionID, postData.ModuleID);
 
@@ -264,7 +261,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                 if (dashboard.DashboardType == 2)
                 {
                     var module = ModuleRepository.Instance.GetModule(dashboard.ModuleID);
-                    int tabID = ModuleRepository.Instance.GetModuleTabID(module.DnnModuleID.Value).Value;
+                    int tabID = ModuleRepository.Instance.GetModuleTabID(module.DnnModuleID.Value);
                     baseUrl = UrlUtil.GetFriendlyViewURL("", "", TabController.Instance.GetTab(tabID, PortalSettings.PortalId), true, "");
                 }
                 else

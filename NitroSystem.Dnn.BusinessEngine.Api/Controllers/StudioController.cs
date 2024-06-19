@@ -38,6 +38,9 @@ using static Dapper.SqlMapper;
 using System.Text.RegularExpressions;
 using DotNetNuke.Entities.Controllers;
 using System.Reflection;
+using NitroSystem.Dnn.BusinessEngine.Core.Common;
+using NitroSystem.Dnn.BusinessEngine.Api.DTO;
+using System.Threading;
 
 namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
 {
@@ -327,7 +330,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                     });
                 }
 
-                var fieldTypes = ModuleFieldMappings.GetFieldTypesViewModel();
+                var fieldTypes = ModuleFieldMappings.GetFieldTypesViewModel(new ModuleSkinInfo());
 
                 PageResourceRepository.Instance.DeleteScenarioPageResources(scenarioID);
 
@@ -1690,39 +1693,69 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
 
         [HttpGet]
         [ValidateAntiForgeryToken]
-        public HttpResponseMessage GetModuleBuilder(Guid moduleID)
+        public HttpResponseMessage GetModuleBuilder(Guid moduleID, string monitoringFileID)
         {
             try
             {
+                var monitoringFile = this.PortalSettings.HomeSystemDirectoryMapPath + string.Format(@"\BusinessEngine\MonitoringProgress\Monitoring_{0}_{1}.txt", moduleID, monitoringFileID);
+                var progressValueFile = this.PortalSettings.HomeSystemDirectoryMapPath + string.Format(@"\BusinessEngine\MonitoringProgress\ProgressValue_{0}_{1}.txt", moduleID, monitoringFileID);
+
+                var monitoring = new ProgressMonitoring(monitoringFile, progressValueFile, "Loading module builder data...");
+
+                monitoring.Progress("Get module scenario...", 5);
                 var scenarioID = ModuleRepository.Instance.GetModuleScenarioID(moduleID);
 
+                monitoring.Progress("Get module data...", 15);
                 var module = ModuleMapping.GetModuleViewModel(moduleID);
 
-                var parentID = module.ParentID != null ? module.ParentID.Value : module.ModuleID;
-                var customResources = PageResourceRepository.Instance.GetModuleResources(parentID).Where(r => r.IsCustomResource);
+                monitoring.Progress("Get module custom resource items...", 20);
+                var customResources = ModuleCustomResourceRepository.Instance.GetResources(moduleID);
 
+                monitoring.Progress("Get module custom libraries items...", 25);
+                var customLibraries = ModuleCustomLibraryRepository.Instance.GetLibraries(moduleID);
+
+                monitoring.Progress("Get available skins...", 35);
                 var skins = SkinRepository.Instance.GetSkins().Select(s =>
                 {
                     s.SkinImage = s.SkinImage.Replace("[ModulePath]", "/DesktopModules/BusinessEngine"); return s;
                 });
+                if (module.ParentID != null)
+                {
+                    var parentSkinName = ModuleRepository.Instance.GetModuleSkinName(module.ParentID.Value);
+                    skins = skins.Where(s => s.SkinName == parentSkinName);
+                }
 
-                var fieldTypes = ModuleFieldMappings.GetFieldTypesViewModel();
+                monitoring.Progress("Get field types...", 45);
+                var fieldTypes = ModuleFieldMappings.GetFieldTypesViewModel(module.SkinObject);
 
+                monitoring.Progress("Get module fields data...", 65);
                 var fields = ModuleFieldMappings.GetFieldsViewModel(moduleID);
 
+                monitoring.Progress("Get module variables...", 70);
                 var variables = ModuleVariableMapping.GetVariablesViewModel(moduleID);
 
+                monitoring.Progress("Get module & fields actions...", 80);
                 var actions = ActionMapping.GetActionsViewModel(moduleID);
 
+                monitoring.Progress("Get scenario services...", 90);
                 var services = ServiceMapping.GetServicesViewModel(scenarioID);
 
+                monitoring.Progress("Get scenario view models...", 95);
                 var viewModels = ViewModelRepository.Instance.GetViewModels(scenarioID);
 
+                monitoring.Progress("Get available libraries...", 99);
+                var libraries = LibraryRepository.Instance.GetLibraries().OrderBy(l => l.LibraryName);
+
+                monitoring.Progress("Get roles...", 100);
                 IEnumerable<string> roles = null;
                 roles = RoleController.Instance.GetRoles(PortalSettings.PortalId).Cast<RoleInfo>().Select(r => r.RoleName);
                 var allUsers = new List<string>();
                 allUsers.Add("All Users");
                 roles = allUsers.Concat(roles);
+
+                System.Threading.Thread.Sleep(100);
+
+                monitoring.End();
 
                 return Request.CreateResponse(HttpStatusCode.OK, new
                 {
@@ -1735,7 +1768,9 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                     ViewModels = viewModels,
                     Variables = variables,
                     Roles = roles,
-                    CustomResources = customResources
+                    Libraries = libraries,
+                    CustomResources = customResources,
+                    CustomLibraries = customLibraries
                 });
             }
             catch (Exception ex)
@@ -1762,7 +1797,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
 
         [HttpGet]
         [ValidateAntiForgeryToken]
-        public HttpResponseMessage GetModuleSkins()
+        public HttpResponseMessage GetModuleSkins(Guid moduleID)
         {
             try
             {
@@ -1771,7 +1806,11 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                     s.SkinImage = s.SkinImage.Replace("[ModulePath]", "/DesktopModules/BusinessEngine"); return s;
                 });
 
-                return Request.CreateResponse(HttpStatusCode.OK, skins);
+                var module = ModuleRepository.Instance.GetModule(moduleID);
+
+                var skin = ModuleSkinManager.GetSkin(moduleID, module.ModuleType, module.ParentID, module.Skin);
+
+                return Request.CreateResponse(HttpStatusCode.OK, new { Skins = skins, CurrentSkin = skin });
             }
             catch (Exception ex)
             {
@@ -1799,13 +1838,13 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
 
         [HttpGet]
         [ValidateAntiForgeryToken]
-        public HttpResponseMessage GetModuleSkinTemplateContents(string layoutTemplatePath = "")
+        public HttpResponseMessage GetLibraryResources(Guid libraryID)
         {
             try
             {
-                var layoutTemplate = FileUtil.GetFileContent(HttpContext.Current.Server.MapPath(layoutTemplatePath));
+                var result = LibraryResourceRepository.Instance.GetResources(libraryID);
 
-                return Request.CreateResponse(HttpStatusCode.OK, new { LayoutTemplate = layoutTemplate });
+                return Request.CreateResponse(HttpStatusCode.OK, result);
             }
             catch (Exception ex)
             {
@@ -1854,7 +1893,42 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public HttpResponseMessage SaveModuleBasicInfo([FromBody] ModuleViewModel module, [FromUri] bool includeAllOptions = true)
+        public HttpResponseMessage CheckModuleName(CheckModuleNameModel module)
+        {
+            try
+            {
+                int count = ModuleRepository.Instance.CheckModuleName(module.ScenarioID, module.NewModuleName);
+                bool isValid = false;
+                bool isExists = false;
+
+                if (module.ModuleID is null && count == 0)
+                    isValid = true;
+                else if (module.ModuleID is null && count == 1)
+                {
+                    isValid = false;
+                    isExists = true;
+                }
+                else if (module.ModuleID != null && count == 1 && module.OldModuleName == module.NewModuleName)
+                    isValid = true;
+                else if (module.ModuleID != null && count == 1 && module.OldModuleName != module.NewModuleName)
+                {
+                    isValid = false;
+                    isExists = true;
+                }
+                else if (module.ModuleID != null && count == 0 && module.OldModuleName != module.NewModuleName)
+                    isValid = true;
+
+                return Request.CreateResponse(HttpStatusCode.OK, new { IsValid = isValid, IsExists = isExists });
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public HttpResponseMessage SaveModule([FromBody] ModuleViewModel module, [FromUri] bool includeAllOptions = true)
         {
             try
             {
@@ -1870,6 +1944,10 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                 objModuleInfo.Skin = includeAllOptions ? module.Skin : objModuleInfo.Skin;
                 objModuleInfo.Template = includeAllOptions ? module.Template : objModuleInfo.Template;
                 objModuleInfo.Theme = includeAllOptions ? module.Theme : objModuleInfo.Theme;
+                objModuleInfo.EnableFieldsDefaultTemplate = includeAllOptions ? module.EnableFieldsDefaultTemplate : objModuleInfo.EnableFieldsDefaultTemplate;
+                objModuleInfo.EnableFieldsDefaultTheme = includeAllOptions ? module.EnableFieldsDefaultTheme : objModuleInfo.EnableFieldsDefaultTheme;
+                objModuleInfo.FieldsDefaultTemplate = includeAllOptions ? module.FieldsDefaultTemplate : objModuleInfo.FieldsDefaultTemplate;
+                objModuleInfo.FieldsDefaultTheme = includeAllOptions ? module.FieldsDefaultTheme : objModuleInfo.FieldsDefaultTheme;
                 objModuleInfo.LayoutTemplate = module.ModuleBuilderType == "HtmlEditor" ? string.Empty : (includeAllOptions ? module.LayoutTemplate : objModuleInfo.LayoutTemplate);
                 objModuleInfo.LayoutCss = module.ModuleBuilderType == "HtmlEditor" ? string.Empty : (includeAllOptions ? module.LayoutCss : objModuleInfo.LayoutCss);
                 objModuleInfo.ModuleBuilderType = module.ModuleBuilderType;
@@ -1893,97 +1971,8 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                     ModuleRepository.Instance.UpdateModule(objModuleInfo);
                 }
 
-                if (module.ModuleBuilderType == "HtmlEditor")
-                {
-                    var scenario = ScenarioRepository.Instance.GetScenario(module.ScenarioID);
-
-                    HostController.Instance.Update("CrmVersion", (Host.CrmVersion + 1).ToString());
-
-                    FileUtil.CreateTextFile(string.Format("{0}/BusinessEngine/{1}/module--{2}/custom.html", PortalSettings.HomeSystemDirectoryMapPath, scenario.ScenarioName, module.ModuleName), module.CustomHtml, true);
-                    FileUtil.CreateTextFile(string.Format("{0}/BusinessEngine/{1}/module--{2}/custom.js", PortalSettings.HomeSystemDirectoryMapPath, scenario.ScenarioName, module.ModuleName), module.CustomJs, true);
-                    FileUtil.CreateTextFile(string.Format("{0}/BusinessEngine/{1}/module--{2}/custom.css", PortalSettings.HomeSystemDirectoryMapPath, scenario.ScenarioName, module.ModuleName), module.CustomCss, true);
-
-                    if (module.ParentID == null)
-                    {
-                        FileUtil.DeleteFile(string.Format("{0}/BusinessEngine/{1}/module--{2}.html", PortalSettings.HomeSystemDirectoryMapPath, scenario.ScenarioName, module.ModuleName), false);
-                        FileUtil.DeleteFile(string.Format("{0}/BusinessEngine/{1}/module--{2}.js", PortalSettings.HomeSystemDirectoryMapPath, scenario.ScenarioName, module.ModuleName), false);
-                        FileUtil.DeleteFile(string.Format("{0}/BusinessEngine/{1}/module--{2}.css", PortalSettings.HomeSystemDirectoryMapPath, scenario.ScenarioName, module.ModuleName), false);
-                        FileUtil.DeleteFile(string.Format("{0}/BusinessEngine/{1}/module-fields--{2}.css", PortalSettings.HomeSystemDirectoryMapPath, scenario.ScenarioName, module.ModuleName), false);
-
-                        int? tabID = ModuleRepository.Instance.GetModuleTabID(module.DnnModuleID.Value);
-
-                        PageResourceRepository.Instance.DeletePageResources(module.ModuleID);
-
-                        var actionScripts = ModuleBuilder.GetModuleActionsScripts(module.ModuleID);
-                        var moduleActionFile = string.Format("{0}/BusinessEngine/{1}/module--{2}/custom-actions.js", this.PortalSettings.HomeSystemDirectory, scenario.ScenarioName, module.ModuleName);
-                        FileUtil.CreateTextFile(HttpContext.Current.Server.MapPath(moduleActionFile), actionScripts, true);
-                        PageResourceRepository.Instance.AddPageResource(new PageResourceInfo()
-                        {
-                            CmsPageID = tabID != null ? tabID.ToString() : null,
-                            ModuleID = module.ModuleID,
-                            ResourceType = "js",
-                            FilePath = moduleActionFile,
-                            IsSystemResource = true,
-                            IsActive = true,
-                            Version = module.Version.ToString(),
-                            LoadOrder = 0,
-                        });
-
-                        PageResourceRepository.Instance.AddPageResource(new PageResourceInfo()
-                        {
-                            CmsPageID = tabID != null ? tabID.ToString() : null,
-                            ModuleID = module.ModuleID,
-                            ResourceType = "css",
-                            FilePath = string.Format("{0}/BusinessEngine/{1}/module--{2}/custom.css", this.PortalSettings.HomeSystemDirectory, scenario.ScenarioName, module.ModuleName),
-                            IsSystemResource = true,
-                            IsActive = true,
-                            Version = module.Version.ToString(),
-                            LoadOrder = 1,
-                        });
-
-                        PageResourceRepository.Instance.AddPageResource(new PageResourceInfo()
-                        {
-                            CmsPageID = tabID != null ? tabID.ToString() : null,
-                            ModuleID = module.ModuleID,
-                            ResourceType = "js",
-                            FilePath = string.Format("{0}/BusinessEngine/{1}/module--{2}/custom.js", this.PortalSettings.HomeSystemDirectory, scenario.ScenarioName, module.ModuleName),
-                            IsSystemResource = true,
-                            IsActive = true,
-                            Version = module.Version.ToString(),
-                            LoadOrder = 2,
-                        });
-
-                        //Get module base libraries resources
-                        var baseLibraries = ModuleBuilder.GetModuleBaseResources();
-                        foreach (var item in baseLibraries)
-                        {
-                            bool isActive = item.LibraryName == "client-app-debug" ? false : true;
-                            PageResourceRepository.Instance.AddPageResource(new PageResourceInfo()
-                            {
-                                CmsPageID = tabID != null ? tabID.ToString() : null,
-                                ModuleID = module.ModuleID,
-                                IsBaseResource = true,
-                                LibraryName = item.LibraryName,
-                                LibraryVersion = item.Version,
-                                LibraryLogo = item.LibraryLogo,
-                                ResourceType = item.ResourceType,
-                                FilePath = item.ResourcePath,
-                                LoadOrder = item.LoadOrder,
-                                IsActive = isActive,
-                                Version = module.Version.ToString(),
-                            });
-                        }
-
-                        ModuleRepository.Instance.UpdateModuleVersion(module.ModuleID);
-                    }
-                }
-
-                ModuleRepository.Instance.UpdateModuleVersion(objModuleInfo.ModuleID);
-
                 DataCache.ClearCache("BEModule_" + objModuleInfo.ModuleID);
                 DataCache.ClearCache("BEModuleFieldsView_" + objModuleInfo.ModuleID);
-
-                ClearCacheAndAddCmsVersion();
 
                 return Request.CreateResponse(HttpStatusCode.OK, objModuleInfo.ModuleID);
             }
@@ -1995,181 +1984,88 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public HttpResponseMessage SaveRenderedModule(RenderedModuleDTO postData)
+        public HttpResponseMessage BuildModule(BuildModuleDTO postData)
         {
             try
             {
-                var moduleGuid = postData.ModuleID;
+                var monitoringFile = this.PortalSettings.HomeSystemDirectoryMapPath + string.Format(@"\BusinessEngine\MonitoringProgress\Monitoring_{0}_{1}.txt", postData.ModuleID, postData.MonitoringFileID);
+                var progressValueFile = this.PortalSettings.HomeSystemDirectoryMapPath + string.Format(@"\BusinessEngine\MonitoringProgress\ProgressValue_{0}_{1}.txt", postData.ModuleID, postData.MonitoringFileID);
 
-                var module = ModuleRepository.Instance.GetModuleView(moduleGuid);
+                var monitoring = new ProgressMonitoring(monitoringFile, progressValueFile, "Building module...");
 
-                FileUtil.CreateTextFile(string.Format("{0}/BusinessEngine/{1}/module--{2}.html", PortalSettings.HomeSystemDirectoryMapPath, module.ScenarioName, module.ModuleName), postData.ModuleTemplate, true);
+                var moduleID = postData.ModuleID;
+                var parentModuleID = postData.ParentID != null ? postData.ParentID.Value : moduleID;
+                var module = ModuleRepository.Instance.GetModuleView(moduleID);
+                var parentModule = parentModuleID == moduleID ? module : ModuleRepository.Instance.GetModuleView(parentModuleID);
+                var tabID = ModuleRepository.Instance.GetModuleTabID(parentModule.DnnModuleID.Value);
+                var isStandaloneDashboard = parentModule.ModuleType == "Dashboard" ? DashboardRepository.Instance.IsStandaloneDashboard(parentModule.ModuleID) : false;
 
-                if (postData.IsRenderScriptsAndStyles)
+                if (postData.ModuleBuilderType == "HtmlEditor")
                 {
-                    var parentModuleID = postData.ParentID != null ? module.ParentID.Value : module.ModuleID;
-                    var parentModule = parentModuleID == moduleGuid ? module : ModuleRepository.Instance.GetModuleView(parentModuleID);
+                    monitoring.Progress($"Create module custom html template with name [module--{module.ModuleName}.html] file...", 25);
+
+                    FileUtil.CreateTextFile(string.Format("{0}/BusinessEngine/{1}/module--{2}/custom.html", PortalSettings.HomeSystemDirectoryMapPath, parentModule.ScenarioName, module.ModuleName), postData.CustomHtml, true);
+
+                    monitoring.Progress($"Create module custom javascripts with name module--{module.ModuleName}.js file...", 30);
+
+                    FileUtil.CreateTextFile(string.Format("{0}/BusinessEngine/{1}/module--{2}/custom.js", PortalSettings.HomeSystemDirectoryMapPath, parentModule.ScenarioName, module.ModuleName), postData.CustomJs, true);
+
+                    monitoring.Progress($"Create module custom css styles with name [module--{module.ModuleName}.css] file...", 35);
+
+                    FileUtil.CreateTextFile(string.Format("{0}/BusinessEngine/{1}/module--{2}/custom.css", PortalSettings.HomeSystemDirectoryMapPath, parentModule.ScenarioName, module.ModuleName), postData.CustomCss, true);
+
+                    monitoring.Progress($"Get module actions scripts...", 40);
+
+                    var actionScripts = ModuleResourcesContentService.GetModuleActionsScripts(module.ModuleID);
+
+                    monitoring.Progress($"Create module actions in module-action--{module.ModuleName}.js file...", 45);
+
+                    FileUtil.CreateTextFile(string.Format("{0}/BusinessEngine/{1}/module--{2}/custom-actions.js", PortalSettings.HomeSystemDirectoryMapPath, parentModule.ScenarioName, module.ModuleName), actionScripts, true);
+                }
+                else if (postData.ModuleBuilderType == "FormDesigner")
+                {
+                    monitoring.Progress($"Create module html template with name [module--{module.ModuleName}.html] file...", 25);
+
+                    //Create module html template in module--[module-name].html
+                    var moduleTemplate = postData.ModuleTemplate;
+                    FileUtil.CreateTextFile(string.Format("{0}/BusinessEngine/{1}/module--{2}.html", PortalSettings.HomeSystemDirectoryMapPath, module.ScenarioName, module.ModuleName), moduleTemplate, true);
+
+                    monitoring.Progress($"Create module custom css styles with name [module--{module.ModuleName}.css] file...", 30);
 
                     //Create module custom css styles in module--[module-name].css
-                    var moduleStyles = ModuleBuilder.GetModuleStyles(parentModuleID);
+                    var moduleStyles = ModuleResourcesContentService.GetModuleStyles(parentModuleID);
                     FileUtil.CreateTextFile(string.Format("{0}/BusinessEngine/{1}/module--{2}.css", PortalSettings.HomeSystemDirectoryMapPath, parentModule.ScenarioName, parentModule.ModuleName), moduleStyles, true);
 
+                    monitoring.Progress($"Create module fields custom css styles with name [module-fields--{module.ModuleName}.css file...", 35);
+
                     //Create module fields custom css styles in module-fields--.[module-name].css
-                    var fieldsStyles = ModuleBuilder.GetModuleFieldsThemeStyles(parentModuleID);
+                    var fieldsStyles = ModuleResourcesContentService.GetModuleFieldsThemeStyles(parentModuleID);
                     FileUtil.CreateTextFile(string.Format("{0}/BusinessEngine/{1}/module-fields--{2}.css", PortalSettings.HomeSystemDirectoryMapPath, parentModule.ScenarioName, parentModule.ModuleName), fieldsStyles, true);
 
+                    monitoring.Progress($"Create module custom javascripts with name module--{module.ModuleName}.js file...", 40);
+
                     //Create module custom javascripts in module--.[module-name].js
-                    var fieldScripts = ModuleBuilder.GetModuleFieldsScripts(parentModuleID);
+                    var fieldScripts = ModuleResourcesContentService.GetModuleFieldsScripts(parentModuleID);
                     FileUtil.CreateTextFile(string.Format("{0}/BusinessEngine/{1}/module--{2}.js", PortalSettings.HomeSystemDirectoryMapPath, parentModule.ScenarioName, parentModule.ModuleName), fieldScripts, true);
 
+                    monitoring.Progress($"Create module actions in module-action--{module.ModuleName}.js file...", 45);
+
                     //Create module actions in module-action--.[module-name].js
-                    var actionScripts = ModuleBuilder.GetModuleActionsScripts(parentModuleID);
+                    var actionScripts = ModuleResourcesContentService.GetModuleActionsScripts(parentModuleID);
                     FileUtil.CreateTextFile(string.Format("{0}/BusinessEngine/{1}/module-action--{2}.js", PortalSettings.HomeSystemDirectoryMapPath, parentModule.ScenarioName, parentModule.ModuleName), actionScripts, true);
-
-                    int? tabID = ModuleRepository.Instance.GetModuleTabID(parentModule.DnnModuleID.Value);
-
-                    var resources = new List<PageResourceInfo>();
-
-                    //Get skin libraries & resources
-                    resources.AddRange(ModuleBuilder.GetModuleSkinResources(parentModule));
-
-                    //Get module base libraries resources
-                    var baseLibraries = ModuleBuilder.GetModuleBaseResources();
-                    foreach (var item in baseLibraries)
-                    {
-                        bool isActive = item.LibraryName == "client-app-debug" ? false : true;
-                        resources.Add(new PageResourceInfo()
-                        {
-                            IsBaseResource = true,
-                            LibraryName = item.LibraryName,
-                            LibraryVersion = item.Version,
-                            LibraryLogo = item.LibraryLogo,
-                            ResourceType = item.ResourceType,
-                            FilePath = item.ResourcePath,
-                            LoadOrder = resources.Count,
-                            IsActive = isActive
-                        });
-                    }
-
-                    //Get used libraries for fields of the module 
-                    var fieldResources = ModuleBuilder.GetModuleFieldsLibraryResources(parentModuleID);
-                    foreach (var item in fieldResources)
-                    {
-                        item.LoadOrder = resources.Count;
-
-                        resources.Add(item);
-                    }
-
-                    string moduleStylesFile = string.Format("{0}/BusinessEngine/{1}/module--{2}.css", PortalSettings.HomeSystemDirectory, parentModule.ScenarioName, parentModule.ModuleName);
-                    resources.Add(new PageResourceInfo()
-                    {
-                        IsSystemResource = true,
-                        ResourceType = "css",
-                        FilePath = moduleStylesFile,
-                        LoadOrder = resources.Count,
-                        IsActive = true
-                    });
-
-                    string moduleFieldsStylesFile = string.Format("{0}/BusinessEngine/{1}/module-fields--{2}.css", PortalSettings.HomeSystemDirectory, parentModule.ScenarioName, parentModule.ModuleName);
-                    resources.Add(new PageResourceInfo()
-                    {
-                        IsSystemResource = true,
-                        ResourceType = "css",
-                        FilePath = moduleFieldsStylesFile,
-                        LoadOrder = resources.Count,
-                        IsActive = true
-                    });
-
-                    string moduleScriptsFile = string.Format("{0}/BusinessEngine/{1}/module--{2}.js", PortalSettings.HomeSystemDirectory, parentModule.ScenarioName, parentModule.ModuleName);
-                    resources.Add(new PageResourceInfo()
-                    {
-                        IsSystemResource = true,
-                        ResourceType = "js",
-                        FilePath = moduleScriptsFile,
-                        LoadOrder = resources.Count,
-                        IsActive = true
-                    });
-
-                    string moduleActionFile = string.Format("{0}/BusinessEngine/{1}/module-action--{2}.js", PortalSettings.HomeSystemDirectory, parentModule.ScenarioName, parentModule.ModuleName);
-                    resources.Add(new PageResourceInfo()
-                    {
-                        IsSystemResource = true,
-                        ResourceType = "js",
-                        FilePath = moduleActionFile,
-                        LoadOrder = resources.Count,
-                        IsActive = true
-                    });
-
-                    PageResourceRepository.Instance.DeletePageResources(parentModuleID);
-
-                    var pageResources = PageResourceRepository.Instance.GetActivePageResourceFilePaths(tabID.Value.ToString());
-
-                    var index = 0;
-                    foreach (var item in resources ?? Enumerable.Empty<PageResourceInfo>())
-                    {
-                        PageResourceRepository.Instance.AddPageResource(new PageResourceInfo()
-                        {
-                            CmsPageID = tabID != null ? tabID.ToString() : null,
-                            ModuleID = parentModuleID,
-                            FieldType = item.FieldType,
-                            LibraryName = item.LibraryName,
-                            LibraryVersion = item.LibraryVersion,
-                            LibraryLogo = item.LibraryLogo,
-                            ResourceType = item.ResourceType,
-                            FilePath = item.FilePath,
-                            IsBaseResource = item.IsBaseResource,
-                            IsSystemResource = item.IsSystemResource,
-                            IsActive = item.IsActive == false ? item.IsActive : !pageResources.Contains(item.FilePath),
-                            Version = module.Version.ToString(),
-                            LoadOrder = index++,
-                        });
-                    }
-
-                    ModuleRepository.Instance.UpdateModuleVersion(parentModuleID);
                 }
 
-                ModuleRepository.Instance.UpdateModuleVersion(moduleGuid);
+                ModuleResourceService.UpdatePageResources(tabID, this.PortalSettings, isStandaloneDashboard, monitoring);
+
+                System.Threading.Thread.Sleep(100);
+
+                monitoring.End();
+
+                HostController.Instance.Update("CrmVersion", (Host.CrmVersion + 1).ToString());
 
                 DataCache.ClearCache("BEModule_");
                 DataCache.ClearCache("BEModuleFieldsView_");
                 DataCache.ClearCache("BEDashboardModuleTemplate_");
-
-                ClearCacheAndAddCmsVersion();
-
-                return Request.CreateResponse(HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
-            }
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public HttpResponseMessage SaveCustomResources([FromBody] IEnumerable<PageResourceInfo> resources, [FromUri] Guid moduleID)
-        {
-            try
-            {
-                PageResourceRepository.Instance.DeleteCustomPageResources(moduleID);
-
-                var module = ModuleRepository.Instance.GetModule(moduleID);
-
-                int? tabID = ModuleRepository.Instance.GetModuleTabID(module.DnnModuleID.Value);
-
-                foreach (var item in resources ?? Enumerable.Empty<PageResourceInfo>())
-                {
-                    PageResourceRepository.Instance.AddPageResource(new PageResourceInfo()
-                    {
-                        ModuleID = moduleID,
-                        CmsPageID = tabID != null ? tabID.ToString() : null,
-                        ResourceType = item.ResourceType,
-                        FilePath = item.FilePath,
-                        IsCustomResource = true,
-                        IsActive = true,
-                        Version = module.Version.ToString(),
-                        LoadOrder = item.LoadOrder,
-                    });
-                }
 
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
@@ -2222,10 +2118,72 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public HttpResponseMessage SaveModuleField(ModuleFieldViewModel field)
+        public HttpResponseMessage SaveModuleSkin(ModuleSkinDTO postData)
         {
             try
             {
+                var objModuleInfo = ModuleRepository.Instance.GetModule(postData.ModuleID);
+                bool changeChildModulesSkin = objModuleInfo.Skin != postData.Skin && objModuleInfo.ParentID == null && objModuleInfo.ModuleType == "Dashboard";
+
+                var skin = ModuleSkinManager.GetSkin(objModuleInfo.ModuleID, objModuleInfo.ModuleType, objModuleInfo.ParentID, postData.Skin);
+                if (skin == null) throw new Exception("Skin not found!");
+
+                var objSkinTemplateInfo = AppearanceService.GetSkinTemplate(postData.Template, objModuleInfo.ModuleType, skin);
+                var layoutTemplateHtml = objSkinTemplateInfo == null ? "" : FileUtil.GetFileContent(HttpContext.Current.Server.MapPath(objSkinTemplateInfo.LayoutTemplatePath));
+                var layoutTemplateCss = objSkinTemplateInfo == null ? "" : FileUtil.GetFileContent(HttpContext.Current.Server.MapPath(objSkinTemplateInfo.LayoutCssPath));
+
+                objModuleInfo.Skin = postData.Skin;
+                objModuleInfo.Template = postData.Template;
+                objModuleInfo.Theme = postData.Theme;
+                objModuleInfo.LayoutTemplate = layoutTemplateHtml;
+                objModuleInfo.LayoutCss = layoutTemplateCss;
+                objModuleInfo.EnableFieldsDefaultTemplate = postData.EnableFieldsDefaultTemplate;
+                objModuleInfo.EnableFieldsDefaultTheme = postData.EnableFieldsDefaultTheme;
+                objModuleInfo.FieldsDefaultTemplate = postData.FieldsDefaultTemplate;
+                objModuleInfo.FieldsDefaultTheme = postData.FieldsDefaultTheme;
+
+                ModuleRepository.Instance.UpdateModule(objModuleInfo);
+
+                if (changeChildModulesSkin) ModuleRepository.Instance.ChangeChildModulesSkin(objModuleInfo.ModuleID, postData.Skin);
+
+
+                return Request.CreateResponse(HttpStatusCode.OK, new { layoutTemplateHtml, layoutTemplateCss });
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public HttpResponseMessage SaveModuleLayoutTemplate(ModuleSkinDTO postData)
+        {
+            try
+            {
+                ModuleRepository.Instance.UpdateModuleLayoutTemplate(postData.ModuleID, postData.LayoutTemplate, postData.LayoutCss);
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public HttpResponseMessage SaveModuleField(ModuleFieldViewModel field, [FromUri] string monitoringFileID)
+        {
+            try
+            {
+                var monitoringFile = this.PortalSettings.HomeSystemDirectoryMapPath + string.Format(@"\BusinessEngine\MonitoringProgress\Monitoring_{0}_{1}.txt", field.ModuleID, monitoringFileID);
+                var progressValueFile = this.PortalSettings.HomeSystemDirectoryMapPath + string.Format(@"\BusinessEngine\MonitoringProgress\ProgressValue_{0}_{1}.txt", field.ModuleID, monitoringFileID);
+
+                var str = field.FieldID == Guid.Empty ? "Creating" : "Updating";
+
+                var monitoring = new ProgressMonitoring(monitoringFile, progressValueFile, $"{str} '{field.FieldName}' field...", 10);
+
                 var objFieldInfo = new ModuleFieldInfo()
                 {
                     ModuleID = field.ModuleID,
@@ -2233,8 +2191,13 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                     FieldType = field.FieldType,
                     FieldName = field.FieldName,
                     PaneName = field.PaneName,
+                    InheritTemplate = field.InheritTemplate,
+                    InheritTheme = field.InheritTheme,
+                    IsSkinTemplate = field.IsSkinTemplate,
+                    IsSkinTheme = field.IsSkinTheme,
                     Template = field.Template,
                     Theme = field.Theme,
+                    ThemeCssClass = field.ThemeCssClass,
                     ParentID = field.ParentID,
                     FieldText = field.FieldText,
                     IsGroup = field.IsGroup,
@@ -2244,9 +2207,10 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                     IsEnabled = field.IsEnabled,
                     IsSelective = field.IsSelective,
                     IsJsonValue = field.IsJsonValue,
-                    AuthorizationViewField = field.AuthorizationViewField != null ? string.Join(",", field.AuthorizationViewField) : string.Empty,
                     ShowConditions = field.ShowConditions != null ? JsonConvert.SerializeObject(field.ShowConditions) : null,
                     FieldValues = field.FieldValues != null ? JsonConvert.SerializeObject(field.FieldValues) : null,
+                    DataSource = field.DataSource != null ? JsonConvert.SerializeObject(field.DataSource) : null,
+                    AuthorizationViewField = field.AuthorizationViewField != null ? string.Join(",", field.AuthorizationViewField) : string.Empty,
                     Description = field.Description,
                     ViewOrder = field.ViewOrder,
                 };
@@ -2259,6 +2223,8 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                     objFieldInfo.CreatedOnDate = field.CreatedOnDate = DateTime.Now;
                     objFieldInfo.CreatedByUserID = field.CreatedByUserID = this.UserInfo.UserID;
 
+                    monitoring.Progress($"Add {objFieldInfo.FieldName} Field to module fields", 30);
+
                     field.FieldID = objFieldInfo.FieldID = ModuleFieldRepository.Instance.AddField(objFieldInfo);
                 }
                 else
@@ -2266,11 +2232,16 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                     objFieldInfo.CreatedOnDate = field.CreatedOnDate == DateTime.MinValue ? DateTime.Now : field.CreatedOnDate;
                     objFieldInfo.CreatedByUserID = field.CreatedByUserID;
 
+                    monitoring.Progress($"updatte {objFieldInfo.FieldName} Field", 40);
+
                     ModuleFieldRepository.Instance.UpdateField(objFieldInfo);
                 }
 
                 if (field.Settings != null)
                 {
+                    monitoring.Progress($"Deleting field settings", 50);
+
+                    short index = 0;
                     ModuleFieldSettingRepository.Instance.DeleteFieldSettings(field.FieldID);
                     foreach (var key in field.Settings.Keys)
                     {
@@ -2278,6 +2249,8 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                         {
                             string value = field.Settings[key].ToString();
                             bool isBoolean = value.ToLower() == "true" || value.ToLower() == "false";
+
+                            monitoring.Progress($"Add {key} = {value} item", (byte)(50 + 5 * index++));
 
                             var setting = new ModuleFieldSettingInfo()
                             {
@@ -2291,6 +2264,8 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                         }
                     }
                 }
+                
+                monitoring.Progress($"Clear 'BEModuleFieldsView_ {field.ModuleID}' caching item", 100);
 
                 DataCache.ClearCache("BEModuleFieldsView_" + field.ModuleID);
 
@@ -2434,7 +2409,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
             {
                 Guid moduleID;
 
-                SaveModuleBasicInfo(new ModuleViewModel()
+                SaveModule(new ModuleViewModel()
                 {
                     ModuleID = dashboard.ModuleID,
                     ScenarioID = dashboard.ScenarioID,
@@ -2444,6 +2419,9 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                     ModuleTitle = dashboard.ModuleTitle,
                     PortalID = PortalSettings.PortalId,
                     DnnModuleID = dashboard.DnnModuleID,
+                    ModuleBuilderType = dashboard.ModuleBuilderType,
+                    IsSSR = dashboard.IsSSR,
+                    IsDisabledFrontFramework = dashboard.IsDisabledFrontFramework,
                     CreatedOnDate = dashboard.CreatedOnDate,
                     CreatedByUserID = dashboard.CreatedByUserID
                 }, false).TryGetContentValue<Guid>(out moduleID);
@@ -2658,7 +2636,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                 var dashboard = DashboardRepository.Instance.GetDashboardView(pageModule.DashboardID);
 
                 if (pageModule.ModuleID == Guid.Empty)
-                    pageModule.ModuleID = ModuleRepository.Instance.AddModule(dashboard.ScenarioID, dashboard.ModuleID, pageModule.ModuleType, pageModule.ModuleName, pageModule.ModuleTitle, PortalSettings.PortalId, null, this.UserInfo.UserID, "Dashboard");
+                    pageModule.ModuleID = ModuleRepository.Instance.AddModule(dashboard.ScenarioID, dashboard.ModuleID, pageModule.ModuleType, pageModule.ModuleBuilderType, pageModule.ModuleName, pageModule.ModuleTitle, PortalSettings.PortalId, null, this.UserInfo.UserID, "Dashboard");
                 else
                 {
                     var module = ModuleRepository.Instance.GetModule(pageModule.ModuleID);
@@ -2764,7 +2742,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
             {
                 Guid moduleID;
 
-                SaveModuleBasicInfo(new ModuleViewModel()
+                SaveModule(new ModuleViewModel()
                 {
                     ModuleID = form.ModuleID,
                     ScenarioID = form.ScenarioID,
@@ -2874,7 +2852,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
             {
                 Guid moduleID;
 
-                SaveModuleBasicInfo(new ModuleViewModel()
+                SaveModule(new ModuleViewModel()
                 {
                     ModuleID = list.ModuleID,
                     ScenarioID = list.ScenarioID,
@@ -2984,7 +2962,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
             {
                 Guid moduleID;
 
-                SaveModuleBasicInfo(new ModuleViewModel()
+                SaveModule(new ModuleViewModel()
                 {
                     ModuleID = details.ModuleID,
                     ScenarioID = details.ScenarioID,
@@ -3282,7 +3260,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                     if (tabs.Contains(tabID)) continue;
                     tabs.Add(tabID);
 
-                    var tab = TabController.Instance.GetTab(tabID.Value, PortalSettings.PortalId);
+                    var tab = TabController.Instance.GetTab(tabID, PortalSettings.PortalId);
                     var item = new { tab.TabID, tab.TabName, Modules = moduleGroup.OrderBy(m => m.ViewOrder).Select(m => new { m.ModuleID, m.ModuleType, m.ModuleName, m.ModuleTitle }) };
                     result.Add(item);
                 }
@@ -3339,7 +3317,6 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
             {
                 var objPageResourceInfo = PageResourceRepository.Instance.GetPageResource(postData.ResourceID);
                 objPageResourceInfo.IsActive = postData.IsActvive;
-                objPageResourceInfo.DisabledByUserID = this.UserInfo.UserID;
                 PageResourceRepository.Instance.UpdatePageResource(objPageResourceInfo);
 
                 return Request.CreateResponse(HttpStatusCode.OK);
@@ -3365,6 +3342,49 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Controller
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public HttpResponseMessage SaveCustomResources([FromBody] IEnumerable<ModuleCustomResourceInfo> resources, [FromUri] Guid moduleID)
+        {
+            try
+            {
+                ModuleCustomResourceRepository.Instance.DeleteResources(moduleID);
+
+                foreach (var item in resources.Where(r => !string.IsNullOrEmpty(r.ResourceType) && !string.IsNullOrEmpty(r.ResourcePath)))
+                {
+                    ModuleCustomResourceRepository.Instance.AddResource(item);
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public HttpResponseMessage SaveCustomLibraries([FromBody] IEnumerable<ModuleCustomLibraryInfo> libraries, [FromUri] Guid moduleID)
+        {
+            try
+            {
+                ModuleCustomLibraryRepository.Instance.DeleteLibraries(moduleID);
+
+                foreach (var item in libraries.Where(l => !string.IsNullOrEmpty(l.LibraryName) && !string.IsNullOrEmpty(l.Version)))
+                {
+                    ModuleCustomLibraryRepository.Instance.AddLibrary(item);
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
 
         #endregion
 

@@ -150,7 +150,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.Infrastructure.SSR
             {
                 string propertyPath = match.Groups[1].Value;
                 var propertyValue = this._expressionService.ParseExpression(propertyPath, this._moduleData, new List<object>(), true);
-                if (!string.IsNullOrEmpty(propertyValue))
+                if (!string.IsNullOrEmpty(propertyValue) && propertyPath != propertyValue)
                     template = template.Replace(match.Value, (propertyValue ?? ""));
             }
 
@@ -206,10 +206,10 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.Infrastructure.SSR
                 }
 
                 var firstData = match.Groups["FirstAttrs"].Value;
-                string parsedFirstData = !string.IsNullOrWhiteSpace(firstData) ? this._expressionService.ParseExpression(firstData, this._moduleData, new List<object>(),true) : firstData;
+                string parsedFirstData = !string.IsNullOrWhiteSpace(firstData) ? this._expressionService.ParseExpression(firstData, this._moduleData, new List<object>(), true) : firstData;
 
                 var lastData = match.Groups["LastAttrs"].Value;
-                var parsedLastData = !string.IsNullOrWhiteSpace(lastData) ? this._expressionService.ParseExpression(lastData, this._moduleData, new List<object>(),true) : lastData;
+                var parsedLastData = !string.IsNullOrWhiteSpace(lastData) ? this._expressionService.ParseExpression(lastData, this._moduleData, new List<object>(), true) : lastData;
 
                 string propertyPath = match.Groups["ImageData"].Value;
                 var propertyValue = this._expressionService.ParseExpression(propertyPath, this._moduleData, new List<object>(), true);

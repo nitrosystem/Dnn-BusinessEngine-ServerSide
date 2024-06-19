@@ -1,4 +1,5 @@
-﻿using DotNetNuke.Entities.Tabs;
+﻿using DotNetNuke.Entities.Host;
+using DotNetNuke.Entities.Tabs;
 using NitroSystem.Dnn.BusinessEngine.Data.Repositories;
 using System;
 using System.Collections.Generic;
@@ -16,28 +17,34 @@ namespace NitroSystem.Dnn.BusinessEngine.Core.Infrastructure.ClientResources
 {
     public static class RegisterPageResources
     {
-        public static void RegisterResources(int tabID, Control pnlStyles, Control pnlScripts, string version)
+        public static string Version
+        {
+            get
+            {
+                return Host.CrmVersion.ToString();
+            }
+        }
+
+        public static void RegisterResources(int tabID, Control pnlStyles, Control pnlScripts)
         {
             List<string> files = new List<string>();
 
             foreach (var item in PageResourceRepository.Instance.GetPageResources(tabID.ToString()))
             {
-                if (!files.Contains(item.FilePath))
+                if (!files.Contains(item.ResourcePath))
                 {
-                    string filePath = item.FilePath;
+                    string filePath = item.ResourcePath;
 
-                    string rtlFile = Path.GetDirectoryName(item.FilePath) + @"\" + Path.GetFileNameWithoutExtension(item.FilePath) + ".rtl.css";
+                    string rtlFile = Path.GetDirectoryName(item.ResourcePath) + @"\" + Path.GetFileNameWithoutExtension(item.ResourcePath) + ".rtl.css";
 
                     if (!CultureInfo.CurrentCulture.TextInfo.IsRightToLeft && File.Exists(HttpContext.Current.Server.MapPath(rtlFile))) filePath = rtlFile;
 
-                    version = version + "-" + item.Version.ToString();
-
                     if (item.ResourceType == "css")
-                        ClientResourceManager.RegisterStyleSheet(pnlStyles, string.Format("~/{0}", filePath), version);
+                        ClientResourceManager.RegisterStyleSheet(pnlStyles, string.Format("~/{0}", filePath), Version);
                     if (item.ResourceType == "js")
-                        ClientResourceManager.RegisterScript(pnlScripts, string.Format("~/{0}", item.FilePath), version);
+                        ClientResourceManager.RegisterScript(pnlScripts, string.Format("~/{0}", item.ResourcePath), Version);
 
-                    files.Add(item.FilePath);
+                    files.Add(item.ResourcePath);
                 }
             }
         }

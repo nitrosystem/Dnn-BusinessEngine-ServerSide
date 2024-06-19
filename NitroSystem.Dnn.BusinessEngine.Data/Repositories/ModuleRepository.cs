@@ -43,7 +43,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
             }
         }
 
-        public Guid AddModule(Guid scenarioID, Guid? parentID, string moduleType, string moduleName, string moduleTitle, int portalID, int? dnnModuleID, int userID, string wrapper = "Dnn")
+        public Guid AddModule(Guid scenarioID, Guid? parentID, string moduleType, string moduleBuilderType, string moduleName, string moduleTitle, int portalID, int? dnnModuleID, int userID, string wrapper = "Dnn")
         {
             return AddModule(new ModuleInfo()
             {
@@ -51,6 +51,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
                 ParentID = parentID,
                 Wrapper = wrapper,
                 ModuleType = moduleType,
+                ModuleBuilderType = moduleBuilderType,
                 ModuleName = moduleName,
                 ModuleTitle = moduleTitle,
                 PortalID = portalID,
@@ -87,16 +88,42 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
             DataCache.ClearCache(ActionsCachePrefix);
         }
 
-        public void UpdateModuleVersion(Guid moduleID)
+        public int UpdateModuleVersion(Guid moduleID)
         {
             using (IDataContext ctx = DataContext.Instance())
             {
-                ctx.Execute(System.Data.CommandType.Text, "UPDATE dbo.BusinessEngine_Modules SET Version = Version + 1 WHERE ModuleID = @0", moduleID);
+                int version = ctx.ExecuteScalar<int>(System.Data.CommandType.Text, "UPDATE dbo.BusinessEngine_Modules SET Version = Version + 1 WHERE ModuleID = @0; SELECT Version FROM dbo.BusinessEngine_Modules WHERE ModuleID = @0", moduleID);
+
+                DataCache.ClearCache(CachePrefix);
+                DataCache.ClearCache(FieldCachePrefix);
+                DataCache.ClearCache(ActionsCachePrefix);
+
+                return version;
+            }
+        }
+
+        public void UpdateModuleLayoutTemplate(Guid moduleID, string layoutTemplate, string layoutCss)
+        {
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                ctx.Execute(System.Data.CommandType.Text, "UPDATE dbo.BusinessEngine_Modules SET LayoutTemplate = @0, LayoutCss = @1  WHERE ModuleID = @2", layoutTemplate, layoutCss, moduleID);
 
                 DataCache.ClearCache(CachePrefix);
                 DataCache.ClearCache(FieldCachePrefix);
                 DataCache.ClearCache(ActionsCachePrefix);
             }
+        }
+
+        public void ChangeChildModulesSkin(Guid moduleID, string skin)
+        {
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                ctx.Execute(System.Data.CommandType.Text, "UPDATE dbo.BusinessEngine_Modules SET Skin = @1 WHERE ParentID = @0", moduleID, skin);
+            }
+
+            DataCache.ClearCache(CachePrefix);
+            DataCache.ClearCache(FieldCachePrefix);
+            DataCache.ClearCache(ActionsCachePrefix);
         }
 
         public void DeleteModule(Guid moduleID)
@@ -257,7 +284,15 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
             return result;
         }
 
-        public IEnumerable<Guid> GetModuleIdsByParentID(Guid moduleID)
+        public int CheckModuleName(Guid scenarioID, string moduleName)
+        {
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                return ctx.ExecuteScalar<int>(System.Data.CommandType.Text, "SELECT ISNULL(COUNT(*),0) FROM dbo.BusinessEngine_Modules WHERE ScenarioID=@0 and ModuleName=@1", scenarioID, moduleName);
+            }
+        }
+
+        public IEnumerable<Guid> GetModuleChildsID(Guid moduleID)
         {
             string cacheKey = CachePrefix + "ModuleIDs_" + moduleID;
 
@@ -284,7 +319,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
             {
                 using (IDataContext ctx = DataContext.Instance())
                 {
-                    result = ctx.ExecuteScalar<bool?>(System.Data.CommandType.Text, "SELECT 1 FROM dbo.BusinessEngine_Modules WHERE ParentID = @0", moduleID);
+                    result = ctx.ExecuteScalar<bool?>(System.Data.CommandType.Text, "SELECT Top 1 1 FROM dbo.BusinessEngine_Modules WHERE ParentID = @0", moduleID);
 
                     DataCache.SetCache(cacheKey, result);
                 }
@@ -293,9 +328,35 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
             return result != null ? result.Value : false;
         }
 
-        public int? GetModuleTabID(int dnnModuleID)
+        public int GetModuleTabID(int dnnModuleID)
         {
-            return DataContext.Instance().ExecuteScalar<int?>(System.Data.CommandType.Text, "Select Top 1 TabID From TabModules Where ModuleID = @0", dnnModuleID);
+            return DataContext.Instance().ExecuteScalar<int>(System.Data.CommandType.Text, "Select Top 1 TabID From dbo.TabModules Where ModuleID = @0", dnnModuleID);
+        }
+
+        public string GetModuleSkinName(Guid moduleID)
+        {
+            string cacheKey = CachePrefix + "SkinName_" + moduleID;
+
+            var result = DataCache.GetCache<string>(cacheKey);
+            if (result == null)
+            {
+                using (IDataContext ctx = DataContext.Instance())
+                {
+                    result = DataContext.Instance().ExecuteScalar<string>(System.Data.CommandType.Text, "Select Top 1 Skin From dbo.BusinessEngine_Modules Where ModuleID = @0", moduleID);
+
+                    DataCache.SetCache(cacheKey, result);
+                }
+            }
+
+            return result;
+        }
+
+        public IEnumerable<ModuleInfo> GetModulesByDnnTabID(int tabID)
+        {
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                return ctx.ExecuteQuery<ModuleInfo>(System.Data.CommandType.StoredProcedure, "dbo.BusinessEngine_GetModulesByTabID", tabID);
+            }
         }
 
         public IEnumerable<ModuleInfo> GetAllModules()

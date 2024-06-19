@@ -7,14 +7,15 @@ using System.Threading.Tasks;
 
 namespace NitroSystem.Dnn.BusinessEngine.Api.Dto
 {
-    public class RenderedModuleDTO
+    public class BuildModuleDTO
     {
         public Guid ModuleID { get; set; }
         public Guid? ParentID { get; set; }
+        public string ModuleBuilderType { get; set; }
+        public string CustomHtml { get; set; }
+        public string CustomJs { get; set; }
+        public string CustomCss { get; set; }
         public string ModuleTemplate { get; set; }
-        public string ModuleStyles { get; set; }
-        public string ModueScripts { get; set; }
-        public bool IsRenderScriptsAndStyles { get; set; }
-
+        public string MonitoringFileID { get; set; }
     }
 }

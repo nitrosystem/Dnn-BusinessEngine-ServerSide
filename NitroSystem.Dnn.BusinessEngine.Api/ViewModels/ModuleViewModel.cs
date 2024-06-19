@@ -22,6 +22,10 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.ViewModels
         public string Skin { get; set; }
         public string Template { get; set; }
         public string Theme { get; set; }
+        public bool EnableFieldsDefaultTemplate { get; set; }
+        public bool EnableFieldsDefaultTheme { get; set; }
+        public string FieldsDefaultTemplate { get; set; }
+        public string FieldsDefaultTheme { get; set; }
         public string LayoutTemplate { get; set; }
         public string LayoutCss { get; set; }
         public string ModuleBuilderType { get; set; }
@@ -34,7 +38,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.ViewModels
         public DateTime LastModifiedOnDate { get; set; }
         public int LastModifiedByUserID { get; set; }
         public int ViewOrder { get; set; }
-        public ModuleSkinInfo ModuleSkin { get; set; }
+        public ModuleSkinInfo SkinObject { get; set; }
         public IDictionary<string, object> Settings { get; set; }
         public string CustomHtml { get; set; }
         public string CustomJs { get; set; }

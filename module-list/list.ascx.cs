@@ -82,6 +82,14 @@ namespace NitroSystem.Dnn.BusinessEngine.Modules
             }
         }
 
+        public bool IsModuleAllTabs
+        {
+            get
+            {
+                return this.ModuleConfiguration.AllTabs;
+            }
+        }
+
         public bool IsRtl
         {
             get
@@ -142,8 +150,10 @@ namespace NitroSystem.Dnn.BusinessEngine.Modules
             CtlPageResource.PortalAlias = this.PortalAlias.HTTPAlias;
             CtlPageResource.DnnTabID = this.TabId;
             CtlPageResource.DnnUserID = this.UserId;
+            CtlPageResource.DnnUserDisplayName = this.UserInfo.DisplayName;
             CtlPageResource.ModuleGuid = this.ModuleGuid;
             CtlPageResource.ModuleName = this.ModuleName;
+            CtlPageResource.IsModuleInAllTabs = this.IsModuleAllTabs;
 
             CtlPageResource.RegisterPageResources();
         }

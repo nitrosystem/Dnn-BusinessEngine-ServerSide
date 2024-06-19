@@ -63,7 +63,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Utilities
             File.AppendAllText(monitoringFile, message);
         }
 
-        public static bool DeleteFile(string fileName, bool raiseException)
+        public static bool DeleteFile(string fileName, bool raiseException = false)
         {
             try
             {

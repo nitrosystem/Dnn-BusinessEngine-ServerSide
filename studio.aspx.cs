@@ -148,13 +148,17 @@ namespace NitroSystem.Dnn.BusinessEngine.Modules.StudioPage
             if (!this.UserInfo.IsInRole("Administrators"))
                 Response.Redirect(DotNetNuke.Common.Globals.AccessDeniedURL());
 
-            var resources = StudioResourceRepository.Instance.GetActiveStudioResources();
-            foreach (var item in resources)
+            var libraries = StudioLibraryRepository.Instance.GetStudioLibraries();
+            foreach (var library in libraries)
             {
-                if (item.ResourceType == "css")
-                    ClientResourceManager.RegisterStyleSheet(pnlResources, item.FilePath, this.Version);
-                if (item.ResourceType == "js")
-                    ClientResourceManager.RegisterScript(pnlResources, item.FilePath, this.Version);
+                var resources = LibraryRepository.Instance.GetLibraryResources(library.LibraryName, library.Version);
+                foreach (var resource in resources)
+                {
+                    if (resource.ResourceType == "css")
+                        ClientResourceManager.RegisterStyleSheet(pnlResources, resource.ResourcePath, this.Version);
+                    if (resource.ResourceType == "js")
+                        ClientResourceManager.RegisterScript(pnlResources, resource.ResourcePath, this.Version);
+                }
             }
         }
 

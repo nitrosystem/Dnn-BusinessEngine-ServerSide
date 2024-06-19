@@ -680,9 +680,9 @@
 //            {
 //                //field.Settings = ModuleFieldSettingRepository.Instance.GetFieldSettings(objFieldInfo.FieldID).ToDictionary(item => item.SettingName, item => item.SettingValue); ;
 
-//                if (field.IsSelective && field.Settings["DataSource"] != null)
+//                if (field.IsSelective && field.DataSource != null)
 //                {
-//                    var dataSource = JsonConvert.DeserializeObject<FieldDataSourceInfo>(field.Settings["DataSource"].ToString());
+//                    var dataSource = JsonConvert.DeserializeObject<FieldDataSourceInfo>(field.DataSource);
 
 //                    field.Options = GetModuleFieldOptionsViewModel(ref field, dataSource, pageUrl);
 //                }
@@ -716,7 +716,7 @@
 //                result = from x in viewItems.Cast<object>()
 //                         select x;
 
-//                field.Settings["DataSource"] = JsonConvert.SerializeObject(dataSource);
+//                field.DataSource = JsonConvert.SerializeObject(dataSource);
 //            }
 
 //            return result;

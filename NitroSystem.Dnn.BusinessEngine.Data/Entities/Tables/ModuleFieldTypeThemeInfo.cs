@@ -15,6 +15,7 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Entities.Tables
     {
         public Guid ThemeID { get; set; }
         public string FieldType { get; set; }
+        public string TemplateName { get; set; }
         public string ThemeName { get; set; }
         public string ThemeImage { get; set; }
         public string ThemeCssPath { get; set; }
@@ -22,5 +23,8 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Entities.Tables
         public bool IsDark { get; set; }
         public string Description { get; set; }
         public int ViewOrder { get; set; }
+
+        [IgnoreColumn]
+        public bool IsSkinTheme { get; set; }
     }
 }

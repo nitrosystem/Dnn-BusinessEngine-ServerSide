@@ -17,7 +17,6 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Entities.Tables
         public Guid LibraryID { get; set; }
         public string ResourceType { get; set; }
         public string ResourcePath { get; set; }
-        public string ResourcePathRtl { get; set; }
         public int LoadOrder { get; set; }
     }
 }

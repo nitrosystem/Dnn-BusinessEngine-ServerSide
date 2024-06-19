@@ -11,5 +11,6 @@ namespace NitroSystem.Dnn.BusinessEngine.Api.Models
         public IEnumerable<object> Items { get; set; }
         public long TotalCount { get; set; }
         public string ErrorMessage { get; set; }
+        internal string DataSourceJson { get; set; }
     }
 }

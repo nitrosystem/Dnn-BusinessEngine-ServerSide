@@ -79,30 +79,32 @@ namespace NitroSystem.Dnn.BusinessEngine.Data.Repositories
             }
         }
 
+        public IEnumerable<ModuleFieldTypeThemeInfo> GetTemplateThemes(string fieldType, string templateName)
+        {
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                var rep = ctx.GetRepository<ModuleFieldTypeThemeInfo>();
+                var result = rep.Find("Where FieldType = @0 and TemplateName = @1", fieldType, templateName).OrderBy(t => t.ViewOrder);
+                return result;
+            }
+        }
+
         public IEnumerable<string> GetFieldsThemeCss(string modules)
         {
             using (IDataContext ctx = DataContext.Instance())
             {
-                return ctx.ExecuteQuery<string>(System.Data.CommandType.Text, "Select Distinct ThemeCssPath From dbo.BusinessEngine_ModuleFieldTypeThemes t inner join dbo.BusinessEngine_ModuleFields f on t.FieldType=f.FieldType Where t.ThemeCssPath is not null and f.ModuleID in (Select [RowValue] From dbo.ConvertListToTable(',',@0))", modules);
+                return ctx.ExecuteQuery<string>(System.Data.CommandType.Text, "Select Distinct ThemeCssPath From dbo.BusinessEngine_ModuleFieldTypeThemes t inner join dbo.BusinessEngine_ModuleFields f on t.FieldType = f.FieldType and t.ThemeName = f.Theme Where t.ThemeCssPath is not null and f.ModuleID in (Select [RowValue] From dbo.ConvertListToTable(',',@0))", modules);
             }
         }
 
-        public string GetThemeCssClass(string fieldType, string theme)
+        public IEnumerable<ModuleFieldInfo> GetFieldsUseSkinTheme(string modules)
         {
-            string cacheKey = CachePrefix + fieldType + "_" + theme;
-
-            var result = DataCache.GetCache<string>(cacheKey);
-            if (result == null)
+            using (IDataContext ctx = DataContext.Instance())
             {
-                using (IDataContext ctx = DataContext.Instance())
-                {
-                    result = ctx.ExecuteScalar<string>(System.Data.CommandType.Text, "Select Distinct Top 1 ThemeCssClass From dbo.BusinessEngine_ModuleFieldTypeThemes Where FieldType = @0 and ThemeName = @1", fieldType, theme);
-
-                    DataCache.SetCache(cacheKey, result);
-                }
+                var rep = ctx.GetRepository<ModuleFieldInfo>();
+                var result = rep.Find("Select ModuleID,FieldID,FieldType,FieldName,Theme From dbo.BusinessEngine_ModuleFields f Where f.IsSkinTheme = 1 and f.ModuleID in (Select [RowValue] From dbo.ConvertListToTable(',',@0))", modules);
+                return result;
             }
-
-            return result;
         }
     }
 }
